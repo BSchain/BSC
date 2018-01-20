@@ -1,6 +1,8 @@
 # BSC
 chain for science data sharing
 
+### python3 manage.py makemigrations  BSCapp
+### python3 manage.py migrate
 ## TODO:
 * <font color=#0099ff size=5 face="黑体"> 1.实名注册 </font>
 >用户注册需要的信息：登录名、密码、邮箱等信息.

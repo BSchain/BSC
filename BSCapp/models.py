@@ -1,4 +1,7 @@
+from __future__ import unicode_literals
 from django.db import models
+
+from django.contrib import admin
 
 # Create your models here.
 
@@ -71,6 +74,6 @@ class Review(models.Model):
 class Notice(models.Model):
     notice_id = models.CharField(max_length=64,primary_key=True)
     user_id = models.CharField(max_length=64)
-    notice_info = models.CharField()
+    notice_info = models.CharField(max_length=200)
     if_check = models.BooleanField(default=False)
 

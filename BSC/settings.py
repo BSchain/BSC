@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'BSCapp' # TODO: need to add app_name
 ]
 
 MIDDLEWARE = [
@@ -75,18 +76,16 @@ WSGI_APPLICATION = 'BSC.wsgi.application'
 
 DATABASES = {
     # TODO:  change the user name and add password
-    """ EXAMPLE
-    'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mysql',
+    
+    'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bsc_db',
         'USER':'root',
         'PASSWORD':'zpflyfe',
         'HOST':'127.0.0.1',
         'PORT':'3306',
-    """
-    
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
