@@ -8,6 +8,7 @@
 # TODO: here should be the node in network
 from urllib.parse import urlparse
 
+
 class Node:
     def __init__(self):
         self.node = set()

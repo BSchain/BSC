@@ -8,13 +8,13 @@
 from time import  time
 import json
 import hashlib as hasher
-import django
 from uuid import uuid4
 from flask import Flask, jsonify, request
 from urllib.parse import urlparse
 import requests
 import os
 import random
+
 
 class Blockchain(object):
     def __init__(self):
@@ -29,6 +29,7 @@ class Blockchain(object):
         # self.store_chain()
         self.chain_init()
         # self.generate_chain_from_file()
+
     def register_node(self, address):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
@@ -146,10 +147,12 @@ class Blockchain(object):
         with open(file_name, 'w') as json_file:
             json_file.write(json.dumps(self.chain))
 
-#  app = django.setup()
-app = Flask(__name__)
+
+app = Flask(__name__)#  app = django.setup()
 node_uuid = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
+
+
 @app.route('/mine',methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...

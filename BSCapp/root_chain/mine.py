@@ -5,9 +5,7 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-import random
-from utils import *
-from chain import *
+from BSCapp.root_chain.chain import *
 
 # type block_chain is class <chain>
 def mine(block_chain): # TODO: need to consider some condition

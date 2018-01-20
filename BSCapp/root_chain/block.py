@@ -5,12 +5,8 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-import config
-import json
 import os
-from time import time
-from uuid import uuid4
-from utils import *
+from BSCapp.root_chain.utils import *
 
 class Block:
     def __init__(self):

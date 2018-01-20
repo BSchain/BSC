@@ -5,9 +5,9 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-from block import *
+from BSCapp.root_chain.block import *
 import requests
-from utils import *
+from BSCapp.root_chain.utils import *
 
 class Chain:
     def __init__(self):
@@ -46,12 +46,12 @@ class Chain:
         pass
 
     def init_chain_length(self):
-        assert os.path.exists(config.BLOCK_SAVE_ROOT), ('blocks save file not exist')
-        block_list = os.listdir(config.BLOCK_SAVE_ROOT)
+        assert os.path.exists(BLOCK_SAVE_ROOT), ('blocks save file not exist')
+        block_list = os.listdir(BLOCK_SAVE_ROOT)
         self.chain_length = len(block_list)
 
     def save_chain(self):
-        assert os.path.exists(config.BLOCK_SAVE_ROOT), ('blocks save file not exist')
+        assert os.path.exists(BLOCK_SAVE_ROOT), ('blocks save file not exist')
         for index,each_block in enumerate(self.chain):
             block_file = get_block_file(index+1)
             f = open(block_file,'w')
@@ -72,12 +72,12 @@ class Chain:
     #     pass
 
     def get_total_chain(self):
-        assert os.path.exists(config.BLOCK_SAVE_ROOT), ('blocks file not exist')
-        block_list = os.listdir(config.BLOCK_SAVE_ROOT)
+        assert os.path.exists(BLOCK_SAVE_ROOT), ('blocks file not exist')
+        block_list = os.listdir(BLOCK_SAVE_ROOT)
         for each_block in block_list:
             index = each_block.split('.')[0]
             assert str(len(self.chain)+1) == str(index), ('lost index',index)
-            with open(config.BLOCK_SAVE_ROOT+each_block,'r') as f:
+            with open(BLOCK_SAVE_ROOT+each_block,'r') as f:
                 block = json.load(f)
             self.chain.append(block)
 
