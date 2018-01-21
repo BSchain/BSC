@@ -96,7 +96,7 @@ function Func_signUp() {
 function Func_validate() {
   pwd = $("#password").val()
   $.ajax({
-    url: '/customLogin/',
+    url: '/signin/',
     dataType: 'json',
     type: 'POST',
     data: {

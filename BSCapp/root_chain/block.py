@@ -40,11 +40,11 @@ class Block:
         return self.index < other_block.index
 
     def save_block(self):
-        assert os.path.exists(config.BLOCK_SAVE_ROOT) , ('Blocks save root file not exist')
+        assert os.path.exists(BLOCK_SAVE_ROOT) , ('Blocks save root file not exist')
         # path = 'blocks/' + str(index) + '_' + str(block_hash) + '.json'
         #save_block_path = config.BLOCK_SAVE_ROOT+ str(self.index)+config.BLOCK_SPLIT+str(self.hash_self) + config.BLOCK_SAVE_SUFFIX
         # path = 'blocks/' + str(index) + '.json'
-        save_block_path = config.BLOCK_SAVE_ROOT+ str(self.index) + config.BLOCK_SAVE_SUFFIX
+        save_block_path = BLOCK_SAVE_ROOT+ str(self.index) + BLOCK_SAVE_SUFFIX
         with open(save_block_path, 'w') as json_file:
             json_file.write(json.dumps(self.to_dict()))
 

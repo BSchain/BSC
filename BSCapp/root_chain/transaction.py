@@ -4,18 +4,19 @@
 # @FileName: transaction.py
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
-
+import os
+from BSCapp.root_chain.utils import *
 class Transaction:
     def __init__(self):
-        self.in_coins = None
-        self.out_coins = None
-        self.timestamp = None
-        self.action = None
-        self.seller = None
-        self.buyer = None
-        self.data_uuid = None
-        self.credit = None
-        self.reviewer = None
+        self.in_coins = []
+        self.out_coins = []
+        self.timestamp = time()
+        self.action = ''
+        self.seller = ''
+        self.buyer = ''
+        self.data_uuid = ''
+        self.credit = 0.0
+        self.reviewer = ''
 
     def __eq__(self, other_ts):
         return self.in_coins == other_ts.in_coins and \
@@ -46,6 +47,15 @@ class Transaction:
         }
         return transaction
 
+    def save_transaction(self):
+        assert os.path.exists(TRANSACTION_SAVE_ROOT), (TRANSACTION_SAVE_ROOT,' not exist')
+        # path = 'blocks/' + str(index) + '_' + str(block_hash) + '.json'
+        # save_block_path = config.BLOCK_SAVE_ROOT+ str(self.index)+config.BLOCK_SPLIT+str(self.hash_self) + config.BLOCK_SAVE_SUFFIX
+        # path = 'blocks/' + str(index) + '.json'
+        save_tx_path = TRANSACTION_SAVE_ROOT + str(self.timestamp) + TRANSACTION_SAVE_SUFFIX
+        with open(save_tx_path, 'w',encoding='utf-8') as json_file:
+            json_file.write(json.dumps(self.to_dict()))
+
     # can change to init value
     def new_transaction(self, in_coins=None, out_coins=None, timestamp=None,
                         action=None, seller=None, buyer=None, data_uuid=None, credit=None, reviewer=None):
@@ -62,8 +72,8 @@ class Transaction:
         :param reviewer:
         :return:
         """
-        self.in_coins.append(in_coins)
-        self.out_coins.append(out_coins)
+        self.in_coins=in_coins
+        self.out_coins=out_coins
         self.timestamp = timestamp
         self.action = action
         self.seller = seller

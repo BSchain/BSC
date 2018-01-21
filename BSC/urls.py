@@ -18,5 +18,6 @@ from django.conf.urls import url, include
 from BSCapp import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^signup/', views.signUpCustom, name='signup'),
+    url(r'^signup/', views.signUp, name='signUp'),
+    url(r'^signin/', views.signIn, name='signIn'),
 ]

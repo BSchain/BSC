@@ -13,7 +13,9 @@ import hashlib as hasher
 import uuid
 from time import time
 
-BLOCK_SAVE_ROOT = 'blocks/' # the blocks saving root
+TRANSACTION_SAVE_ROOT = r'transactions/'
+TRANSACTION_SAVE_SUFFIX = '.json'
+BLOCK_SAVE_ROOT = r'blocks/' # the blocks saving root
 BLOCK_SAVE_SUFFIX = '.json' # block suffix
 BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
 
@@ -62,6 +64,40 @@ def get_block_file(index):
     return BLOCK_SAVE_ROOT + str(index) + BLOCK_SAVE_SUFFIX
 
 
+def get_total_tx():
+    tx_total = []
+    tx_files = get_tx_files()
+    for item_file in tx_files:
+        with open(item_file, 'r') as f:
+            item_tx = json.load(f)
+        tx_total.append(item_tx)
+    return tx_total
+
+
+def get_n_tx(tx_number,get_total=0):
+    tx_sub = []
+    tx_files = get_tx_files()
+    if get_total == 1:
+        return get_total_tx()
+    else:
+        for idx, item_file in enumerate(tx_files):
+            if idx+1 > tx_number:
+                return tx_sub
+            with open(item_file, 'r') as f:
+                item_tx = json.load(f)
+            tx_sub.append(item_tx)
+
+
+def get_tx_number():
+    return len(get_tx_files())
+
+
+def get_tx_files():
+    assert os.path.exists(TRANSACTION_SAVE_ROOT), (TRANSACTION_SAVE_ROOT,'not exist')
+    tx_files = os.listdir(TRANSACTION_SAVE_ROOT)
+    return tx_files
+
+
 def valid_block(block):
     if block.index == 1:
         return True
@@ -96,5 +132,4 @@ def valid_chain(chain):
 
 
 def generate_uuid(name):
-    namespace = str(time())
-    return uuid.uuid3(namespace=namespace, name=name)
+    return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name))
