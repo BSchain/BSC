@@ -1,15 +1,26 @@
 # BSC
 chain for science data sharing
 
-### python3 manage.py makemigrations  BSCapp
-### python3 manage.py migrate
+## 数据库迁移指令
+>`python3 manage.py makemigrations  BSCapp`
+>
+>`python3 manage.py migrate`
+
+## 项目运行指令
+>`python3 manage.py runserver`
+>
+>在浏览器网站中输入 `127.0.0.1:8000/index` 默认端口为8000
+>
+>点击右上角的login，里面可以选择注册还是登陆
+
 ## TODO:
-* <font color=#0099ff size=5 face="黑体"> 1.实名注册 </font>
->用户注册需要的信息：登录名、密码、邮箱等信息.
+* <font color=#0099ff size=5 face="黑体"> 1.实名注册(Done) </font>
+>用户注册需要的信息：登录名、密码、邮箱信息.
 >用户表，保存登录名，密码，邮箱到表中。
-* <font color=#0099ff size=5 face="黑体"> 2.用户登录 && 管理员登录 </font>
+
+* <font color=#0099ff size=5 face="黑体"> 2.用户登录 && 管理员登录 (TODO: add admin) </font>
 >用户或者管理员登录：需要进行数据库查询操作，登陆后跳转至页面：按数据上传时间最新排序.
-* <font color=#0099ff size=5 face="黑体"> 3.用户个人信息完善 </font>
+* <font color=#0099ff size=5 face="黑体"> 3.用户个人信息完善(Doing) </font>
 >个人信息完善包括：真实姓名、手机号、身份证号、所在公司、个人头衔、居住地.
 >
 >个人信息表，保存真实姓名、手机号、身份证号、所在公司、个人头衔、居住地。
