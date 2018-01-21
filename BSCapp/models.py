@@ -11,16 +11,12 @@ class User(models.Model):
     user_name = models.CharField(max_length=20, unique=True)
     user_pwd = models.CharField(max_length=20)
     user_email = models.EmailField()
-
-
-class UserInfo(models.Model):
-    user_id = models.CharField(max_length=64, primary_key=True)
-    user_realName = models.CharField(max_length=20)
-    user_phone = models.CharField(max_length=20)
-    user_idcard = models.CharField(max_length=20)
-    user_company = models.CharField(max_length=20)
-    user_title = models.CharField(max_length=20)
-    user_place = models.CharField(max_length=20)
+    user_realName = models.CharField(max_length=20, default='')
+    user_phone = models.CharField(max_length=20, default=0)
+    user_idcard = models.CharField(max_length=20, default=0)
+    user_company = models.CharField(max_length=64, default='')
+    user_title = models.CharField(max_length=20, default=0)
+    user_addr = models.CharField(max_length=64, default='China')
 
 
 class Data(models.Model):

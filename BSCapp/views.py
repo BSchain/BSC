@@ -8,9 +8,9 @@ import hashlib
 from django.db import connection
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from BSCapp.root_chain.utils import *
-from BSCapp.root_chain.transaction import *
-import time
-import random
+import BSCapp.root_chain.transaction as TX
+from time import time
+
 # Create your views here.
 
 @csrf_exempt
@@ -38,6 +38,25 @@ def login(request):
             'errormessage': 'wrong password',
             }))
     else:
+        """
+
+        :param in_coins:
+        :param out_coins:
+        :param timestamp:
+        :param action:
+        :param seller:
+        :param buyer:
+        :param data_uuid:
+        :param credit:
+        :param reviewer:
+        :return:
+        """
+
+        tx = TX.Transaction()
+        tx.new_transaction(in_coins=[], out_coins=[],timestamp=time(), action='login',
+                           seller=u.user_id, buyer='',data_uuid='',credit=0.0, reviewer='')
+        tx.save_transaction()
+
         request.session['username'] = username
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -71,5 +90,13 @@ def signUp(request):
 
 @csrf_exempt
 def userInfo(request):
-    user_name = request.session['username']
-    return render(request, "app/userInfo.html")
+    username = request.session['username']
+    user = User.objects.get(user_name=username)
+    return render(request, "app/userInfo.html",{
+        'id': user.user_name,
+        'name': user.user_realName,
+        'email':user.user_email,
+        'addr':user.user_addr,
+        'phone':user.user_phone,
+        'idcard':user.user_idcard
+        })
