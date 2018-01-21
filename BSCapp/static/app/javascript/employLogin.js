@@ -69,29 +69,6 @@ function validateSignIn() {
   })
 }
 
-function Func_signUp() {
-  pwd = $("#inputPassword").val()
-  $.ajax("/signUp/", {
-    dataType: 'json',
-    type: 'POST',
-    data: {
-      "username": $("#inputUsername").val(),
-      "mail": $("#inputEmail").val(),
-      "password": pwd,
-    }
-  }).done(function(data) {
-    if (data.statCode != 0) {
-      alert(data.errormessage)
-    } else {
-      location.reload();
-      $("#menuLogin").hide()
-      $("#menuUser").show()
-      $("#navUser").text(data.username)
-      $.cookie('username', data.username, {path: '/'})
-      $.cookie('password', md5(pwd), {path: '/'})
-    }
-  })
-}
 */
 function Func_validate() {
   pwd = $("#password").val()

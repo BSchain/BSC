@@ -71,14 +71,14 @@ function validateSignIn() {
 */
 
 function SignUp_validate() {
+  pwd = $("#password").val()
   $.ajax({
     dataType: 'json',
     type: 'POST',
     data: {
       "username": $("#username").val(),
       "email": $("#email").val(),
-      "password": $("#password").val(),
-      "name": $("#name").val(),
+      "password": pwd,
     }
   }).done(function(data) {
     if (data.statCode != 0) {

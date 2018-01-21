@@ -96,7 +96,7 @@ function Func_signUp() {
 function Func_validate() {
   pwd = $("#password").val()
   $.ajax({
-    url: '/signin/',
+    url: '/login/',
     dataType: 'json',
     type: 'POST',
     data: {
@@ -110,7 +110,7 @@ function Func_validate() {
     } else {
      $.cookie('username', data.username, {path: '/'})
      $.cookie('password', md5(pwd), {path: '/'})
-     indexURL = "/customInfo/"
+     indexURL = "/userInfo/"
      window.location.replace(indexURL);
      return(true)
      /*

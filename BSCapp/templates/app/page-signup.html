@@ -1,5 +1,5 @@
 <!doctype html>
-
+{% load static %}
 <html lang="en" class="fullscreen-bg">
 
 <head>
@@ -33,7 +33,7 @@
 						<div class="content">
 							<div class="header">
 								<div class="logo text-center"><img src="/../static/app/assets/img/logo_big.jpg" alt="Klorofil Logo"></div>
-								<p class="lead">Sign up your account</p>
+								<p class="lead">SignUp your account</p>
 							</div>
 							<form class="form-auth-small" onsubmit="return SignUp_validate()" action="javascript:void(0)" >
                                 <div class="form-group">
@@ -44,38 +44,10 @@
 									<label for="id_password" class="control-label sr-only">Password</label>
 									<input name="password" required type="password" class="form-control" id="password" value="" placeholder="Password">
 								</div>
-								<div class="form-group">
-									<label for="id_name" class="control-label sr-only">Name</label>
-									<input name="name" required type="name" class="form-control" id="name" value="" placeholder="Name">
-								</div>
                                 <div class="form-group">
 									<label for="id_email" class="control-label sr-only">Email</label>
 									<input name="email" required type="email" class="form-control" id="email" value="" placeholder="Email">
 								</div>
-                                <!--<div class="form-group">
-									<label for="id_addr" class="control-label sr-only">Address</label>
-									<input name ="addr" required type="address" class="form-control" id="addr" value="" placeholder="Address">
-                                </div>
-                                <div class="form-group">
-									<label for="id_phone" class="control-label sr-only">Phone</label>
-									<input name="phone" required type="phone" class="form-control" id="phone" value="" placeholder="Phone">
-								</div>
-                                <div class="form-group">
-									<label for="id_idcard" class="control-label sr-only">IDCard</label>
-									<input name="idcard" required type="idcard" class="form-control" id="idcard" value="" placeholder="IDCard">
-								</div>
-								<div class="form-group">
-									<label for="id_company" class="control-label sr-only">Company</label>
-									<input name="company" required type="company" class="form-control" id="company" value="" placeholder="Company">
-								</div>
-								<div class="form-group">
-									<label for="id_title" class="control-label sr-only">Title</label>
-									<input name="title" required type="title" class="form-control" id="title" value="" placeholder="Title">
-								</div>
-								<div class="form-group">
-									<label for="id_place" class="control-label sr-only">Place</label>
-									<input name="place" required type="place" class="form-control" id="place" value="" placeholder="Place">
-								</div>-->
 								<button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
 							</form>
 						</div>

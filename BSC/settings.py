@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'BSC.wsgi.application'
 
 DATABASES = {
     # TODO:  change the user name and add password
-    
+
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
