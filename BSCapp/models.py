@@ -18,7 +18,6 @@ class User(models.Model):
     user_title = models.CharField(max_length=20, default=0)
     user_addr = models.CharField(max_length=64, default='China')
 
-
 class Data(models.Model):
     data_id = models.CharField(max_length=64, primary_key=True)
     user_id = models.CharField(max_length=64)
@@ -87,4 +86,3 @@ class Notice(models.Model):
     user_id = models.CharField(max_length=64)
     notice_info = models.CharField(max_length=200)
     if_check = models.BooleanField(default=False)
-
