@@ -91,12 +91,31 @@ def signUp(request):
 @csrf_exempt
 def userInfo(request):
     username = request.session['username']
-    user = User.objects.get(user_name=username)
-    return render(request, "app/userInfo.html",{
-        'id': user.user_name,
-        'name': user.user_realName,
-        'email':user.user_email,
-        'addr':user.user_addr,
-        'phone':user.user_phone,
-        'idcard':user.user_idcard
-        })
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
+    try:
+        user.user_realName = request.POST['realname']
+        user.user_email = request.POST['email']
+        user.user_phone = request.POST['phone']
+        user.user_idcard = request.POST['idcard']
+        user.user_company = request.POST['company']
+        user.user_title = request.POST['title']
+        user.user_addr = request.POST['addr']
+        user.save()
+        return HttpResponse(json.dumps({
+            'statCode': 0
+            }))
+    except Exception as e:
+        print(str(e))
+        return render(request, "app/userInfo.html",{
+            'id': user.user_name,
+            'name': user.user_realName,
+            'email':user.user_email,
+            'addr':user.user_addr,
+            'phone':user.user_phone,
+            'idcard':user.user_idcard,
+            'company':user.user_company,
+            'title':user.user_title,
+            })
