@@ -134,40 +134,18 @@
 								<!-- END PROFILE HEADER -->
 								<!-- PROFILE DETAIL -->
 								<div class="profile-detail">
-									<div class="profile-info">
+									<div class="profile-info" id="profile">
 										<h4 class="heading">用户信息</h4>
-										<form class="form-auth-small" onsubmit="return EditInfo()" action="javascript:void(0)" >
-											<div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">姓名</button></span>
-												<span id="nametext" class="form-control">{{name}}</span>
-											</div>
-			                                <div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">邮箱</button></span>
-												<input name="email" required type="email" class="form-control" id="email" value="{{email}}">
-											</div>
-			                                <div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">电话</button></span>
-												<input name="phone" required type="phone" class="form-control" id="phone" value="{{phone}}">
-											</div>
-			                                <div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">身份证号</button></span>
-												<input name="idcard" required type="idcard" class="form-control" id="idcard" value="{{idcard}}">
-											</div>
-			                                <div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">公司</button></span>
-												<input name="company" required type="company" class="form-control" id="company" value="{{company}}">
-											</div>
-											<div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">头衔</button></span>
-												<input name="title" required type="title" class="form-control" id="title" value="{{title}}">
-											</div>
-											<div class="input-group">
-												<span class="input-group-btn"><button class="btn btn-primary" type="button">地址</button></span>
-												<input name="addr" required type="addr" class="form-control" id="addr" value="{{addr}}">
-											</div>
-											<p> </p>
-											<button id="edit" type="submit" class="btn btn-primary btn-lg btn-block">编辑</button>
-										</form>
+										<ul class="list-unstyled list-justify">
+											<li>姓名 <span id="nametext">{{name}}</span></li>
+											<li>邮箱 <span id="emailtext">{{email}}</span></li>
+											<li>电话 <span id="phonetext">{{phone}}</span></li>
+											<li>身份证号 <span id="idcardtext">{{idcard}}</span></li>
+											<li>公司 <span id="companytext">{{company}}</span></li>
+											<li>头衔 <span id="titletext">{{title}}</span></li>
+											<li>地址 <span id="addrtext">{{addr}}</span></li>
+										</ul>
+										<button id="edit" class="btn btn-primary btn-lg btn-block" onclick="EditInfo()">编辑</button>
 									</div>
 									<div class="profile-info">
 										<h4 class="heading">Social</h4>
