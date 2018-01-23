@@ -25,7 +25,6 @@ def login(request):
         password = request.POST['password']
     except Exception:
         return render(request, "app/page-login.html")
-    
     try:
         a = Admin.objects.get(admin_name=username)
         if (password != a.admin_pwd):
@@ -43,7 +42,6 @@ def login(request):
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'username': username,
-                'isAdmin': 1,
                 }))
     except Exception:
         pass
@@ -84,7 +82,6 @@ def login(request):
         return HttpResponse(json.dumps({
             'statCode': 0,
             'username': username,
-            'isAdmin': 0,
             }))
 
 @csrf_exempt
@@ -98,7 +95,6 @@ def signUp(request):
     except Exception as e:
         print(str(e))
         return render(request, "app/page-signup.html")
-    # client cannot overwrite admin users
     try:
         c = Admin.objects.get(admin_name=user_name)
         return HttpResponse(json.dumps({
@@ -107,7 +103,6 @@ def signUp(request):
             }))
     except Exception:
         pass
-
     try:
         c = User.objects.get(user_name=user_name)
         return HttpResponse(json.dumps({
@@ -125,37 +120,53 @@ def signUp(request):
 
 @csrf_exempt
 def userInfo(request):
-    username = request.session['username']
+    adminname = request.session['username']
     try:
-        user = User.objects.get(user_name=username)
+        admin = User.objects.get(admin_name=adminname)
     except Exception:
         return render(request, "app/page-login.html")
     try:
-        user.user_realName = request.POST['realname']
-        user.user_email = request.POST['email']
-        user.user_phone = request.POST['phone']
-        user.user_idcard = request.POST['idcard']
-        user.user_company = request.POST['company']
-        user.user_title = request.POST['title']
-        user.user_addr = request.POST['addr']
-        user.save()
+        admin.admin_realName = request.POST['realname']
+        admin.admin_email = request.POST['email']
+        admin.admin_phone = request.POST['phone']
+        admin.admin_idcard = request.POST['idcard']
+        admin.admin_company = request.POST['company']
+        admin.admin_title = request.POST['title']
+        admin.admin_addr = request.POST['addr']
+        admin.save()
         return HttpResponse(json.dumps({
             'statCode': 0
             }))
     except Exception as e:
         print(str(e))
-        return render(request, "app/userInfo.html",{
-            'id': user.user_name,
-            'name': user.user_realName,
-            'email':user.user_email,
-            'addr':user.user_addr,
-            'phone':user.user_phone,
-            'idcard':user.user_idcard,
-            'company':user.user_company,
-            'title':user.user_title,
+        return render(request, "app/adminInfo.html",{
+            'id': admin.admin_name,
+            'name': admin.admin_realName,
+            'email':admin.admin_email,
+            'addr':admin.admin_addr,
+            'phone':admin.admin_phone,
+            'idcard':admin.admin_idcard,
+            'company':admin.admin_company,
+            'title':admin.admin_title,
             })
 
 @csrf_exempt
 def adminInfo(request):
-    # TODO
-    return render(request, "app/adminInfo.html")
+    adminname = request.session['username']
+    try:
+        admin = Admin.objects.get(admin_name=adminname)
+    except Exception:
+        return render(request, "app/page-login.html")
+    try:
+        admin.admin_id = request.POST['admin_id']
+        admin.admin_name = request.POST['admin_name']
+        admin.save()
+        return HttpResponse(json.dumps({
+            'statCode': 0
+            }))
+    except Exception as e:
+        print(str(e))
+        return render(request, "app/adminInfo.html",{
+            'id': admin.admin_id,
+            'name': admin.admin_name
+            })
