@@ -132,4 +132,4 @@ def valid_chain(chain):
 
 
 def generate_uuid(name):
-    return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name))
+    return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name+str(time())))

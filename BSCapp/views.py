@@ -83,6 +83,7 @@ def signUp(request):
     except Exception as e:
         User(user_id=user_id, user_name=user_name,
             user_pwd=user_pwd, user_email=user_email).save()
+        Wallet(user_id=user_id, account = 0.0).save()
         return HttpResponse(json.dumps({
             'statCode': 0,
             'username': user_name,
