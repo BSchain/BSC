@@ -139,7 +139,7 @@
 										<form class="form-auth-small" onsubmit="return EditInfo()" action="javascript:void(0)" >
 											<div class="input-group">
 												<span class="input-group-btn"><button class="btn btn-primary" type="button">姓名</button></span>
-												<input name="name" required type="name" class="form-control" id="name" value="{{name}}">
+												<span id="nametext" class="form-control">{{name}}</span>
 											</div>
 			                                <div class="input-group">
 												<span class="input-group-btn"><button class="btn btn-primary" type="button">邮箱</button></span>
@@ -166,7 +166,7 @@
 												<input name="addr" required type="addr" class="form-control" id="addr" value="{{addr}}">
 											</div>
 											<p> </p>
-											<button type="submit" class="btn btn-primary btn-lg btn-block">Edit</button>
+											<button id="edit" type="submit" class="btn btn-primary btn-lg btn-block">编辑</button>
 										</form>
 									</div>
 									<div class="profile-info">
