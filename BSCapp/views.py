@@ -25,6 +25,29 @@ def login(request):
         password = request.POST['password']
     except Exception:
         return render(request, "app/page-login.html")
+    
+    try:
+        a = Admin.objects.get(admin_name=username)
+        if (password != a.admin_pwd):
+            return HttpResponse(json.dumps({
+                        'statCode': -3,
+                        'errormessage': 'wrong password',
+                        }))
+        else:
+            tx = TX.Transaction()
+            tx.new_transaction(in_coins=[], out_coins=[],timestamp=time(), action='login',
+                               seller=a.admin_id, buyer='',data_uuid='',credit=0.0, reviewer='')
+            tx.save_transaction()
+
+            request.session['username'] = username
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'username': username,
+                'isAdmin': 1,
+                }))
+    except Exception:
+        pass
+
     try:
         u = User.objects.get(user_name=username)
     except Exception:
@@ -61,6 +84,7 @@ def login(request):
         return HttpResponse(json.dumps({
             'statCode': 0,
             'username': username,
+            'isAdmin': 0,
             }))
 
 @csrf_exempt
@@ -74,6 +98,16 @@ def signUp(request):
     except Exception as e:
         print(str(e))
         return render(request, "app/page-signup.html")
+    # client cannot overwrite admin users
+    try:
+        c = Admin.objects.get(admin_name=user_name)
+        return HttpResponse(json.dumps({
+            'statCode': -1,
+            'errormessage': 'username has been signed up',
+            }))
+    except Exception:
+        pass
+
     try:
         c = User.objects.get(user_name=user_name)
         return HttpResponse(json.dumps({
@@ -120,3 +154,8 @@ def userInfo(request):
             'company':user.user_company,
             'title':user.user_title,
             })
+
+@csrf_exempt
+def adminInfo(request):
+    # TODO
+    return render(request, "app/adminInfo.html")

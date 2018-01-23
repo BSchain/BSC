@@ -110,7 +110,11 @@ function Func_validate() {
     } else {
      $.cookie('username', data.username, {path: '/'})
      $.cookie('password', md5(pwd), {path: '/'})
-     indexURL = "/userInfo/"
+     if (data.isAdmin == 0) { 
+       indexURL = "/userInfo/"
+     } else {
+       indexURL = "/adminInfo/" 
+     }
      window.location.replace(indexURL);
      return(true)
      /*
