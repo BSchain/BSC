@@ -58,23 +58,9 @@ def login(request):
     if(password != u.user_pwd):
         return HttpResponse(json.dumps({
             'statCode': -3,
-            'errormessage': 'wrong password',
+            'errormessage': 'wrong username or wrong password',
             }))
     else:
-        """
-
-        :param in_coins:
-        :param out_coins:
-        :param timestamp:
-        :param action:
-        :param seller:
-        :param buyer:
-        :param data_uuid:
-        :param credit:
-        :param reviewer:
-        :return:
-        """
-
         tx = TX.Transaction()
         tx.new_transaction(in_coins=[], out_coins=[],timestamp=time(), action='login',
                            seller=u.user_id, buyer='',data_uuid='',credit=0.0, reviewer='')
@@ -156,9 +142,9 @@ def userInfo(request):
             })
 
 @csrf_exempt
-def adminInfo(request):
+def adminDataInfo(request):
     # TODO
-    return render(request, "app/adminInfo.html")
+    return render(request, "app/adminDataInfo.html")
 
 
 def uploadData(request):

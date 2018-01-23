@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Typography | Klorofil - Free Bootstrap Dashboard Template</title>
+	<title>Custom | Anywhere - Professional Express System</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -27,7 +27,7 @@
 		<!-- NAVBAR -->
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="brand">
-				<a href="index.html"><img src="../static/app/assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+				<a href="index.html"><img src="../static/app/assets/img/logo.jpg" alt="Klorofil Logo" class="img-responsive logo"></a>
 			</div>
 			<div class="container-fluid">
 				<div class="navbar-btn">
@@ -39,9 +39,6 @@
 						<span class="input-group-btn"><button type="button" class="btn btn-primary">Go</button></span>
 					</div>
 				</form>
-				<div class="navbar-btn navbar-btn-right">
-					<a class="btn btn-success update-pro" href="#downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
-				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown">
@@ -68,12 +65,12 @@
 							</ul>
 						</li>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>Samuel</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
-								<li><a href="#"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+								<li><a href="/index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
 						<!-- <li>
@@ -89,24 +86,16 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="index.html" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
-						<li><a href="elements.html" class=""><i class="lnr lnr-code"></i> <span>Elements</span></a></li>
-						<li><a href="charts.html" class=""><i class="lnr lnr-chart-bars"></i> <span>Charts</span></a></li>
-						<li><a href="panels.html" class=""><i class="lnr lnr-cog"></i> <span>Panels</span></a></li>
-						<li><a href="notifications.html" class=""><i class="lnr lnr-alarm"></i> <span>Notifications</span></a></li>
+						<li><a href="/index/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>Pages</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse ">
+							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse in">
 								<ul class="nav">
-									<li><a href="page-profile.html" class="">Profile</a></li>
-									<li><a href="page-login.html" class="">Login</a></li>
-									<li><a href="page-lockscreen.html" class="">Lockscreen</a></li>
+									<li><a href="/index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="tables.html" class=""><i class="lnr lnr-dice"></i> <span>Tables</span></a></li>
-						<li><a href="typography.html" class="active"><i class="lnr lnr-text-format"></i> <span>Typography</span></a></li>
-						<li><a href="icons.html" class=""><i class="lnr lnr-linearicons"></i> <span>Icons</span></a></li>
+						<li><a href="/adminDataInfo/" class="active"><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -117,33 +106,49 @@
 			<!-- MAIN CONTENT -->
 			<div class="main-content">
 				<div class="container-fluid">
-					<h3 class="page-title">Typography</h3>
-					<div class="panel panel-headline">
-						<div class="panel-body">
-							<h1>Dashboard Heading 1</h1>
-							<h2>Dashboard Heading 2</h2>
-							<h3>Dashboard Heading 3</h3>
-							<h4>Dashboard Heading 4</h4>
-							<h5>Dashboard Heading 5</h5>
-							<h6>Dashboard Heading 6</h6>
-							<hr>
-							<p>Appropriately benchmark web-enabled bandwidth and functionalized leadership skills. Conveniently syndicate global opportunities without interactive methods of empowerment. Collaboratively conceptualize user-centric e-tailers for visionary methodologies. Dramatically myocardinate. Phosfluorescently disintermediate unique resources whereas reliable mindshare. Competently optimize client-focused infrastructures vis-a-vis e-business human capital. Uniquely formulate sustainable benefits whereas functional results. Energistically myocardinate bleeding-edge e-business.</p>
-							<hr>
-							<p class="text-muted"><code>.text-muted</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<p class="text-primary"><code>.text-primary</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<p class="text-success"><code>.text-success</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<p class="text-info"><code>.text-info</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<p class="text-warning"><code>.text-warning</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<p class="text-danger"><code>.text-danger</code> Convey meaning through color with a handful of emphasis utility classes.</p>
-							<hr>
-							<p>Make a paragraph stand out by adding <code>.lead</code></p>
-							<p class="lead">Objectively re-engineer maintainable total linkage after proactive intellectual capital. Dynamically evolve best-of-breed e-services for user-centric customer.</p>
-							<hr>
-							<div class="well">
-								<p class="text-left"><code>.text-left</code> Left aligned text.</p>
-								<p class="text-center"><code>.text-center</code> Center aligned text.</p>
-								<p class="text-right"><code>.text-right</code> Right aligned text.</p>
+					<div class="row">
+						<div class="col-md-12">
+							<!-- TABLE STRIPED -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">用户上传</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped">
+										<thead>
+											<tr>
+												<th align="center">数据名</th>
+												<th align="center">数据简介</th>
+												<th align="center">上传时间</th>
+												<th align="center">数据标签</th>
+												<th align="center">数据状态</th>
+                                                <th align="center">审核操作</th>
+											</tr>
+										</thead>
+
+										<tbody>
+                                        <!-- data.status = 0 待审核， =1 审核通过，=2 审核不通过 -->
+										{% for data in datas %}
+											<tr>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
+												<td align="">  {{data.timestamp}}</td>
+												<td align="">  {{data.tag}}</td>
+												<td align="">  {{data.status}}</td>
+                                                <td><button>审核通过</button> <button>审核通过</button></td>
+											</tr>
+										{% endfor %}
+                                        <td align="">  我是数据名</td>
+                                        <td align="">  我是数据信息</td>
+                                        <td align="">  2018年01月24日00:07:08</td>
+                                        <td align="">  交通、医疗</td>
+                                        <td align="">  审核中</td>
+                                        <td><button>审核通过</button> <button>审核不通过</button> </td>
+										</tbody>
+									</table>
+								</div>
 							</div>
+							<!-- END TABLE STRIPED -->
 						</div>
 					</div>
 				</div>
@@ -164,6 +169,10 @@
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+	<script src="../static/app/javascript/orderManage.js"></script>
 </body>
 
 </html>

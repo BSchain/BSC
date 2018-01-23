@@ -113,7 +113,7 @@ function Func_validate() {
      if (data.isAdmin == 0) { 
        indexURL = "/userInfo/"
      } else {
-       indexURL = "/adminInfo/" 
+       indexURL = "/adminDataInfo/"
      }
      window.location.replace(indexURL);
      return(true)
