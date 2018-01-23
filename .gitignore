@@ -1,3 +1,4 @@
 .idea
-BSC/__pycache__/
-BSCapp/__pycache__/
+BSC/__pycache__/*
+BSCapp/__pycache__/*
+BSCapp/root_chain/__pycache/*

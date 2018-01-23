@@ -29,7 +29,9 @@ class Data(models.Model):
     data_tag  = models.CharField(max_length=100)
     data_address = models.CharField(max_length=200)
     data_status = models.CharField(max_length=20)
-
+    data_md5 = models.CharField(max_length=64)
+    data_size = models.FloatField()
+    data_download = models.FloatField()
 
 class Transcation(models.Model):
     transaction_id = models.CharField(max_length=64, primary_key=True)

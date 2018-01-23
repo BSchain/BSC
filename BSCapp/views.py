@@ -159,3 +159,30 @@ def userInfo(request):
 def adminInfo(request):
     # TODO
     return render(request, "app/adminInfo.html")
+
+
+def uploadData(request):
+    username = request.session['username']
+    user = User.objects.get(user_name=username)
+    user_id = user.user_id
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status from BSCapp_data where BSCapp_data.user_id = %s ;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except :
+        cursor.close()
+        return context
+    datas = []
+    for i in range(len(content)):
+        data = dict()
+        data['name'] = content[i][0]
+        data['info'] = content[i][1]
+        data['timestamp'] = content[i][2]
+        data['tag'] = content[i][3]
+        data['download'] = content[i][4]
+        data['status'] = content[i][5]
+        datas.append(data)
+    return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
