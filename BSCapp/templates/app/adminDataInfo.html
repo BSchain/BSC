@@ -135,15 +135,10 @@
 												<td align="">  {{data.timestamp}}</td>
 												<td align="">  {{data.tag}}</td>
 												<td align="">  {{data.status}}</td>
-                                                <td><button>审核通过</button> <button>审核通过</button></td>
+												<td><button id="{{data.dataid}}" onclick="reviewAcknowledge(this);">审核通过</button> 
+													<button id="{{data.dataid}}" onclick="reviewReject(this);">审核不通过</button></td>
 											</tr>
 										{% endfor %}
-                                        <td align="">  我是数据名</td>
-                                        <td align="">  我是数据信息</td>
-                                        <td align="">  2018年01月24日00:07:08</td>
-                                        <td align="">  交通、医疗</td>
-                                        <td align="">  审核中</td>
-                                        <td><button>审核通过</button> <button>审核不通过</button> </td>
 										</tbody>
 									</table>
 								</div>
@@ -173,6 +168,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 	<script src="../static/app/javascript/orderManage.js"></script>
+	<script src="../static/app/javascript/review.js"></script>	
 </body>
 
 </html>

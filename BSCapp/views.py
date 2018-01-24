@@ -143,9 +143,47 @@ def userInfo(request):
 
 @csrf_exempt
 def adminDataInfo(request):
-    # TODO
-    return render(request, "app/adminDataInfo.html")
+    # try if it is triggered by a confirmation of a review
+    try: 
+        dataid = request.POST['id']
+        op = request.POST['op']
+        sql = 'update bscapp_data set data_status = %s where data_id = %s;'
+        cursor = connection.cursor()
+        cursor.execute(sql, [op, dataid])
+        cursor.close()
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            }))
+    except Exception:
+        pass
 
+    # else it is after logging in
+    cursor = connection.cursor()
+    sql = 'select data_id, data_name, data_info, timestamp, data_tag, data_status from BSCapp_data;'
+    try:
+        cursor.execute(sql, [])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(str(e))
+        cursor.close()
+        return {}
+    datas = []
+    for i in range(len(content)):
+        data = dict()
+        data['dataid'] = content[i][0]
+        data['name'] = content[i][1]
+        data['info'] = content[i][2]
+        data['timestamp'] = content[i][3]
+        data['tag'] = content[i][4]
+        if content[i][5] == '0':
+            data['status'] = '审核中'
+        elif content[i][5] == '1':
+            data['status'] = '审核通过'
+        else:
+            data['status'] = '审核不通过'
+        datas.append(data)
+    return render(request, "app/adminDataInfo.html", {'datas': datas}) 
 
 def uploadData(request):
     username = request.session['username']
