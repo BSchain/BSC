@@ -130,7 +130,7 @@ def userInfo(request):
             }))
     except Exception as e:
         print(str(e))
-        return render(request, "app/userInfo.html",{
+        return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
             'email':user.user_email,
@@ -174,3 +174,30 @@ def uploadData(request):
         data['price'] = content[i][7]
         datas.append(data)
     return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
+
+@csrf_exempt
+def order(request):
+    username = request.session['username']
+    print(username)
+    user = User.objects.get(user_name=username)
+    user_id = user.user_id
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select BSCapp_data.data_name, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
+            ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(str(e))
+        cursor.close()
+        return context
+    orders = []
+    for i in range(len(content)):
+        order = dict()
+        order['data_name'] = content[i][0]
+        order['timestamp'] = content[i][1]
+        order['price'] = content[i][2]
+        orders.append(order)
+    return render(request, "app/page-order.html", {'orders': orders, 'id':username})

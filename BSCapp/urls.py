@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^userInfo/$',views.userInfo),
     url(r'^adminDataInfo/$',views.adminDataInfo),
     url(r'^uploadData/$',views.uploadData),
+    url(r'^order/$',views.order),
 ]

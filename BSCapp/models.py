@@ -35,7 +35,7 @@ class Data(models.Model):
     data_purchase = models.FloatField()
     data_price = models.FloatField()
 
-class Transcation(models.Model):
+class Transaction(models.Model):
     transaction_id = models.CharField(max_length=64, primary_key=True)
     buyer_id = models.CharField(max_length=64)
     seller_id = models.CharField(max_length=64)

@@ -3,7 +3,7 @@ from .models import *
 # Register your models here.
 admin.site.register(User)
 admin.site.register(Data)
-admin.site.register(Transcation)
+admin.site.register(Transaction)
 admin.site.register(Coin)
 admin.site.register(Recharge)
 admin.site.register(Wallet)
