@@ -11,7 +11,7 @@ class User(models.Model):
     user_name = models.CharField(max_length=20, unique=True) # 用户登录名
     user_pwd = models.CharField(max_length=20) #用户密码
     user_email = models.EmailField() # 用户邮箱
-    user_realName = models.CharField(max_length=20, default=user_name) # 用户真实姓名
+    user_realName = models.CharField(max_length=20) # 用户真实姓名
     user_phone = models.CharField(max_length=20) # 用户手机号
     user_idcard = models.CharField(max_length=20) # 用户身份证号
     user_company = models.CharField(max_length=64) # 用户所在公司
@@ -80,14 +80,18 @@ class Admin(models.Model):
 
 
 class Review(models.Model):
-    reviewer_id = models.CharField(max_length=64, primary_key=True) # 审查者密码
+    reviewer_id = models.CharField(max_length=64) # 审查者id
     data_id = models.CharField(max_length=64) # 所审核数据id
-    review_status = models.CharField(max_length=32) # 数据状态
+    review_status = models.IntegerField() # 数据状态 status = 0待审核 | 1 审核通过| 2 审核不通过
     timestamp = models.CharField(max_length=32) # 数据审核时间
-
+    class Meta:
+        unique_together=("reviewer_id","data_id") # 联合主键
 
 class Notice(models.Model):
     notice_id = models.CharField(max_length=64,primary_key=True) # 通知信息id
-    user_id = models.CharField(max_length=64) # 用户id
-    notice_info = models.CharField(max_length=200) # 通知信息内容
+    sender_id = models.CharField(max_length=64) # 信息发送方id (系统id 设置为generate_uuid(SCOPE, name=''+time()))
+    receiver_id = models.CharField(max_length=64)  # 信息接收方id
+    notice_type = models.IntegerField() # 信息类型 (0: 用户提交新的数据待审核， 1: 数据审核通过信息，  2: 数据审核不通过信息， 3: 用户充值成功信息， 4: 用户购买数据成功信息， 5:系统信息 )
+    notice_info = models.CharField(max_length=200) # 通知信息内容 (sender_name + '在'+time() + switch notince_type: (different_notices)  需要提前进行构造)
     if_check = models.BooleanField(default=False) # 用户是否查看信息
+    timestamp = models.CharField(max_length=32) # 此通知信息生成的时间

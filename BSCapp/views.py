@@ -9,7 +9,7 @@ from django.db import connection
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
-from time import time
+from time import time, localtime
 
 # Create your views here.
 
@@ -145,7 +145,7 @@ def userInfo(request):
 def adminDataInfo(request):
     username = request.session['username']
     try:
-        user = Admin.objects.get(admin_name=username)
+        now_admin = Admin.objects.get(admin_name=username)
     except Exception:
         return render(request, "app/page-login.html")
     # username = request.session['username']
@@ -154,16 +154,44 @@ def adminDataInfo(request):
     # except Exception:
     #     return render(request, "app/page-login.html")
     # try if it is triggered by a confirmation of a review
-    try: 
-        dataid = request.POST['id']
-        op = request.POST['op']
-        sql = 'update bscapp_data set data_status = %s where data_id = %s;'
+    try:
+        now_admin_id = now_admin.admin_id
+        now_data_id = request.POST['id']
+        now_data_status = int(request.POST['op'])
+        sql = 'update BSCapp_data set data_status = %s where data_id = %s;'
         cursor = connection.cursor()
-        cursor.execute(sql, [op, dataid])
+        cursor.execute(sql, [now_data_status, now_data_id])
         cursor.close()
-        return HttpResponse(json.dumps({
-            'statCode': 0,
+
+        now_data = Data.objects.get(data_id=now_data_id)
+        seller_id = now_data.user_id
+        now_action = ''
+        if now_data_status == 1:
+            now_action = 'review_pass'
+        elif now_data_status == 2:
+            now_action = 'review_reject'
+        now_time = str(time())
+        try:
+            tx = TX.Transaction()
+            tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
+                               seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
+            tx.save_transaction()
+        except Exception:
+            pass
+        try:
+            review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
+            review_history.review_status = now_data_status
+            review_history.timestamp = now_time
+            review_history.save()
+
+            return HttpResponse(json.dumps({
+                'statCode': 0,
             }))
+        except Exception:
+            Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                }))
     except Exception:
         pass
 
@@ -191,9 +219,9 @@ def adminDataInfo(request):
         data['timestamp'] = content[i][4]
         data['source'] = content[i][5]
         data['type'] = content[i][6]
-        if content[i][7] == '0':
+        if content[i][7] == 0:
             data['status'] = '审核中'
-        elif content[i][7] == '1':
+        elif content[i][7] == 1:
             data['status'] = '审核通过'
         else:
             data['status'] = '审核不通过'

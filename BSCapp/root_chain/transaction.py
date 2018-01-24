@@ -10,7 +10,7 @@ class Transaction:
     def __init__(self):
         self.in_coins = []
         self.out_coins = []
-        self.timestamp = time()
+        self.timestamp = ''
         self.action = ''
         self.seller = ''
         self.buyer = ''
@@ -154,24 +154,24 @@ class Transaction:
         credit = NULL
         reviewer = NULL
     if action == 'review_pass' : # [管理员审核通过]
-        in_coins = NULL
-        out_coins = NULL
+        in_coins = []
+        out_coins = []
         timestamp = 1515846393.1849742
         action = 'review_pass'
         seller = 'zpf_uuid'
-        buyer = NULL
+        buyer = ''
         data_uuid = 'mydata_uuid'
-        credit = NULL
+        credit = 0.0
         reviewer = 'admin_uuid'
     if action == 'review_reject' : # [管理员审核不通过]
-        in_coins = NULL
-        out_coins = NULL
+        in_coins = []
+        out_coins = []
         timestamp = 1515846393.1849742
         action = 'review_reject'
         seller = 'zpf_uuid'
-        buyer = NULL
+        buyer = ''
         data_uuid = 'mydata_uuid'
-        credit = NULL
+        credit = 0.0
         reviewer = 'admin_uuid'
     if action == 'recharge' :
         in_coins = NULL
@@ -239,22 +239,22 @@ class Transaction:
             assert self.reviewer is None, ('Download data, reviewer should be None, reviewer:', self.reviewer)
             return True
         elif self.action == 'review_pass':
-            assert self.in_coins is None, ('Review_pass data, in_coins should be None, in_coins:', self.in_coins)
-            assert self.out_coins is None, ('Review_pass data, out_coins should be None, out_coins:', self.out_coins)
-            assert self.buyer is None, ('Review_pass data, buyer should be None, buyer:', self.buyer)
-            assert self.seller is not None, ('Review_pass data, seller should not be None, seller:', self.seller)
-            assert self.data_uuid is not None, ('Review_pass data, data_uuid should not be None, data_uuid:', self.data_uuid)
-            assert self.credit is None, ('Review_pass data, credit should be None, credit:', self.credit)
-            assert self.reviewer is not None, ('Review_pass data, reviewer should not be None, reviewer:', self.reviewer)
+            assert len(self.in_coins)==0, ('Review_pass data, in_coins should be None, in_coins:', self.in_coins)
+            assert len(self.out_coins)==0, ('Review_pass data, out_coins should be None, out_coins:', self.out_coins)
+            assert self.buyer is '', ('Review_pass data, buyer should be None, buyer:', self.buyer)
+            assert self.seller is not '', ('Review_pass data, seller should not be None, seller:', self.seller)
+            assert self.data_uuid is not '', ('Review_pass data, data_uuid should not be None, data_uuid:', self.data_uuid)
+            assert self.credit == 0.0, ('Review_pass data, credit should be None, credit:', self.credit)
+            assert self.reviewer is not '', ('Review_pass data, reviewer should not be None, reviewer:', self.reviewer)
             return True
         elif self.action == 'review_reject':
-            assert self.in_coins is None, ('Review_reject data, in_coins should be None, in_coins:', self.in_coins)
-            assert self.out_coins is None, ('Review_reject data, out_coins should be None, out_coins:', self.out_coins)
-            assert self.buyer is None, ('Review_reject data, buyer should be None, buyer:', self.buyer)
-            assert self.seller is not None, ('Review_reject data, seller should not be None, seller:', self.seller)
-            assert self.data_uuid is not None, ('Review_reject data, data_uuid should not be None, data_uuid:', self.data_uuid)
-            assert self.credit is None, ('Review_reject data, credit should be None, credit:', self.credit)
-            assert self.reviewer is not None, ('Review_reject data, reviewer should not be None, reviewer:', self.reviewer)
+            assert len(self.in_coins)==0 , ('Review_reject data, in_coins should be None, in_coins:', self.in_coins)
+            assert len(self.out_coins)==0, ('Review_reject data, out_coins should be None, out_coins:', self.out_coins)
+            assert self.buyer is '', ('Review_reject data, buyer should be None, buyer:', self.buyer)
+            assert self.seller is not '', ('Review_reject data, seller should not be None, seller:', self.seller)
+            assert self.data_uuid is not '', ('Review_reject data, data_uuid should not be None, data_uuid:', self.data_uuid)
+            assert self.credit == 0.0, ('Review_reject data, credit should be None, credit:', self.credit)
+            assert self.reviewer is not '', ('Review_reject data, reviewer should not be None, reviewer:', self.reviewer)
             return True
         elif self.action == 'recharge':
             assert self.in_coins is None, ('Recharge, in_coins should be None, in_coins:', self.in_coins)
