@@ -13,6 +13,11 @@ chain for science data sharing
 >
 >点击右上角的login，里面可以选择注册还是登陆
 
+## 创建超级用户指令
+>`python3 manage.py createsuperuser`
+>
+>在浏览器网站中输入 `http://127.0.0.1:8000/admin/` 即可管理数据库
+
 ## TODO:
 * <font color=#0099ff size=5 face="黑体"> 1.实名注册(Done) </font>
 >用户注册需要的信息：登录名、密码、邮箱信息.
