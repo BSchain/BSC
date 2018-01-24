@@ -32,6 +32,8 @@ class Data(models.Model):
     data_md5 = models.CharField(max_length=64)
     data_size = models.FloatField()
     data_download = models.FloatField()
+    data_purchase = models.FloatField()
+    data_price = models.FloatField()
 
 class Transcation(models.Model):
     transaction_id = models.CharField(max_length=64, primary_key=True)
