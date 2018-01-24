@@ -1,10 +1,28 @@
 # BSC
 chain for science data sharing
-
+## 数据库重新建立(设置utf8编码)
+>`mysql -u root -p`
+>
+>`输入mysql密码`
+>
+> 如果原来的database需要删除：
+>> `drop bsc_db;`
+>
+> 如果原来的不存在，需要重新创建,运行以下指令，设定为utf8编码格式:
+>
+> `create database bsc_db DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;`
+>
 ## 数据库迁移指令
 >`python3 manage.py makemigrations  BSCapp`
 >
 >`python3 manage.py migrate`
+
+## 创建超级用户指令
+>`python3 manage.py createsuperuser`
+>
+>运行项目 `python3 manage.py runserver`
+>
+>在浏览器网站中输入 `http://127.0.0.1:8000/admin/` 即可管理数据库
 
 ## 项目运行指令
 >`python3 manage.py runserver`
@@ -12,11 +30,6 @@ chain for science data sharing
 >在浏览器网站中输入 `127.0.0.1:8000/index` 默认端口为8000
 >
 >点击右上角的login，里面可以选择注册还是登陆
-
-## 创建超级用户指令
->`python3 manage.py createsuperuser`
->
->在浏览器网站中输入 `http://127.0.0.1:8000/admin/` 即可管理数据库
 
 ## TODO:
 * <font color=#0099ff size=5 face="黑体"> 1.实名注册(Done) </font>
