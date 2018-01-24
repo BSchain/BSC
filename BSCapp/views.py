@@ -58,7 +58,7 @@ def login(request):
     if(password != u.user_pwd):
         return HttpResponse(json.dumps({
             'statCode': -3,
-            'errormessage': 'wrong username or wrong password',
+            'errormessage': 'Incorrect username or password',
             }))
     else:
         tx = TX.Transaction()
@@ -80,7 +80,7 @@ def signUp(request):
         user_pwd = request.POST['password']
         user_email = request.POST['email']
         user_id = generate_uuid(user_name)
-        print(user_id)
+        # print(user_id)
     except Exception as e:
         print(str(e))
         return render(request, "app/page-signup.html")
@@ -143,6 +143,16 @@ def userInfo(request):
 
 @csrf_exempt
 def adminDataInfo(request):
+    username = request.session['username']
+    try:
+        user = Admin.objects.get(admin_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
+    # username = request.session['username']
+    # try:
+    #     user = Admin.objects.get(admin_name=username)
+    # except Exception:
+    #     return render(request, "app/page-login.html")
     # try if it is triggered by a confirmation of a review
     try: 
         dataid = request.POST['id']
@@ -159,7 +169,8 @@ def adminDataInfo(request):
 
     # else it is after logging in
     cursor = connection.cursor()
-    sql = 'select data_id, data_name, data_info, timestamp, data_tag, data_status from BSCapp_data;'
+    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
+          'data_source, data_type, data_status, data_price from BSCapp_data;'
     try:
         cursor.execute(sql, [])
         content = cursor.fetchall()
@@ -169,19 +180,24 @@ def adminDataInfo(request):
         cursor.close()
         return {}
     datas = []
-    for i in range(len(content)):
+    len_content = len(content)
+    for i in range(len_content):
         data = dict()
         data['dataid'] = content[i][0]
-        data['name'] = content[i][1]
-        data['info'] = content[i][2]
-        data['timestamp'] = content[i][3]
-        data['tag'] = content[i][4]
-        if content[i][5] == '0':
+        seller = User.objects.get(user_id = content[i][1])
+        data['seller'] = seller.user_realName
+        data['name'] = content[i][2]
+        data['info'] = content[i][3]
+        data['timestamp'] = content[i][4]
+        data['source'] = content[i][5]
+        data['type'] = content[i][6]
+        if content[i][7] == '0':
             data['status'] = '审核中'
-        elif content[i][5] == '1':
+        elif content[i][7] == '1':
             data['status'] = '审核通过'
         else:
             data['status'] = '审核不通过'
+        data['price'] = content[i][8]
         datas.append(data)
     return render(request, "app/adminDataInfo.html", {'datas': datas}) 
 
@@ -203,14 +219,24 @@ def uploadData(request):
         cursor.close()
         return context
     datas = []
-    for i in range(len(content)):
+    len_content = len(content)
+    for i in range(len_content):
         data = dict()
         data['name'] = content[i][0]
         data['info'] = content[i][1]
         data['timestamp'] = content[i][2]
         data['tag'] = content[i][3]
         data['download'] = content[i][4]
-        data['status'] = content[i][5]
+        # status = 0 审核中
+        # status = 1 审核通过
+        # status = 2 审核不通过
+        # data['status'] = content[i][5]
+        if content[i][5] == '0':
+            data['status'] = '审核中'
+        elif content[i][5] == '1':
+            data['status'] = '审核通过'
+        else:
+            data['status'] = '审核不通过'
         data['purchase'] = content[i][6]
         data['price'] = content[i][7]
         datas.append(data)
@@ -226,8 +252,9 @@ def order(request):
     user_id = user.user_id
     context = {}
     cursor = connection.cursor()
-    sql = 'select BSCapp_data.data_name, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
-            ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
+    sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
+          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
+          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
     try:
         cursor.execute(sql, [user_id])
         content = cursor.fetchall()
@@ -237,10 +264,17 @@ def order(request):
         cursor.close()
         return context
     orders = []
-    for i in range(len(content)):
+    len_content = len(content)
+    for i in range(len_content):
         order = dict()
-        order['data_name'] = content[i][0]
-        order['timestamp'] = content[i][1]
-        order['price'] = content[i][2]
+        order['dataid'] = content[i][0]
+        seller = User.objects.get(user_id=content[i][1])
+        order['seller'] = seller.user_name
+        order['name'] = content[i][2]
+        order['info'] = content[i][3]
+        order['source'] = content[i][4]
+        order['type'] = content[i][5]
+        order['timestamp'] = content[i][6]
+        order['price'] = content[i][7]
         orders.append(order)
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})

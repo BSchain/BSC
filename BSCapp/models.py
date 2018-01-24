@@ -7,86 +7,87 @@ from django.contrib import admin
 
 
 class User(models.Model):
-    user_id = models.CharField(max_length=64, primary_key=True)
-    user_name = models.CharField(max_length=20, unique=True)
-    user_pwd = models.CharField(max_length=20)
-    user_email = models.EmailField()
-    user_realName = models.CharField(max_length=20, default='')
-    user_phone = models.CharField(max_length=20, default=0)
-    user_idcard = models.CharField(max_length=20, default=0)
-    user_company = models.CharField(max_length=64, default='')
-    user_title = models.CharField(max_length=20, default=0)
-    user_addr = models.CharField(max_length=64, default='China')
+    user_id = models.CharField(max_length=64, primary_key=True) # 用户id  generate_uuid  uuid5(SCOPE, name+time())
+    user_name = models.CharField(max_length=20, unique=True) # 用户登录名
+    user_pwd = models.CharField(max_length=20) #用户密码
+    user_email = models.EmailField() # 用户邮箱
+    user_realName = models.CharField(max_length=20, default=user_name) # 用户真实姓名
+    user_phone = models.CharField(max_length=20) # 用户手机号
+    user_idcard = models.CharField(max_length=20) # 用户身份证号
+    user_company = models.CharField(max_length=64) # 用户所在公司
+    user_title = models.CharField(max_length=20) # 用户职称
+    user_addr = models.CharField(max_length=64, default='China') # 用户居住地
 
 class Data(models.Model):
-    data_id = models.CharField(max_length=64, primary_key=True)
-    user_id = models.CharField(max_length=64)
-    data_name = models.CharField(max_length=64)
-    data_info = models.CharField(max_length=200)
-    timestamp = models.CharField(max_length=32)
-    data_source = models.CharField(max_length=20)
-    data_type = models.CharField(max_length=20)
-    data_tag  = models.CharField(max_length=100)
-    data_address = models.CharField(max_length=200)
-    data_status = models.CharField(max_length=20)
-    data_md5 = models.CharField(max_length=64)
-    data_size = models.FloatField()
-    data_download = models.FloatField()
-    data_purchase = models.FloatField()
-    data_price = models.FloatField()
+    data_id = models.CharField(max_length=64, primary_key=True) # 数据id
+    user_id = models.CharField(max_length=64) # 用户id
+    data_name = models.CharField(max_length=64) # 数据名称，由上传者定
+    data_info = models.CharField(max_length=200) # 数据简介
+    timestamp = models.CharField(max_length=32) # 时间戳
+    data_source = models.CharField(max_length=20) # 数据来源 清华，北大，北航
+    data_type = models.CharField(max_length=20) # 数据类型， csv, doc, mp3
+    data_tag  = models.CharField(max_length=100) # 数据tag, 教育，医疗
+    data_status = models.IntegerField(default=0) # status = 0 审核中. =1 审核通过 =2 审核不通过
+    data_md5 = models.CharField(max_length=64) # 数据md5值，用于校验
+    data_size = models.FloatField() # 数据大小
+    data_download = models.IntegerField() # 数据下载量
+    data_purchase = models.IntegerField() # 数据购买量
+    data_price = models.FloatField() # 数据价格，信用度
+    data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
 
 class Transaction(models.Model):
-    transaction_id = models.CharField(max_length=64, primary_key=True)
-    buyer_id = models.CharField(max_length=64)
-    seller_id = models.CharField(max_length=64)
-    data_id = models.CharField(max_length=64)
-    timestamp = models.CharField(max_length=32)
-    price = models.FloatField()
+    transaction_id = models.CharField(max_length=64, primary_key=True) # 交易id
+    buyer_id = models.CharField(max_length=64) # 购买者id
+    seller_id = models.CharField(max_length=64) # 出售者id
+    data_id = models.CharField(max_length=64) # 数据id
+    timestamp = models.CharField(max_length=32)  #交易时间戳
+    price = models.FloatField() # 成交价格， 信用度
 
 
 class Coin(models.Model):
-    coin_id = models.CharField(max_length=64, primary_key=True)
-    owner_id = models.CharField(max_length=64)
-    is_spent = models.BooleanField(default=False)
-    timestamp = models.CharField(max_length=32)
+    coin_id = models.CharField(max_length=64, primary_key=True) # coin id
+    owner_id = models.CharField(max_length=64) # 所有者id
+    is_spent = models.BooleanField(default=False) # 当前coin 默认未花费
+    timestamp = models.CharField(max_length=32) # coin生成时间
 
 
 class Recharge(models.Model):
-    recharge_id = models.CharField(max_length=64, primary_key=True)
-    user_id =  models.CharField(max_length=64)
-    timestamp = models.CharField(max_length=32)
-    credits = models.FloatField()
-    before_account = models.FloatField()
-    after_account = models.FloatField()
-    coin_id = models.CharField(max_length=64)
+    recharge_id = models.CharField(max_length=64, primary_key=True) # 充值id
+    user_id =  models.CharField(max_length=64) # 用户id
+    timestamp = models.CharField(max_length=32) # 时间戳
+    credits = models.FloatField() # 充值信用度
+    before_account = models.FloatField() # 充值前账户信用度余额
+    after_account = models.FloatField() # 充值后信用度余额
+    coin_id = models.CharField(max_length=64) # 此次充值生成的coin id
 
 
 class Wallet(models.Model):
-    user_id = models.CharField(max_length=64, primary_key=True)
-    account = models.FloatField()
+    user_id = models.CharField(max_length=64, primary_key=True) # 用户id
+    account = models.FloatField() # 账户余额 [仅用作展示，实际需要遍历区块链]
 
 
 class Download(models.Model):
-    user_id = models.CharField(max_length=64)
-    data_id = models.CharField(max_length=64)
+    user_id = models.CharField(max_length=64) # 用户id
+    data_id = models.CharField(max_length=64) # 数据id
     class Meta:
-        unique_together=("user_id","data_id")
+        unique_together=("user_id","data_id") # 联合主键
 
 
 class Admin(models.Model):
-    admin_id = models.CharField(max_length=64, primary_key=True)
-    admin_name = models.CharField(max_length=20)
-    admin_pwd = models.CharField(max_length=20)
+    admin_id = models.CharField(max_length=64, primary_key=True) # 管理员id
+    admin_name = models.CharField(max_length=20) # 管理员登录名
+    admin_pwd = models.CharField(max_length=20) # 管理员密码
 
 
 class Review(models.Model):
-    reviewer_id = models.CharField(max_length=64, primary_key=True)
-    data_id = models.CharField(max_length=64)
-    review_status = models.CharField(max_length=32)
+    reviewer_id = models.CharField(max_length=64, primary_key=True) # 审查者密码
+    data_id = models.CharField(max_length=64) # 所审核数据id
+    review_status = models.CharField(max_length=32) # 数据状态
+    timestamp = models.CharField(max_length=32) # 数据审核时间
 
 
 class Notice(models.Model):
-    notice_id = models.CharField(max_length=64,primary_key=True)
-    user_id = models.CharField(max_length=64)
-    notice_info = models.CharField(max_length=200)
-    if_check = models.BooleanField(default=False)
+    notice_id = models.CharField(max_length=64,primary_key=True) # 通知信息id
+    user_id = models.CharField(max_length=64) # 用户id
+    notice_info = models.CharField(max_length=200) # 通知信息内容
+    if_check = models.BooleanField(default=False) # 用户是否查看信息

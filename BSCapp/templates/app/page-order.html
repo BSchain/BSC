@@ -86,12 +86,12 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/page-userInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li><a href="/userInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse in">
 								<ul class="nav">
-									<li><a href="/page-userInfo/" class="">个人信息</a></li>
+									<li><a href="/userInfo/" class="">个人信息</a></li>
 									<li><a href="/index/" class="">登出</a></li>
 								</ul>
 							</div>
@@ -119,8 +119,12 @@
 									<table class="table table-striped">
 										<thead>
 											<tr>
+                                                <th align="center">出售者</th>
 												<th align="center">数据名称</th>
+                                                <th align="center">数据简介</th>
 												<th align="center">购买时间</th>
+                                                <th align="center">数据来源</th>
+                                                <th align="center">数据类型</th>
 												<th align="center">购买价格</th>
 											</tr>
 										</thead>
@@ -128,8 +132,12 @@
 										<tbody>
 										{% for order in orders %}
 											<tr>
-												<td align="">  {{order.data_name}}</td>
+                                                <td align="">  {{order.seller}}</td>
+												<td align="">  {{order.name}}</td>
+                                                <td align="">  {{order.info}}</td>
 												<td align="">  {{order.timestamp}}</td>
+                                                <td align="">  {{order.source}}</td>
+                                                <td align="">  {{order.type}}</td>
 												<td align="">  {{order.price}}</td>
 											</tr>
 										{% endfor %}
@@ -148,7 +156,7 @@
 		<div class="clearfix"></div>
 		<footer>
 			<div class="container-fluid">
-				<p class="copyright">&copy; 2017 <a href="#" target="_blank">Theme I Need</a>. All Rights Reserved. More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></p>
+				<p align="center" class="copyright" >&copy; 2018 <a href="#" target="_blank">BUAA</a>. All Rights Reserved.</p>
 			</div>
 		</footer>
 	</div>
