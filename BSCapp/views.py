@@ -149,7 +149,10 @@ def adminDataInfo(request):
 
 def uploadData(request):
     username = request.session['username']
-    user = User.objects.get(user_name=username)
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     user_id = user.user_id
     context = {}
     cursor = connection.cursor()
@@ -178,8 +181,10 @@ def uploadData(request):
 @csrf_exempt
 def order(request):
     username = request.session['username']
-    print(username)
-    user = User.objects.get(user_name=username)
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     user_id = user.user_id
     context = {}
     cursor = connection.cursor()

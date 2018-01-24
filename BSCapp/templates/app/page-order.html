@@ -96,8 +96,8 @@
 								</ul>
 							</div>
 						</li>
-						<li><a href="/uploadData/" class="active"><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
-						<li><a href="/order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/uploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+						<li><a href="/order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -128,7 +128,6 @@
 										<tbody>
 										{% for order in orders %}
 											<tr>
-												<td>  <button type="button" class="btn-primary btn-xs" name="{{order.order_id}}" onclick="check(this)" >Confirm</button> </td>
 												<td align="">  {{order.data_name}}</td>
 												<td align="">  {{order.timestamp}}</td>
 												<td align="">  {{order.price}}</td>
