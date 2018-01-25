@@ -232,15 +232,32 @@ def adminDataInfo(request):
 @csrf_exempt
 def upload(request):
     username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     if (request.method=="POST"):
-        uploadFile = request.FILES.get("file", None)
+        uploadFile = request.FILES.get("file", None)    #获得上传文件
         if not uploadFile:
             return render(request, "app/page-upload.html")
-        destination = open(os.path.join("upload",uploadFile.name),'wb+')    # 打开特定的文件进行二进制的写操作
+        # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
+        destination = open(os.path.join("upload",uploadFile.name),'wb+')
         for chunk in uploadFile.chunks():      # 分块写入文件
             destination.write(chunk)
         destination.close()
-    return render(request, "app/page-upload.html")
+        data_name = request.POST["data_name"]   #获取数据信息
+        data_info = request.POST['data_info']
+        user_id = user.user_id
+        data_source = request.POST.getlist('data_source')[0]
+        data_type = request.POST.getlist('data_type')[0]
+        data_tag = request.POST.getlist('data_tag')[0]
+        data_size = uploadFile.size
+        data_price = request.POST['data_price']
+        data_id = generate_uuid(data_name)
+        Data(data_id=data_id, data_name=data_name, data_info=data_info,
+            data_source=data_source, data_type=data_type, data_tag=data_tag,
+            data_price=data_price, data_size=data_size, user_id=user_id).save()
+    return render(request, "app/page-upload.html", {"username": username})
 
 
 @csrf_exempt

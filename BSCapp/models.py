@@ -30,8 +30,8 @@ class Data(models.Model):
     data_status = models.IntegerField(default=0) # status = 0 审核中. =1 审核通过 =2 审核不通过
     data_md5 = models.CharField(max_length=64) # 数据md5值，用于校验
     data_size = models.FloatField() # 数据大小
-    data_download = models.IntegerField() # 数据下载量
-    data_purchase = models.IntegerField() # 数据购买量
+    data_download = models.IntegerField(default=0) # 数据下载量
+    data_purchase = models.IntegerField(default=0) # 数据购买量
     data_price = models.FloatField() # 数据价格，信用度
     data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
 
