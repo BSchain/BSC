@@ -67,7 +67,7 @@ class Wallet(models.Model):
     account = models.FloatField() # 账户余额 [仅用作展示，实际需要遍历区块链]
 
 
-class Download(models.Model):
+class Purchase(models.Model):
     user_id = models.CharField(max_length=64) # 用户id
     data_id = models.CharField(max_length=64) # 数据id
     class Meta:
