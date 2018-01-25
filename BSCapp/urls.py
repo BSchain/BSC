@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^userInfo/$',views.userInfo),
     url(r'^adminDataInfo/$',views.adminDataInfo),
     url(r'^userAckData/$',views.userAckData),
+    url(r'^upload/$',views.upload),
     url(r'^uploadData/$',views.uploadData),
     url(r'^order/$',views.order),
 ]
