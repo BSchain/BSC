@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt,csrf_protect
 from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
 from time import time, localtime
+import BSCapp.root_chain.coin as COIN
 
 # Create your views here.
 
@@ -152,7 +153,9 @@ def userAckData(request):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
-            from BSCapp_data where BSCapp_data.user_id = %s and BSCapp_data.data_status = %s;'
+            from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = %s;'
+    # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
+    #             from BSCapp_data where BSCapp_data.data_status = %s;'
     try:
         cursor.execute(sql, [user_id, '1'])
         content = cursor.fetchall()
@@ -214,14 +217,13 @@ def adminDataInfo(request):
             now_action = 'review_pass'
         elif now_data_status == 2:
             now_action = 'review_reject'
+
         now_time = str(time())
-        try:
-            tx = TX.Transaction()
-            tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
-                               seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
-            tx.save_transaction()
-        except Exception:
-            pass
+        tx = TX.Transaction()
+        tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
+                           seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
+        tx.save_transaction()
+
         try:
             review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
             review_history.review_status = now_data_status
@@ -285,22 +287,72 @@ def upload(request):
         if not uploadFile:
             return render(request, "app/page-upload.html")
         # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
-        destination = open(os.path.join("upload",uploadFile.name),'wb+')
+        data_path = os.path.join("upload",uploadFile.name)
+        destination = open(data_path,'wb+')
         for chunk in uploadFile.chunks():      # 分块写入文件
             destination.write(chunk)
         destination.close()
+        data_address = data_path + generate_uuid(uploadFile.name)
         data_name = request.POST["data_name"]   #获取数据信息
-        data_info = request.POST['data_info']
+        data_id = generate_uuid(data_name)
         user_id = user.user_id
+        data_info = request.POST['data_info']
         data_source = request.POST.getlist('data_source')[0]
-        data_type = request.POST.getlist('data_type')[0]
-        data_tag = request.POST.getlist('data_tag')[0]
+        data_md5 = get_file_md5(data_path)
         data_size = uploadFile.size
         data_price = request.POST['data_price']
-        data_id = generate_uuid(data_name)
-        Data(data_id=data_id, data_name=data_name, data_info=data_info,
-            data_source=data_source, data_type=data_type, data_tag=data_tag,
-            data_price=data_price, data_size=data_size, user_id=user_id).save()
+
+        data_type = request.POST.getlist('data_type')[0]
+        data_tag = request.POST.getlist('data_tag')[0]
+
+        Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(time()),
+             data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
+             data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
+
+        now_time = str(time())
+        # TODO: 1. generate new coin_id for the user_id
+        # to keep the coin_id is unique, we use time() in generate_uuid
+        new_coin_id = generate_uuid(data_id)
+        default_coin_number = 1.0
+
+        Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
+             timestamp=now_time,coin_credit=default_coin_number).save()
+
+        # TODO: 2. save transaction info to file
+        out_coins = []
+        coin = COIN.Coin()
+        coin.new_coin(new_coin_id, default_coin_number, user_id)
+        out_coins.append(coin.to_dict())
+        tx = TX.Transaction()
+        tx.new_transaction(in_coins=[], out_coins=out_coins, timestamp=now_time, action='upload',
+                           seller=user_id, buyer='', data_uuid=data_id, credit=default_coin_number, reviewer='')
+        tx.save_transaction()
+
+        # TODO: 3. update the wallet of this user
+        # because when user signup there must have a wallet for this user
+        # that's why we just need to get the result out and sum those.
+        wallet = Wallet.objects.get(user_id=user_id)
+        # review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
+        wallet.account = wallet.account + default_coin_number
+
+        cursor = connection.cursor()
+        sql = 'select coin_id , coin_credit from BSCapp_coin where BSCapp_coin.is_spent = FALSE and BSCapp.owner_id = %s'
+        try:
+            # check the user has those coin and those unspent coin total = wallet.account
+            cursor.execute(sql, [user_id])
+            content = cursor.fetchall()
+            cursor.close()
+            check_wallet_account = 0.0
+            len_content = len(content)
+            for i in len_content:
+                check_wallet_account += content[i][1] # add all unspent coin together.
+            if check_wallet_account != wallet.account:
+                wallet.account = check_wallet_account
+        except Exception:
+            pass # something wrong in cursor, just pass, and use the waller.account
+
+        wallet.save()
+
     return render(request, "app/page-upload.html", {"username": username})
 
 

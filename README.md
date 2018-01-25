@@ -6,7 +6,7 @@ chain for science data sharing
 >`输入mysql密码`
 >
 > 如果原来的database需要删除：
->> `drop bsc_db;`
+>> `drop database bsc_db;`
 >
 > 如果原来的不存在，需要重新创建,运行以下指令，设定为utf8编码格式:
 >

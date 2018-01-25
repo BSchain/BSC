@@ -49,6 +49,7 @@ class Coin(models.Model):
     owner_id = models.CharField(max_length=64) # 所有者id
     is_spent = models.BooleanField(default=False) # 当前coin 默认未花费
     timestamp = models.CharField(max_length=32) # coin生成时间
+    coin_credit = models.FloatField() # 当前coin的价值
 
 
 class Recharge(models.Model):

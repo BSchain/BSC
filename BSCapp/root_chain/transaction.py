@@ -92,7 +92,7 @@ class Transaction:
     管理员reviewer = 'admin_uuid'
 
     if action == 'upload' :
-        in_coins = NULL
+        in_coins = []
         out_coins = [{
             coin_uuid: generate_uuid_coin, 
             number_coin: credit( equals to credit) 
@@ -101,10 +101,10 @@ class Transaction:
         timestamp = 1515846393.1849742
         action = 'upload'
         seller = 'zpf_uuid'
-        buyer = NULL 
+        buyer = '' 
         data_uuid = 'mydata_uuid'
         credit = 2.0
-
+        reviewer = ''
     if action == 'buy' :
         in_coins = [{
             coin_uuid: 'coin_uuid_1' (unspent)
@@ -194,8 +194,8 @@ class Transaction:
         assert self.timestamp is not None, ('timestamp should not be None')
 
         if self.action == 'upload':
-            assert self.in_coins is None, ('Upload data, in_coins should be None, in_coins:', self.in_coins)
-            assert self.out_coins is not None, ('Upload data, out_coins should not be None, out_coins:', self.out_coins)
+            assert len(self.in_coins) ==0 , ('Upload data, in_coins should be None, in_coins:', self.in_coins)
+            assert len(self.out_coins) > 0 , ('Upload data, out_coins should not be None, out_coins:', self.out_coins)
             number_coin_total = 0.0
             for idx in range(len(self.out_coins)):
                 assert self.out_coins[idx].owner == self.seller, (
@@ -203,12 +203,12 @@ class Transaction:
                 number_coin_total += self.out_coins[idx].number_coin
             assert number_coin_total == self.credit, (
             'Upload data, out_coins number_coin:', number_coin_total, 'credit:', self.credit)
-            assert self.buyer is None, ('Upload data, buyer should be None, buyer:',self.buyer)
-            assert self.seller is not None, ('Upload data, seller should not be None')
-            assert self.data_uuid is not None, ('Upload data, data_uuid should not be None, data_uuid:', self.data_uuid)
-            assert self.credit is not None, ('Upload data, credit should be None, credit:',self.credit)
+            assert self.buyer is '', ('Upload data, buyer should be None, buyer:',self.buyer)
+            assert self.seller is not '', ('Upload data, seller should not be None')
+            assert self.data_uuid is not '', ('Upload data, data_uuid should not be None, data_uuid:', self.data_uuid)
+            # assert self.credit is not None, ('Upload data, credit should be None, credit:',self.credit)
             assert self.credit >=0, ('Upload data, should have (+) credit reward. credit:',self.credit)
-            assert self.reviewer is None, ('Upload data, reviewer should be None, reviewer:', self.reviewer)
+            assert self.reviewer is '', ('Upload data, reviewer should be None, reviewer:', self.reviewer)
             return True
         elif self.action == 'buy': #TODO: need to fix those logist
             assert self.in_coins is not None, ('Buy data, in_coins should not be None, in_coins:', self.in_coins)

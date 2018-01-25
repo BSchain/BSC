@@ -12,6 +12,7 @@ import json
 import hashlib as hasher
 import uuid
 from time import time
+import os
 
 TRANSACTION_SAVE_ROOT = r'transactions/'
 TRANSACTION_SAVE_SUFFIX = '.json'
@@ -133,3 +134,16 @@ def valid_chain(chain):
 
 def generate_uuid(name):
     return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name+str(time())))
+
+def get_file_md5(file_path):
+    f = open(file_path, 'rb')
+    md5_obj = hasher.md5()
+    while True:
+        d = f.read(8096)
+        if not d:
+            break
+        md5_obj.update(d)
+    hash_code = md5_obj.hexdigest()
+    f.close()
+    md5 = str(hash_code).lower()
+    return md5
