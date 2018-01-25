@@ -49,6 +49,7 @@ class Coin(models.Model):
     owner_id = models.CharField(max_length=64) # 所有者id
     is_spent = models.BooleanField(default=False) # 当前coin 默认未花费
     timestamp = models.CharField(max_length=32) # coin生成时间
+    coin_credit = models.FloatField() # 当前coin的价值
 
 
 class Recharge(models.Model):
@@ -66,7 +67,7 @@ class Wallet(models.Model):
     account = models.FloatField() # 账户余额 [仅用作展示，实际需要遍历区块链]
 
 
-class Download(models.Model):
+class Purchase(models.Model):
     user_id = models.CharField(max_length=64) # 用户id
     data_id = models.CharField(max_length=64) # 数据id
     class Meta:
