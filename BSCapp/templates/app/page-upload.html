@@ -86,17 +86,19 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/customInfo/" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
+						<li><a href="/userInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>Pages</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse in">
+							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/customInfo/" class="">Profile</a></li>
-									<li><a href="/index/" class="">Log Out</a></li>
+									<li><a href="/userInfo/" class="">个人信息</a></li>
+									<li><a href="/index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/customOrderManage/" class="active"><i class="lnr lnr-dice"></i> <span>OrderManage</span></a></li>
+						<li><a href="/upload/" class="active"><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/uploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+						<li><a href="/order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -107,35 +109,96 @@
 			<!-- MAIN CONTENT -->
 			<div class="main-content">
 				<div class="container-fluid">
-					<h3 class="page-title">Tables</h3>
+					<h3 class="page-title">数据信息</h3>
 					<div class="row">
 						<form class="form-auth-small" method = "POST" action="/customOrderInsert/">
 							<div class="col-md-12">
 								<div class="panel">
 									<div class="panel-heading">
-										<h3 class="panel-title">New Order</h3>
+										<h3 class="panel-title">上传新的数据</h3>
 									</div>
 									<div class="panel-body">
-										<div class="form-group">
-											<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
-											<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="Cargo Name">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据名 </span>
+											</div>
+											<div class="col-md-5">
+												<div class="form-group">
+													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
+													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据名">
+												</div>
+											</div>
 										</div>
-										<div class="form-group">
-											<label for="type_cargo" class="control-label sr-only">Cargo Type</label>
-											<input name="cargo_type" class="form-control" id="cargo_type" value="" placeholder="Cargo Type">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据简介 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
+													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据简介">
+												</div>
+											</div>
 										</div>
-										<div class="form-group">
-											<label for="volume_cargo" class="control-label sr-only">Cargo Volume</label>
-											<input name="cargo_volume" class="form-control" id="cargo_volume" value="" placeholder="Cargo Volume">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据来源 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<select class="form-control">
+														<option value="buaa">北京航空航天大学</option>
+														<option value="pku">北京大学</option>
+														<option value="thu">清华大学</option>
+														<option value="others">其他大学</option>
+													</select>
+												</div>
+											</div>
 										</div>
-										<div class="form-group">
-											<label for="weight_cargo" class="control-label sr-only">Cargo Weight</label>
-											<input name="cargo_weight" class="form-control" id="cargo_weight" value="" placeholder="Cargo Weight">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据类型 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<select class="form-control">
+														<option value="excel">excel</option>
+														<option value="csv">csv</option>
+														<option value="mp3">mp3</option>
+														<option value="mp4">mp4</option>
+													</select>
+												</div>
+											</div>
 										</div>
-										<div class="form-group">
-											<label for="address_receive" class="control-label sr-only">Receive Address</label>
-											<input name="receive_address" class="form-control" id="receive_address" value="" placeholder="Receive Address">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据标签 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<select class="form-control">
+														<option value="transport">交通</option>
+														<option value="health">医疗</option>
+														<option value="education">教育</option>
+														<option value="others">其它</option>
+													</select>
+												</div>
+											</div>
 										</div>
+										<div class="row">
+											<div class="col-md-2">
+												<span> 数据标价 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
+													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据标价">
+												</div>
+											</div>
+										</div>
+										<form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data" >
+										　　　<input type="file" id="upload" name="upload" /> <br />
+										</form>
 									</div>
 								</div>
 							</div>

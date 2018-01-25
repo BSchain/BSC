@@ -227,7 +227,12 @@ def adminDataInfo(request):
             data['status'] = '审核不通过'
         data['price'] = content[i][8]
         datas.append(data)
-    return render(request, "app/adminDataInfo.html", {'datas': datas}) 
+    return render(request, "app/adminDataInfo.html", {'datas': datas})
+
+def upload(request):
+    username = request.session['username']
+    return render(request, "app/page-upload.html")
+
 
 def uploadData(request):
     username = request.session['username']
