@@ -142,6 +142,50 @@ def userInfo(request):
             })
 
 @csrf_exempt
+def userAckData(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
+    user_id = user.user_id
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
+            from BSCapp_data where BSCapp_data.user_id = %s and BSCapp_data.data_status = %s;'
+    try:
+        cursor.execute(sql, [user_id, '1'])
+        content = cursor.fetchall()
+        cursor.close()
+    except :
+        cursor.close()
+        return context
+    datas = []
+    len_content = len(content)
+    for i in range(len_content):
+        data = dict()
+        data['name'] = content[i][0]
+        data['info'] = content[i][1]
+        data['timestamp'] = content[i][2]
+        data['tag'] = content[i][3]
+        data['download'] = content[i][4]
+        # status = 0 审核中
+        # status = 1 审核通过
+        # status = 2 审核不通过
+        # data['status'] = content[i][5]
+        if content[i][5] == 0:
+            data['status'] = '审核中'
+        elif content[i][5] == 1:
+            data['status'] = '审核通过'
+        else:
+            data['status'] = '审核不通过'
+        data['purchase'] = content[i][6]
+        data['price'] = content[i][7]
+        datas.append(data)
+    return render(request, "app/userAckData.html", {'datas': datas, 'id':username})
+
+
+@csrf_exempt
 def adminDataInfo(request):
     username = request.session['username']
     try:
@@ -291,9 +335,9 @@ def uploadData(request):
         # status = 1 审核通过
         # status = 2 审核不通过
         # data['status'] = content[i][5]
-        if content[i][5] == '0':
+        if content[i][5] == 0:
             data['status'] = '审核中'
-        elif content[i][5] == '1':
+        elif content[i][5] == 1:
             data['status'] = '审核通过'
         else:
             data['status'] = '审核不通过'
