@@ -229,11 +229,21 @@ def adminDataInfo(request):
         datas.append(data)
     return render(request, "app/adminDataInfo.html", {'datas': datas})
 
+@csrf_exempt
 def upload(request):
     username = request.session['username']
+    if (request.method=="POST"):
+        uploadFile = request.FILES.get("file", None)
+        if not uploadFile:
+            return render(request, "app/page-upload.html")
+        destination = open(os.path.join("upload",uploadFile.name),'wb+')    # 打开特定的文件进行二进制的写操作
+        for chunk in uploadFile.chunks():      # 分块写入文件
+            destination.write(chunk)
+        destination.close()
     return render(request, "app/page-upload.html")
 
 
+@csrf_exempt
 def uploadData(request):
     username = request.session['username']
     try:

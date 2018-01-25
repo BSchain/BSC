@@ -111,7 +111,7 @@
 				<div class="container-fluid">
 					<h3 class="page-title">数据信息</h3>
 					<div class="row">
-						<form class="form-auth-small" method = "POST" action="/customOrderInsert/">
+						<form class="form-auth-small" enctype="multipart/form-data" method = "POST" action="/upload/">
 							<div class="col-md-12">
 								<div class="panel">
 									<div class="panel-heading">
@@ -124,8 +124,7 @@
 											</div>
 											<div class="col-md-5">
 												<div class="form-group">
-													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
-													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据名">
+													<input name ="data_name" class="form-control" id="data_name" value="" placeholder="数据名">
 												</div>
 											</div>
 										</div>
@@ -135,8 +134,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
-													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据简介">
+													<input name ="data_info" class="form-control" id="data_info" value="" placeholder="数据简介">
 												</div>
 											</div>
 										</div>
@@ -146,7 +144,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control">
+													<select class="form-control" id="data_source">
 														<option value="buaa">北京航空航天大学</option>
 														<option value="pku">北京大学</option>
 														<option value="thu">清华大学</option>
@@ -161,7 +159,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control">
+													<select class="form-control" id="data_type">
 														<option value="excel">excel</option>
 														<option value="csv">csv</option>
 														<option value="mp3">mp3</option>
@@ -176,7 +174,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control">
+													<select class="form-control" id="data_tag">
 														<option value="transport">交通</option>
 														<option value="health">医疗</option>
 														<option value="education">教育</option>
@@ -191,18 +189,17 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<label for="id_cargo" class="control-label sr-only">Cargo Name</label>
-													<input name ="cargo_name" class="form-control" id="cargo_name" value="" placeholder="数据标价">
+													<input name ="data_price" class="form-control" id="data_price" value="" placeholder="数据标价">
 												</div>
 											</div>
 										</div>
-										<form id="upload-form" action="upload.php" method="post" enctype="multipart/form-data" >
-										　　　<input type="file" id="upload" name="upload" /> <br />
-										</form>
+										<div class="form-group">
+										　　　	<input type="file" id="file" name="file" /> <br />
+										</div>
+										<button type="submit" class="btn btn-primary" style="float:right"> 上传 </button>
 									</div>
 								</div>
 							</div>
-							<button type="submit" class="btn btn-default" style="float:right"><i class="fa fa-plus-square"></i> Add </button>
 						</form>
 					</div>
 				</div>
