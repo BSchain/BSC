@@ -98,7 +98,7 @@
 						</li>
 						<li><a href="/uploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
 						<li><a href="/userAckData/" class="active"><i class="lnr lnr-dice"></i> <span>已通过数据</span></a></li>
-						<li><a href="/order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -114,32 +114,34 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">历史订单</h3>
+									<h3 class="panel-title">已通过数据</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center">出售者</th>
-												<th align="center">数据名称</th>
-                                                <th align="center">数据简介</th>
-												<th align="center">购买时间</th>
-                                                <th align="center">数据来源</th>
-                                                <th align="center">数据类型</th>
-												<th align="center">购买价格</th>
+												<th align="center">数据名</th>
+												<th align="center">数据简介</th>
+												<th align="center">上传时间</th>
+												<th align="center">数据标签</th>
+												<th align="center">数据状态</th>
+												<th align="center">数据购买量</th>
+												<th align="center">数据下载量</th>
+												<th align="center">数据标价</th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for order in orders %}
+										{% for data in datas %}
 											<tr>
-                                                <td align="">  {{order.seller}}</td>
-												<td align="">  {{order.name}}</td>
-                                                <td align="">  {{order.info}}</td>
-												<td align="">  {{order.timestamp}}</td>
-                                                <td align="">  {{order.source}}</td>
-                                                <td align="">  {{order.type}}</td>
-												<td align="">  {{order.price}}</td>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
+												<td align="">  {{data.timestamp}}</td>
+												<td align="">  {{data.tag}}</td>
+												<td align="">  {{data.status}}</td>
+												<td align="">  {{data.purchase}}</td>
+												<td align="">  {{data.download}}</td>
+												<td align="">  {{data.price}}</td>
 											</tr>
 										{% endfor %}
 										</tbody>
