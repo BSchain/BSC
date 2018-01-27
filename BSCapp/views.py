@@ -434,3 +434,36 @@ def order(request):
         order['price'] = content[i][7]
         orders.append(order)
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})
+
+@csrf_exempt
+def recharge(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
+    user_id = user.user_id
+    if (request.method=="POST"):
+        amount = request.POST["amount"]
+        now_time = str(time())
+        # TODO: 1. generate new coin_id for the user_id
+        # to keep the coin_id is unique, we use time() in generate_uuid
+        new_coin_id = generate_uuid(user_id)
+        default_coin_number = 1.0
+
+        Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
+             timestamp=now_time,coin_credit=default_coin_number).save()
+
+        # TODO: 2. modify wallet of the user_id
+        cursor = connection.cursor()
+        sql = 'update BSCapp_wallet set BSCapp_wallet.account = BSCapp_wallet.account + %s where BSCapp_wallet.user_id = %s;'
+        try:
+            cursor.execute(sql, [amount, user_id])
+            cursor.close()
+        except Exception as e:
+            print(str(e))
+            cursor.close()
+            return context
+
+
+    return render(request, "app/page-recharge.html", {'id':username})

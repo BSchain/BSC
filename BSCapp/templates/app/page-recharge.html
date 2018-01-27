@@ -65,7 +65,7 @@
 							</ul>
 						</li>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{username}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
@@ -97,10 +97,10 @@
 							</div>
 						</li>
 						<li><a href="/upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/userAckData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
-						<li><a href="/order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/userAckData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
+						<li><a href="/order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
                         <li><a href="/uploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
-                        <li><a href="/recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
+                        <li><a href="/recharge/" class="active"><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -111,45 +111,65 @@
 			<!-- MAIN CONTENT -->
 			<div class="main-content">
 				<div class="container-fluid">
+					<h3 class="page-title">账户充值</h3>
 					<div class="row">
-						<div class="col-md-12">
-							<!-- TABLE STRIPED -->
-							<div class="panel">
-								<div class="panel-heading">
-									<h3 class="panel-title">历史订单</h3>
-								</div>
-								<div class="panel-body">
-									<table class="table table-striped">
-										<thead>
-											<tr>
-                                                <th align="center">出售者</th>
-												<th align="center">数据名称</th>
-                                                <th align="center">数据简介</th>
-												<th align="center">购买时间</th>
-                                                <th align="center">数据来源</th>
-                                                <th align="center">数据类型</th>
-												<th align="center">购买价格</th>
-											</tr>
-										</thead>
-
-										<tbody>
-										{% for order in orders %}
-											<tr>
-                                                <td align="">  {{order.seller}}</td>
-												<td align="">  {{order.name}}</td>
-                                                <td align="">  {{order.info}}</td>
-												<td align="">  {{order.timestamp}}</td>
-                                                <td align="">  {{order.source}}</td>
-                                                <td align="">  {{order.type}}</td>
-												<td align="">  {{order.price}}</td>
-											</tr>
-										{% endfor %}
-										</tbody>
-									</table>
+						<form class="form-auth-small" method = "POST" action="/recharge/">
+							<div class="col-md-12">
+								<div class="panel">
+									<div class="panel-heading">
+										<h3 class="panel-title">充值信息</h3>
+									</div>
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-2">
+												<span> 充值账号 </span>
+											</div>
+											<div class="col-md-5">
+												<div class="form-group">
+													<input name ="account" class="form-control" id="account" value="" placeholder="充值账号">
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-2">
+												<span> 确认账号 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<input name ="reaccount" class="form-control" id="reaccount" value="" placeholder="确认账号">
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-2">
+												<span> 充值方式 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<select class="form-control" name="payment">
+														<option value="支付宝">支付宝</option>
+														<option value="微信支付">微信支付</option>
+														<option value="网上银行">网上银行</option>
+														<option value="其他">其他</option>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-md-2">
+												<span> 充值金额 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<input name ="amount" class="form-control" id="amount" value="" placeholder="充值金额">
+												</div>
+											</div>
+										</div>
+										<button type="submit" class="btn btn-primary " style="float:right"> 充值 </button>
+									</div>
 								</div>
 							</div>
-							<!-- END TABLE STRIPED -->
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -157,11 +177,6 @@
 		</div>
 		<!-- END MAIN -->
 		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p align="center" class="copyright" >&copy; 2018 <a href="#" target="_blank">BUAA</a>. All Rights Reserved.</p>
-			</div>
-		</footer>
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
@@ -172,7 +187,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-	<script src="../static/app/javascript/orderManage.js"></script>
+	<script src="../static/app/javascript/upload.js"></script>
 </body>
 
 </html>
