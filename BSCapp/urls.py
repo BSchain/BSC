@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^upload/$',views.upload),
     url(r'^uploadData/$',views.uploadData),
     url(r'^order/$',views.order),
+    url(r'^recharge/$',views.recharge),
 ]

@@ -282,6 +282,17 @@ def upload(request):
         user = User.objects.get(user_name=username)
     except Exception:
         return render(request, "app/page-login.html")
+
+    return render(request, "app/page-upload.html", {"username": username})
+
+
+@csrf_exempt
+def uploadData(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     if (request.method=="POST"):
         uploadFile = request.FILES.get("file", None)    #获得上传文件
         if not uploadFile:
@@ -352,17 +363,6 @@ def upload(request):
             pass # something wrong in cursor, just pass, and use the waller.account
 
         wallet.save()
-
-    return render(request, "app/page-upload.html", {"username": username})
-
-
-@csrf_exempt
-def uploadData(request):
-    username = request.session['username']
-    try:
-        user = User.objects.get(user_name=username)
-    except Exception:
-        return render(request, "app/page-login.html")
     user_id = user.user_id
     context = {}
     cursor = connection.cursor()

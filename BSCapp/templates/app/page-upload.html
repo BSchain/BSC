@@ -112,7 +112,7 @@
 				<div class="container-fluid">
 					<h3 class="page-title">上传新的数据</h3>
 					<div class="row">
-						<form class="form-auth-small" enctype="multipart/form-data" method = "POST" action="/upload/">
+						<form class="form-auth-small" enctype="multipart/form-data" method = "POST" onsubmit="checkUpload()" action="/uploadData/">
 							<div class="col-md-12">
 								<div class="panel">
 									<div class="panel-heading">
@@ -216,6 +216,10 @@
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+	<script src="../static/app/javascript/upload.js"></script>
 </body>
 
 </html>
