@@ -76,39 +76,61 @@ def login(request):
 
 @csrf_exempt
 def signUp(request):
+    # get the info of user sign up
     try:
         user_name = request.POST['username']
         user_pwd = request.POST['password']
+        user_repwd = request.POST['repassword']
         user_email = request.POST['email']
         user_id = generate_uuid(user_name)
-        # print(user_id)
     except Exception as e:
-        print(str(e))
         return render(request, "app/page-signup.html")
     # client cannot overwrite admin users
     try:
-        c = Admin.objects.get(admin_name=user_name)
+        u = Admin.objects.get(admin_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': 'username has been signed up',
+            'errormessage': '用户名已注册',
             }))
     except Exception:
         pass
-
+    #username cannot be signed up before
     try:
-        c = User.objects.get(user_name=user_name)
+        u = User.objects.get(user_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': 'username has been signed up',
+            'errormessage': '用户名已注册',
             }))
     except Exception as e:
-        User(user_id=user_id, user_name=user_name,
-            user_pwd=user_pwd, user_email=user_email).save()
-        Wallet(user_id=user_id, account = 0.0).save()
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-            'username': user_name,
-            }))
+        #email cannot be signed up before
+        sql = 'select user_name from BSCapp_user where BSCapp_user.user_email=%s';
+        content = {}
+        cursor = connection.cursor()
+        try:
+            cursor.execute(sql, [user_email])
+            content = cursor.fetchall()
+            cursor.close()
+        except:
+            cursor.close()
+        if len(content)>0:
+            return HttpResponse(json.dumps({
+                'statCode': -2,
+                'errormessage': '邮箱已注册',
+                }))
+        else:
+            #the password and password input again have to be the same
+            if (user_pwd!=user_repwd):
+                return HttpResponse(json.dumps({
+                    'statCode': -3,
+                    'errormessage': '两次输入密码不一致',
+                    }))
+            User(user_id=user_id, user_name=user_name,
+                user_pwd=user_pwd, user_email=user_email).save()
+            Wallet(user_id=user_id, account = 0.0).save()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'username': user_name,
+                }))
 
 @csrf_exempt
 def userInfo(request):
@@ -119,7 +141,6 @@ def userInfo(request):
         return render(request, "app/page-login.html")
     try:
         user.user_realName = request.POST['realname']
-        user.user_email = request.POST['email']
         user.user_phone = request.POST['phone']
         user.user_idcard = request.POST['idcard']
         user.user_company = request.POST['company']

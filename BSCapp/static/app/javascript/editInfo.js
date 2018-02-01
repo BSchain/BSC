@@ -7,9 +7,6 @@ function EditInfo(){
         var name = document.getElementById("nametext");
         var value = name.innerHTML;
         name.innerHTML = "<input name='name' id='name' value="+value+">";
-        var email = document.getElementById("emailtext");
-        var value = email.innerHTML;
-        email.innerHTML = "<input name='email' required type='email' id='email' value="+value+">";
         var phone = document.getElementById("phonetext");
         var value = phone.innerHTML;
         phone.innerHTML = "<input name='phone' id='phone' value="+value+">";
@@ -31,7 +28,6 @@ function EditInfo(){
           dataType: 'json',
           type: 'POST',
           data: {
-            "email": $("#email").val(),
             "realname": $("#name").val(),
             "phone": $("#phone").val(),
             "idcard": $("#idcard").val(),

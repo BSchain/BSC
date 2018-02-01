@@ -79,6 +79,7 @@ function SignUp_validate() {
       "username": $("#username").val(),
       "email": $("#email").val(),
       "password": pwd,
+      "repassword": $("#repassword").val(),
     }
   }).done(function(data) {
     if (data.statCode != 0) {
