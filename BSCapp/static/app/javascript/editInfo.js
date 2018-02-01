@@ -1,4 +1,3 @@
-
 function EditInfo(){
     var btn = document.getElementById("edit");
     if (btn.innerHTML == "编辑")
@@ -43,7 +42,7 @@ function EditInfo(){
               var value = document.getElementById("name").value;
               var name = document.getElementById("nametext");
               name.innerHTML = value;
-              indexURL = "/userInfo/"
+              indexURL = "/UserInfo/"
               window.location.replace(indexURL);
           }
         })

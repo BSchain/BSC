@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-	<title>Distributor | Anywhere - Professional Express System</title>
+	<title>Custom | Anywhere - Professional Express System</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -27,7 +27,7 @@
 		<!-- NAVBAR -->
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="brand">
-				<a href="index.html"><img src="../static/app/assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+				<a href="index.html"><img src="../static/app/assets/img/logo.jpg" alt="Klorofil Logo" class="img-responsive logo"></a>
 			</div>
 			<div class="container-fluid">
 				<div class="navbar-btn">
@@ -70,7 +70,7 @@
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
-								<li><a href="/index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
 						<!-- <li>
@@ -86,17 +86,21 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/distributorInfo/" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
+						<li><a href="/UserInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-file-empty"></i> <span>Pages</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse ">
+							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/distributorInfo/" class="">Profile</a></li>
-									<li><a href="/index/" class="">Log Out</a></li>
+									<li><a href="/UserInfo/" class="">个人信息</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/distributorOrderManage/" class="active"><i class="lnr lnr-dice"></i> <span>orderManage</span></a></li>
+                        <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/UserAckData/" class="active"><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
+						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/UploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -107,73 +111,42 @@
 			<!-- MAIN CONTENT -->
 			<div class="main-content">
 				<div class="container-fluid">
-					<h3 class="page-title">Tables</h3>
 					<div class="row">
 						<div class="col-md-12">
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">InwareOrders</h3>
+									<h3 class="panel-title">已通过数据</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-												<th align="char">#</th>
-												<th align="center">order_id</th>
-												<th align="center">receive_time</th>
-												<th align="center">employ_id</th>
-												<th align="center">ware_id</th>
+												<th align="center">数据名</th>
+												<th align="center">数据简介</th>
+												<th align="center">上传时间</th>
+												<th align="center">数据标签</th>
+												<th align="center">数据状态</th>
+												<th align="center">数据购买量</th>
+												<th align="center">数据下载量</th>
+												<th align="center">数据标价</th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for order in inwareOrders %}
+										{% for data in datas %}
 											<tr>
-												<td>  <button type="button" class="btn-primary btn-xs"  name="{{order.order_id}}" onclick="operate(this)">distribute</button> </td>
-												<td align="">  {{order.order_id}}</td>
-												<td align="">  {{order.receive_time}}</td>
-												<td align="">  {{order.employ_id}}</td>
-												<td align="">  {{order.ware_id}}</td>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
+												<td align="">  {{data.timestamp}}</td>
+												<td align="">  {{data.tag}}</td>
+												<td align="">  {{data.status}}</td>
+												<td align="">  {{data.purchase}}</td>
+												<td align="">  {{data.download}}</td>
+												<td align="">  {{data.price}}</td>
 											</tr>
 										{% endfor %}
 										</tbody>
-									</table>
-								</div>
-							</div>
-							<!-- END TABLE STRIPED -->
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<!-- TABLE STRIPED -->
-							<div class="panel">
-								<div class="panel-heading">
-									<h3 class="panel-title">DistributeOrders</h3>
-								</div>
-								<div class="panel-body">
-									<table class="table table-striped">
-										<thead>
-											<tr>
-												<th align="char">#</th>
-												<th align="center">order_id</th>
-												<th align="center">distribute_time</th>
-												<th align="center">employ_id</th>
-											</tr>
-										</thead>
-
-										<tbody>
-										{% for order in distributeOrders %}
-											<tr>
-												<td>  <button type="button" class="btn-primary btn-xs">Success</button> </td>
-												<td align="">  {{order.order_id}}</td>
-												<td align="">  {{order.distribute_time}}</td>
-												<td align="">  {{order.employ_id}}</td>
-											</tr>
-										{% endfor %}
-
-										</tbody>
-
 									</table>
 								</div>
 							</div>

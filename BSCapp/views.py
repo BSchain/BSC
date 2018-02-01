@@ -15,12 +15,12 @@ import BSCapp.root_chain.coin as COIN
 # Create your views here.
 
 @csrf_exempt
-def getIndex(request):
+def Index(request):
     request.session['username'] = ""
-    return render(request, "app/index.html")
+    return render(request, "app/page-index.html")
 
 @csrf_exempt
-def login(request):
+def Login(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
@@ -75,7 +75,7 @@ def login(request):
             }))
 
 @csrf_exempt
-def signUp(request):
+def Signup(request):
     # get the info of user sign up
     try:
         user_name = request.POST['username']
@@ -133,7 +133,7 @@ def signUp(request):
                 }))
 
 @csrf_exempt
-def userInfo(request):
+def UserInfo(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -164,7 +164,7 @@ def userInfo(request):
             })
 
 @csrf_exempt
-def userAckData(request):
+def UserAckData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -206,21 +206,15 @@ def userAckData(request):
         data['purchase'] = content[i][6]
         data['price'] = content[i][7]
         datas.append(data)
-    return render(request, "app/userAckData.html", {'datas': datas, 'id':username})
-
+    return render(request, "app/page-userAckData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
-def adminDataInfo(request):
+def AdminDataInfo(request):
     username = request.session['username']
     try:
         now_admin = Admin.objects.get(admin_name=username)
     except Exception:
         return render(request, "app/page-login.html")
-    # username = request.session['username']
-    # try:
-    #     user = Admin.objects.get(admin_name=username)
-    # except Exception:
-    #     return render(request, "app/page-login.html")
     # try if it is triggered by a confirmation of a review
     try:
         now_admin_id = now_admin.admin_id
@@ -294,10 +288,10 @@ def adminDataInfo(request):
             data['status'] = '审核不通过'
         data['price'] = content[i][8]
         datas.append(data)
-    return render(request, "app/adminDataInfo.html", {'datas': datas})
+    return render(request, "app/page-adminDataInfo.html", {'datas': datas})
 
 @csrf_exempt
-def upload(request):
+def Upload(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -306,9 +300,8 @@ def upload(request):
 
     return render(request, "app/page-upload.html", {"username": username})
 
-
 @csrf_exempt
-def uploadData(request):
+def UploadData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -381,8 +374,7 @@ def uploadData(request):
             if check_wallet_account != wallet.account:
                 wallet.account = check_wallet_account
         except Exception:
-            pass # something wrong in cursor, just pass, and use the waller.account
-
+            pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
     user_id = user.user_id
     context = {}
@@ -420,7 +412,7 @@ def uploadData(request):
     return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
-def order(request):
+def Order(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -437,7 +429,6 @@ def order(request):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
         cursor.close()
         return context
     orders = []
@@ -457,7 +448,7 @@ def order(request):
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})
 
 @csrf_exempt
-def recharge(request):
+def Recharge(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -482,9 +473,7 @@ def recharge(request):
             cursor.execute(sql, [amount, user_id])
             cursor.close()
         except Exception as e:
-            print(str(e))
             cursor.close()
             return context
-
 
     return render(request, "app/page-recharge.html", {'id':username})
