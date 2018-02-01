@@ -1,10 +1,10 @@
 function buyData(obj) {
+    data_id = obj.value
     $.ajax("/buyableData/", {
         dataType: 'json',
         type: 'POST',
         data: {
-          "id": obj.id,
-            "price":obj.price,
+            "data_id": data_id,
         }
       }).done(function(data){
           if (data.statCode !=0){

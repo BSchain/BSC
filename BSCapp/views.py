@@ -83,7 +83,6 @@ def signUp(request):
         user_id = generate_uuid(user_name)
         # print(user_id)
     except Exception as e:
-        print(str(e))
         return render(request, "app/page-signup.html")
     # client cannot overwrite admin users
     try:
@@ -130,7 +129,6 @@ def userInfo(request):
             'statCode': 0
             }))
     except Exception as e:
-        print(str(e))
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -150,97 +148,122 @@ def buyableData(request):
     except Exception:
         return render(request, "app/page-login.html")
 
-    now_data_id = request.POST['id']
-    now_data_price = float(request.POST['id'])
+    buyer_id = user.user_id  # get buyer
 
-    # whether this user can buy data
-    buyer_id = user.user_id # get buyer
+    try:
+        # print(request.POST['data_id'])
+        now_data_id = request.POST['data_id']
 
-    user_balance = Wallet.objects.get(user_id=buyer_id).account
-    if user_balance < now_data_price:
+        # now_data_price = float(request.POST['price'])
+        now_data_price = Data.objects.get(data_id=now_data_id).data_price
+        # whether this user can buy data
+
+        print('data_price',now_data_price)
+
+        user_balance = Wallet.objects.get(user_id=buyer_id).account
+        print('user_balance', user_balance)
+
+        if user_balance < now_data_price:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'error': '余额不足!'
+            }))
+
+        seller_id = Data.objects.get(data_id=now_data_id).user_id # get seller
+
+        # get user coins
+        cursor = connection.cursor()
+        sql = 'select coin_id, coin_credit from BSCapp_coin ' \
+              'where BSCapp_coin.owner_id = %s and BSCapp_coin.is_spent = False'
+        try:
+            cursor.execute(sql,[buyer_id])
+            content = cursor.fetchall()
+            cursor.close()
+        except Exception as e:
+            print(str(e))
+            cursor.close()
+            return content
+
+        # get user in_coins
+        in_coins = []
+        len_content = len(content); coin_numbers = 0; coin_credicts = 0
+        for i in range(len_content):
+            if coin_credicts >= now_data_price:
+                break
+            coin_numbers+=1
+            buyer_coin = COIN.Coin()
+            buyer_coin.new_coin(coin_uuid=content[i][0],number_coin=content[i][1],owner=buyer_id)
+            coin_credicts += content[i][1]
+            in_coins.append(buyer_coin.to_dict())
+        print('in_coins', in_coins)
+        # generate out_coins
+        out_coins = []
+
+        left_credit = coin_credicts - now_data_price
+        print('left_credict', left_credit)
+        if left_credit > 0:
+            buyer_out_coin = COIN.Coin()
+            buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
+            out_coins.append(buyer_out_coin.to_dict())
+
+        seller_out_coin = COIN.Coin()
+        seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
+        out_coins.append(seller_out_coin.to_dict())
+
+        print('out_coins', out_coins)
+        # generate new transactions
+        tx = TX.Transaction()
+        tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(time()), action='buy',
+                           seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
+        tx.save_transaction()
+
+        # update the coin table is_spent = True
+        try:
+            cursor = connection.cursor()
+            for i in range(coin_numbers):
+                print('success!!!')
+                item_coin_id = in_coins[i]['coin_uuid']
+                print('item',item_coin_id)
+                sql = 'update BSCapp_coin set is_spent = True where coin_id = %s'
+                cursor.execute(sql,[item_coin_id])
+
+            cursor.close()
+        except Exception as e:
+            print(str(e))
+            return False
+
+        # insert new coin for buyer and seller
+        if left_credit > 0:
+            Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
+                 is_spent=False, timestamp=str(time()), coin_credit=left_credit).save()
+        Coin(coin_id=seller_out_coin.to_dict()['coin_uuid'], owner_id=seller_id,
+                 is_spent=False, timestamp=str(time()), coin_credit=now_data_price).save()
+
+        # update the wallet of buyer and seller
+        try:
+            cursor = connection.cursor()
+            sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
+            cursor.execute(sql, [0 - now_data_price, buyer_id])
+            cursor.execute(sql, [now_data_price, seller_id])
+            cursor.close()
+        except Exception as e:
+            print(str(e))
+            return False
+
+        # insert new purchase_log for buyer
+        Purchase(data_id= now_data_id, user_id= buyer_id).save()
+        # generate a new transaction
+        print('success1')
+        Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
+                    data_id=now_data_id, timestamp=str(time()), price=now_data_price).save()
+        print('success2')
         return HttpResponse(json.dumps({
-            'statCode': -1,
-            'error': '余额不足!'
+            'statCode': 0,
+            'error': '购买成功!'
         }))
 
-    seller_id = Data.objects.get(data_id=now_data_id).user_id # get seller
-
-    # get user coins
-    cursor = connection.cursor()
-    sql = 'select coin_id, coin_credit from BSCapp_coin ' \
-          'where BSCapp_coin.user_id = %s and BSCapp_coin.is_spent = False order by BSCapp_coin.coin_credit ASC'
-    try:
-        cursor.execute(sql,[buyer_id])
-        content = cursor.fetchall()
-        cursor.close()
     except:
-        cursor.close()
-        return content
-
-    # get user in_coins
-    in_coins = []
-    len_content = len(content); coin_numbers = 0; coin_credicts = 0
-    for i in range(len_content):
-        if coin_credicts >= now_data_price:
-            break
-        coin_numbers+=1
-        buyer_coin = COIN.Coin()
-        buyer_coin.new_coin(coin_uuid=content[i][0],number_coin=content[i][1],owner=buyer_id)
-        in_coins.append(buyer_coin.to_dict())
-
-    # generate out_coins
-    out_coins = []
-
-    left_credit = coin_credicts - now_data_price
-    if left_credit > 0:
-        buyer_out_coin = COIN.Coin()
-        buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
-        out_coins.append(buyer_out_coin)
-
-    seller_out_coin = COIN.Coin()
-    seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
-    out_coins.append(seller_out_coin)
-
-    # generate new transactions
-    tx = TX.Transaction()
-    tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(time()), action='buy',
-                       seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
-    tx.save_transaction()
-
-    # update the coin table is_spent = True
-    try:
-        cursor = connection.cursor()
-        for i in range(coin_numbers):
-            item_coin_id = in_coins[i]['coin_id']
-            sql = 'update BSCapp_coin set is_spent = True where coin_id = %s'
-            cursor.execute(sql,[item_coin_id])
-        cursor.close()
-    except:
-        return False
-
-    # insert new coin for buyer and seller
-    if left_credit > 0:
-        Coin(coin_id = buyer_out_coin.to_dict()['coin_id'], owner_id=buyer_id,
-             is_spent=False, timestamp=str(time()), coin_credit=left_credit).save()
-    Coin(coin_id=seller_out_coin.to_dict()['coin_id'], owner_id=seller_id,
-             is_spent=False, timestamp=str(time()), coin_credit=now_data_price).save()
-
-    # update the wallet of buyer and seller
-    try:
-        cursor = connection.cursor()
-        sql = 'update BSCapp_wallet set  BSCapp_wallet.account + %f where user_id = %s'
-        cursor.execute(sql, [0 - now_data_price, buyer_id])
-        cursor.execute(sql, [now_data_price, seller_id])
-        cursor.close()
-    except:
-        return False
-
-    # insert new purchase_log for buyer
-    Purchase(data_id= now_data_id, user_id= buyer_id).save()
-
-    # generate a new transaction
-    Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
-                data_id=now_data_id, timestamp=str(time()), price=now_data_price).save()
+        pass
 
     context = {}
     cursor = connection.cursor()
@@ -336,7 +359,6 @@ def adminDataInfo(request):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
         cursor.close()
         return {}
     datas = []
@@ -502,7 +524,6 @@ def order(request):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
         cursor.close()
         return context
     orders = []
@@ -535,10 +556,10 @@ def recharge(request):
         # TODO: 1. generate new coin_id for the user_id
         # to keep the coin_id is unique, we use time() in generate_uuid
         new_coin_id = generate_uuid(user_id)
-        default_coin_number = 1.0
+        # default_coin_number = 1.0
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
-             timestamp=now_time,coin_credit=default_coin_number).save()
+             timestamp=now_time,coin_credit=amount).save()
 
         # TODO: 2. modify wallet of the user_id
         cursor = connection.cursor()
@@ -547,7 +568,6 @@ def recharge(request):
             cursor.execute(sql, [amount, user_id])
             cursor.close()
         except Exception as e:
-            print(str(e))
             cursor.close()
 
 

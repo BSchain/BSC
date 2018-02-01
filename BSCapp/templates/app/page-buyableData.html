@@ -144,8 +144,8 @@
 												<td align="">  {{data.tag}}</td>
 												<td align="">  {{data.md5}}</td>
                                                 <td align="">  {{data.size}}</td>
-												<td align="">  {{data.price}}</td>
-                                                <td><button class="label label-success" id="{{data.dataid}}" price="{{ data.price }}" onclick="buyData(this);">购买</button></td>
+												<td align=""> {{data.price}}</td>
+                                                <td><button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}} " onclick="buyData(this);">购买</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -177,6 +177,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 	<script src="../static/app/javascript/orderManage.js"></script>
+    <script src="../static/app/javascript/buyData.js"></script>
 </body>
 
 </html>
