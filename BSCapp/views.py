@@ -137,6 +137,7 @@ def UserInfo(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
+        account = GetAccount(user.user_id)
     except Exception:
         return render(request, "app/page-login.html")
     try:
@@ -161,6 +162,7 @@ def UserInfo(request):
             'idcard':user.user_idcard,
             'company':user.user_company,
             'title':user.user_title,
+            'account':account,
             })
 
 @csrf_exempt
@@ -467,7 +469,6 @@ def Recharge(request):
 
         #get the wallet account before recharge
         before_account = GetAccount(user_id)
-        print(before_account)
 
         #2. modify wallet of the user_id
         cursor = connection.cursor()
@@ -479,7 +480,6 @@ def Recharge(request):
             cursor.close()
         #get the wallet account after recharge
         after_account = GetAccount(user_id)
-        print(after_account)
 
         #3. add the recharge record into the recharge tables
         recharge_id = generate_uuid(user_id)
@@ -490,7 +490,6 @@ def Recharge(request):
             cursor.execute(sql, [recharge_id, user_id, timestamp, amount, before_account, after_account, new_coin_id])
             cursor.close()
         except Exception as e:
-            print(str(e))
             cursor.close()
 
     return render(request, "app/page-recharge.html", {'id':username})
