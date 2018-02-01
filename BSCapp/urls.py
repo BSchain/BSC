@@ -4,14 +4,14 @@ from . import views
 #admin.autodiscover()
 
 urlpatterns = [
-    url(r'^index/$',views.getIndex),
-    url(r'^login/$',views.login),
-    url(r'^signUp/$',views.signUp),
-    url(r'^userInfo/$',views.userInfo),
-    url(r'^adminDataInfo/$',views.adminDataInfo),
-    url(r'^userAckData/$',views.userAckData),
-    url(r'^upload/$',views.upload),
-    url(r'^uploadData/$',views.uploadData),
-    url(r'^order/$',views.order),
-    url(r'^recharge/$',views.recharge),
+    url(r'^Index/$',views.Index),
+    url(r'^Login/$',views.Login),
+    url(r'^Signup/$',views.Signup),
+    url(r'^UserInfo/$',views.UserInfo),
+    url(r'^AdminDataInfo/$',views.AdminDataInfo),
+    url(r'^UserAckData/$',views.UserAckData),
+    url(r'^Upload/$',views.Upload),
+    url(r'^UploadData/$',views.UploadData),
+    url(r'^Order/$',views.Order),
+    url(r'^Recharge/$',views.Recharge),
 ]
