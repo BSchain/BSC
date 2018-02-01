@@ -152,8 +152,9 @@ def UserInfo(request):
             'statCode': 0
             }))
     except Exception as e:
-        print(str(e))
+        user_balance = Wallet.objects.get(user_id = user.user_id).account
         return render(request, "app/page-userInfo.html",{
+            'balance': user_balance,
             'id': user.user_name,
             'name': user.user_realName,
             'email':user.user_email,
@@ -166,21 +167,140 @@ def UserInfo(request):
             })
 
 @csrf_exempt
-def UserAckData(request):
+def buyableData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
     except Exception:
         return render(request, "app/page-login.html")
-    user_id = user.user_id
+
+    buyer_id = user.user_id  # get buyer
+
+    try:
+        # print(request.POST['data_id'])
+        now_data_id = request.POST['data_id']
+        now_op = request.POST['op']
+        if now_op == 'download':
+            try:
+                print('data_id',now_data_id)
+                Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
+                return HttpResponse(json.dumps({
+                    'statCode': 0,
+                    'message': '已购买此数据,可以下载!'
+                }))
+            except:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '未购买此数据,无法下载!'
+                }))
+        # insert new purchase_log for buyer
+        try:
+            Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
+            return HttpResponse(json.dumps({  # 到这一步说明已经购买过数据
+                'statCode': -3,
+                'message': '已经购买此数据，请勿重复购买！'
+            }))
+        except:
+            pass # 数据还未购买,则可以进行购买操作
+
+        # whether this user can buy data
+        user_balance = Wallet.objects.get(user_id=buyer_id).account
+        now_data_price = Data.objects.get(data_id=now_data_id).data_price
+        if user_balance < now_data_price:
+            return HttpResponse(json.dumps({
+                'statCode': -2,
+                'message': '余额不足!'
+            }))
+
+        seller_id = Data.objects.get(data_id=now_data_id).user_id # get seller
+
+        # get user unspent coins
+        try:
+            cursor = connection.cursor()
+            sql = 'select coin_id, coin_credit from BSCapp_coin ' \
+              'where BSCapp_coin.owner_id = %s and BSCapp_coin.is_spent = False'
+            cursor.execute(sql,[buyer_id])
+            content = cursor.fetchall()
+
+            # get user in_coins
+            in_coins = []
+            len_content = len(content); coin_numbers = 0; coin_credicts = 0
+            for i in range(len_content):
+                if coin_credicts >= now_data_price:
+                    break
+                coin_numbers+=1
+                buyer_coin = COIN.Coin()
+                buyer_coin.new_coin(coin_uuid=content[i][0],number_coin=content[i][1],owner=buyer_id)
+                coin_credicts += content[i][1]
+                in_coins.append(buyer_coin.to_dict())
+
+            # generate out_coins
+            out_coins = []
+            left_credit = coin_credicts - now_data_price
+            if left_credit > 0:
+                buyer_out_coin = COIN.Coin()
+                buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
+                out_coins.append(buyer_out_coin.to_dict())
+
+            seller_out_coin = COIN.Coin()
+            seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
+            out_coins.append(seller_out_coin.to_dict())
+
+            # insert one purchase log into table
+            Purchase(user_id=buyer_id,data_id=now_data_id).save()
+
+            # generate new transactions
+            tx = TX.Transaction()
+            tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(time()), action='buy',
+                               seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
+            tx.save_transaction()
+
+            # update the coin table is_spent = True
+            cursor = connection.cursor()
+            for i in range(coin_numbers):
+                item_coin_id = in_coins[i]['coin_uuid']
+                sql = 'update BSCapp_coin set is_spent = True where coin_id = %s'
+                cursor.execute(sql,[item_coin_id])
+
+            # insert new coin for buyer and seller
+            if left_credit > 0:
+                Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
+                     is_spent=False, timestamp=str(time()), coin_credit=left_credit).save()
+            Coin(coin_id=seller_out_coin.to_dict()['coin_uuid'], owner_id=seller_id,
+                     is_spent=False, timestamp=str(time()), coin_credit=now_data_price).save()
+
+            # update the wallet of buyer and seller
+            sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
+            cursor.execute(sql, [0 - now_data_price, buyer_id])
+            cursor.execute(sql, [now_data_price, seller_id])
+            sql = 'update BSCapp_data set BSCapp_data.data_download = data_download + 1 where data_id = %s'
+            cursor.execute(sql, [now_data_id])
+            cursor.close()
+
+            # generate a new transaction
+            Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
+                        data_id=now_data_id, timestamp=str(time()), price=now_data_price).save()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '购买成功!'
+            }))
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '系统错误!'
+            }))
+    except:
+        pass
+
     context = {}
     cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
-            from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = %s;'
+    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
+          'data_tag, data_status, data_md5, data_size, data_price ' \
+          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1;'
     # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
     #             from BSCapp_data where BSCapp_data.data_status = %s;'
     try:
-        cursor.execute(sql, [user_id, '1'])
+        cursor.execute(sql, [buyer_id])
         content = cursor.fetchall()
         cursor.close()
     except :
@@ -190,25 +310,18 @@ def UserAckData(request):
     len_content = len(content)
     for i in range(len_content):
         data = dict()
-        data['name'] = content[i][0]
-        data['info'] = content[i][1]
-        data['timestamp'] = content[i][2]
-        data['tag'] = content[i][3]
-        data['download'] = content[i][4]
-        # status = 0 审核中
-        # status = 1 审核通过
-        # status = 2 审核不通过
-        # data['status'] = content[i][5]
-        if content[i][5] == 0:
-            data['status'] = '审核中'
-        elif content[i][5] == 1:
-            data['status'] = '审核通过'
-        else:
-            data['status'] = '审核不通过'
-        data['purchase'] = content[i][6]
-        data['price'] = content[i][7]
+        data['data_id'] = content[i][0]
+        seller = User.objects.get(user_id=content[i][1]).user_name
+        data['seller'] = seller
+        data['name'] = content[i][2]
+        data['info'] = content[i][3]
+        data['timestamp'] = time_to_str(content[i][4])
+        data['tag'] = content[i][5]
+        data['md5'] = content[i][7]
+        data['size'] = content[i][8]
+        data['price'] = content[i][9]
         datas.append(data)
-    return render(request, "app/page-userAckData.html", {'datas': datas, 'id':username})
+    return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -267,7 +380,6 @@ def AdminDataInfo(request):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
         cursor.close()
         return {}
     datas = []
@@ -279,7 +391,7 @@ def AdminDataInfo(request):
         data['seller'] = seller.user_realName
         data['name'] = content[i][2]
         data['info'] = content[i][3]
-        data['timestamp'] = content[i][4]
+        data['timestamp'] = time_to_str(content[i][4])
         data['source'] = content[i][5]
         data['type'] = content[i][6]
         if content[i][7] == 0:
@@ -326,7 +438,7 @@ def UploadData(request):
         data_info = request.POST['data_info']
         data_source = request.POST.getlist('data_source')[0]
         data_md5 = get_file_md5(data_path)
-        data_size = uploadFile.size
+        data_size = uploadFile.size / (1024 * 1024)
         data_price = request.POST['data_price']
 
         data_type = request.POST.getlist('data_type')[0]
@@ -395,7 +507,7 @@ def UploadData(request):
         data = dict()
         data['name'] = content[i][0]
         data['info'] = content[i][1]
-        data['timestamp'] = content[i][2]
+        data['timestamp'] = time_to_str(content[i][2])
         data['tag'] = content[i][3]
         data['download'] = content[i][4]
         # status = 0 审核中
@@ -444,7 +556,7 @@ def Order(request):
         order['info'] = content[i][3]
         order['source'] = content[i][4]
         order['type'] = content[i][5]
-        order['timestamp'] = content[i][6]
+        order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         orders.append(order)
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})

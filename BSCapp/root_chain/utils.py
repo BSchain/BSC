@@ -13,6 +13,8 @@ import hashlib as hasher
 import uuid
 from time import time
 import os
+import datetime
+
 
 TRANSACTION_SAVE_ROOT = r'transactions/'
 TRANSACTION_SAVE_SUFFIX = '.json'
@@ -147,3 +149,6 @@ def get_file_md5(file_path):
     f.close()
     md5 = str(hash_code).lower()
     return md5
+
+def time_to_str(timestamp):
+    return datetime.datetime.fromtimestamp(float(timestamp) + 28800).strftime('%Y-%m-%d %H:%M:%S')
