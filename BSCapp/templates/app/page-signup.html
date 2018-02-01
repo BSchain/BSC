@@ -38,15 +38,19 @@
 							<form class="form-auth-small" onsubmit="return SignUp_validate()" action="javascript:void(0)" >
                                 <div class="form-group">
 									<label for="id_username" class="control-label sr-only">User</label>
-									<input name ="username" required type="user" class="form-control" id="username" value="" placeholder="User">
+									<input name ="username" required type="user" class="form-control" id="username" value="" placeholder="用户名">
                                 </div>
                                 <div class="form-group">
 									<label for="id_password" class="control-label sr-only">Password</label>
-									<input name="password" required type="password" class="form-control" id="password" value="" placeholder="Password">
+									<input name="password" required type="password" class="form-control" id="password" value="" placeholder="密码">
+								</div>
+								<div class="form-group">
+									<label for="id_repassword" class="control-label sr-only">Password</label>
+									<input name="repassword" required type="password" class="form-control" id="repassword" value="" placeholder="确认密码">
 								</div>
                                 <div class="form-group">
 									<label for="id_email" class="control-label sr-only">Email</label>
-									<input name="email" required type="email" class="form-control" id="email" value="" placeholder="Email">
+									<input name="email" required type="email" class="form-control" id="email" value="" placeholder="邮箱">
 								</div>
 								<button type="submit" class="btn btn-primary btn-lg btn-block">Register</button>
 							</form>
@@ -68,7 +72,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-	<script src="../static/app/javascript/signUp.js"></script>
+	<script src="../static/app/javascript/signup.js"></script>
 </body>
 
 </html>

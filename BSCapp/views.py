@@ -15,12 +15,12 @@ import BSCapp.root_chain.coin as COIN
 # Create your views here.
 
 @csrf_exempt
-def getIndex(request):
+def Index(request):
     request.session['username'] = ""
-    return render(request, "app/index.html")
+    return render(request, "app/page-index.html")
 
 @csrf_exempt
-def login(request):
+def Login(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
@@ -75,50 +75,73 @@ def login(request):
             }))
 
 @csrf_exempt
-def signUp(request):
+def Signup(request):
+    # get the info of user sign up
     try:
         user_name = request.POST['username']
         user_pwd = request.POST['password']
+        user_repwd = request.POST['repassword']
         user_email = request.POST['email']
         user_id = generate_uuid(user_name)
-        # print(user_id)
     except Exception as e:
         return render(request, "app/page-signup.html")
     # client cannot overwrite admin users
     try:
-        c = Admin.objects.get(admin_name=user_name)
+        u = Admin.objects.get(admin_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': 'username has been signed up',
+            'errormessage': '用户名已注册',
             }))
     except Exception:
         pass
-
+    #username cannot be signed up before
     try:
-        c = User.objects.get(user_name=user_name)
+        u = User.objects.get(user_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': 'username has been signed up',
+            'errormessage': '用户名已注册',
             }))
     except Exception as e:
-        User(user_id=user_id, user_name=user_name,
-            user_pwd=user_pwd, user_email=user_email).save()
-        Wallet(user_id=user_id, account = 0.0).save()
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-            'username': user_name,
-            }))
+        #email cannot be signed up before
+        sql = 'select user_name from BSCapp_user where BSCapp_user.user_email=%s';
+        content = {}
+        cursor = connection.cursor()
+        try:
+            cursor.execute(sql, [user_email])
+            content = cursor.fetchall()
+            cursor.close()
+        except:
+            cursor.close()
+        if len(content)>0:
+            return HttpResponse(json.dumps({
+                'statCode': -2,
+                'errormessage': '邮箱已注册',
+                }))
+        else:
+            #the password and password input again have to be the same
+            if (user_pwd!=user_repwd):
+                return HttpResponse(json.dumps({
+                    'statCode': -3,
+                    'errormessage': '两次输入密码不一致',
+                    }))
+            User(user_id=user_id, user_name=user_name,
+                user_pwd=user_pwd, user_email=user_email).save()
+            Wallet(user_id=user_id, account = 0.0).save()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'username': user_name,
+                }))
 
 @csrf_exempt
-def userInfo(request):
+def UserInfo(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
+        account = GetAccount(user.user_id)
     except Exception:
         return render(request, "app/page-login.html")
     try:
         user.user_realName = request.POST['realname']
-        user.user_email = request.POST['email']
         user.user_phone = request.POST['phone']
         user.user_idcard = request.POST['idcard']
         user.user_company = request.POST['company']
@@ -140,6 +163,7 @@ def userInfo(request):
             'idcard':user.user_idcard,
             'company':user.user_company,
             'title':user.user_title,
+            'account':account,
             })
 
 @csrf_exempt
@@ -299,19 +323,13 @@ def buyableData(request):
         datas.append(data)
     return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
-
 @csrf_exempt
-def adminDataInfo(request):
+def AdminDataInfo(request):
     username = request.session['username']
     try:
         now_admin = Admin.objects.get(admin_name=username)
     except Exception:
         return render(request, "app/page-login.html")
-    # username = request.session['username']
-    # try:
-    #     user = Admin.objects.get(admin_name=username)
-    # except Exception:
-    #     return render(request, "app/page-login.html")
     # try if it is triggered by a confirmation of a review
     try:
         now_admin_id = now_admin.admin_id
@@ -387,7 +405,7 @@ def adminDataInfo(request):
     return render(request, "app/page-adminDataInfo.html", {'datas': datas})
 
 @csrf_exempt
-def upload(request):
+def Upload(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -396,9 +414,8 @@ def upload(request):
 
     return render(request, "app/page-upload.html", {"username": username})
 
-
 @csrf_exempt
-def uploadData(request):
+def UploadData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -471,8 +488,7 @@ def uploadData(request):
             if check_wallet_account != wallet.account:
                 wallet.account = check_wallet_account
         except Exception:
-            pass # something wrong in cursor, just pass, and use the waller.account
-
+            pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
     user_id = user.user_id
     context = {}
@@ -510,7 +526,7 @@ def uploadData(request):
     return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
-def order(request):
+def Order(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -546,7 +562,7 @@ def order(request):
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})
 
 @csrf_exempt
-def recharge(request):
+def Recharge(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -556,22 +572,49 @@ def recharge(request):
     if (request.method=="POST"):
         amount = request.POST["amount"]
         now_time = str(time())
-        # TODO: 1. generate new coin_id for the user_id
-        # to keep the coin_id is unique, we use time() in generate_uuid
+        #1. generate new coin_id for the user_id
+        # to keep the coin_id is unique, we use time() in generate_uuid amount means the recharge money
         new_coin_id = generate_uuid(user_id)
-        # default_coin_number = 1.0
 
-        Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
+        Coin(coin_id=new_coin_id, owner_id=user_id, is_spent=False,
              timestamp=now_time,coin_credit=amount).save()
 
-        # TODO: 2. modify wallet of the user_id
+        #get the wallet account before recharge
+        before_account = GetAccount(user_id)
+
+        #2. modify wallet of the user_id
         cursor = connection.cursor()
-        sql = 'update BSCapp_wallet set BSCapp_wallet.account = BSCapp_wallet.account + %s where BSCapp_wallet.user_id = %s;'
+        sql = 'update BSCapp_wallet set BSCapp_wallet.account = %s + %s where BSCapp_wallet.user_id = %s;'
         try:
-            cursor.execute(sql, [amount, user_id])
+            cursor.execute(sql, [before_account, amount, user_id])
+            cursor.close()
+        except Exception as e:
+            cursor.close()
+        #get the wallet account after recharge
+        after_account = GetAccount(user_id)
+
+        #3. add the recharge record into the recharge tables
+        recharge_id = generate_uuid(user_id)
+        cursor = connection.cursor()
+        sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
+        try:
+            timestamp = time()
+            cursor.execute(sql, [recharge_id, user_id, timestamp, amount, before_account, after_account, new_coin_id])
             cursor.close()
         except Exception as e:
             cursor.close()
 
-
     return render(request, "app/page-recharge.html", {'id':username})
+
+def GetAccount(user_id):
+    #get the wallet account before recharge
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content[0][0]
