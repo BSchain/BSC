@@ -458,22 +458,52 @@ def Recharge(request):
     if (request.method=="POST"):
         amount = request.POST["amount"]
         now_time = str(time())
-        # TODO: 1. generate new coin_id for the user_id
-        # to keep the coin_id is unique, we use time() in generate_uuid
+        #1. generate new coin_id for the user_id
+        # to keep the coin_id is unique, we use time() in generate_uuid amount means the recharge money
         new_coin_id = generate_uuid(user_id)
-        default_coin_number = 1.0
 
-        Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
-             timestamp=now_time,coin_credit=default_coin_number).save()
+        Coin(coin_id=new_coin_id, owner_id=user_id, is_spent=False,
+             timestamp=now_time,coin_credit=amount).save()
 
-        # TODO: 2. modify wallet of the user_id
+        #get the wallet account before recharge
+        before_account = GetAccount(user_id)
+        print(before_account)
+
+        #2. modify wallet of the user_id
         cursor = connection.cursor()
-        sql = 'update BSCapp_wallet set BSCapp_wallet.account = BSCapp_wallet.account + %s where BSCapp_wallet.user_id = %s;'
+        sql = 'update BSCapp_wallet set BSCapp_wallet.account = %s + %s where BSCapp_wallet.user_id = %s;'
         try:
-            cursor.execute(sql, [amount, user_id])
+            cursor.execute(sql, [before_account, amount, user_id])
             cursor.close()
         except Exception as e:
             cursor.close()
-            return context
+        #get the wallet account after recharge
+        after_account = GetAccount(user_id)
+        print(after_account)
+
+        #3. add the recharge record into the recharge tables
+        recharge_id = generate_uuid(user_id)
+        cursor = connection.cursor()
+        sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
+        try:
+            timestamp = time()
+            cursor.execute(sql, [recharge_id, user_id, timestamp, amount, before_account, after_account, new_coin_id])
+            cursor.close()
+        except Exception as e:
+            print(str(e))
+            cursor.close()
 
     return render(request, "app/page-recharge.html", {'id':username})
+
+def GetAccount(user_id):
+    #get the wallet account before recharge
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content[0][0]
