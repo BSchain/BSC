@@ -143,7 +143,7 @@ def userInfo(request):
             })
 
 @csrf_exempt
-def userAckData(request):
+def buyableData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -179,7 +179,7 @@ def userAckData(request):
         data['size'] = content[i][8]
         data['price'] = content[i][9]
         datas.append(data)
-    return render(request, "app/userAckData.html", {'datas': datas, 'id':username})
+    return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
 
 @csrf_exempt
