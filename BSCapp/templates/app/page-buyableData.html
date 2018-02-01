@@ -145,7 +145,7 @@
 												<td align="">  {{data.md5}}</td>
                                                 <td align="">  {{data.size}}</td>
 												<td align="">  {{data.price}}</td>
-                                                <td><button class="label label-success" id="{{data.dataid}}" onclick="reviewAcknowledge(this);">购买</button></td>
+                                                <td><button class="label label-success" id="{{data.dataid}}" price="{{ data.price }}" onclick="buyData(this);">购买</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>
