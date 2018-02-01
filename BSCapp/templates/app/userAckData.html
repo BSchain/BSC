@@ -116,34 +116,36 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">已通过数据</h3>
+									<h3 class="panel-title">可购买数据</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
+                                                <th align="center">出售者</th>
 												<th align="center">数据名</th>
 												<th align="center">数据简介</th>
 												<th align="center">上传时间</th>
 												<th align="center">数据标签</th>
-												<th align="center">数据状态</th>
-												<th align="center">数据购买量</th>
-												<th align="center">数据下载量</th>
+												<th align="center">数据md5</th>
+                                                <th align="center">数据大小(MB)</th>
 												<th align="center">数据标价</th>
+                                                <th align="center">购买数据</th>
 											</tr>
 										</thead>
 
 										<tbody>
 										{% for data in datas %}
 											<tr>
+                                                <td align="">  {{data.seller}}</td>
 												<td align="">  {{data.name}}</td>
 												<td align="">  {{data.info}}</td>
 												<td align="">  {{data.timestamp}}</td>
 												<td align="">  {{data.tag}}</td>
-												<td align="">  {{data.status}}</td>
-												<td align="">  {{data.purchase}}</td>
-												<td align="">  {{data.download}}</td>
+												<td align="">  {{data.md5}}</td>
+                                                <td align="">  {{data.size}}</td>
 												<td align="">  {{data.price}}</td>
+                                                <td><button class="label label-success" id="{{data.dataid}}" onclick="reviewAcknowledge(this);">购买</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>

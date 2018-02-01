@@ -1,6 +1,5 @@
 upload/
 blocks/
-transactions/
 *.pyc
 .idea
 BSC/__pycache__/*

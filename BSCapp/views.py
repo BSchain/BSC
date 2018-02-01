@@ -152,12 +152,13 @@ def userAckData(request):
     user_id = user.user_id
     context = {}
     cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
-            from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = %s;'
+    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
+          'data_tag, data_status, data_md5, data_size, data_price ' \
+          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1;'
     # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
     #             from BSCapp_data where BSCapp_data.data_status = %s;'
     try:
-        cursor.execute(sql, [user_id, '1'])
+        cursor.execute(sql, [user_id])
         content = cursor.fetchall()
         cursor.close()
     except :
@@ -167,23 +168,16 @@ def userAckData(request):
     len_content = len(content)
     for i in range(len_content):
         data = dict()
-        data['name'] = content[i][0]
-        data['info'] = content[i][1]
-        data['timestamp'] = content[i][2]
-        data['tag'] = content[i][3]
-        data['download'] = content[i][4]
-        # status = 0 审核中
-        # status = 1 审核通过
-        # status = 2 审核不通过
-        # data['status'] = content[i][5]
-        if content[i][5] == 0:
-            data['status'] = '审核中'
-        elif content[i][5] == 1:
-            data['status'] = '审核通过'
-        else:
-            data['status'] = '审核不通过'
-        data['purchase'] = content[i][6]
-        data['price'] = content[i][7]
+        data['data_id'] = content[i][0]
+        seller = User.objects.get(user_id=content[i][1]).user_name
+        data['seller'] = seller
+        data['name'] = content[i][2]
+        data['info'] = content[i][3]
+        data['timestamp'] = time_to_str(content[i][4])
+        data['tag'] = content[i][5]
+        data['md5'] = content[i][7]
+        data['size'] = content[i][8]
+        data['price'] = content[i][9]
         datas.append(data)
     return render(request, "app/userAckData.html", {'datas': datas, 'id':username})
 
@@ -310,7 +304,7 @@ def uploadData(request):
         data_info = request.POST['data_info']
         data_source = request.POST.getlist('data_source')[0]
         data_md5 = get_file_md5(data_path)
-        data_size = uploadFile.size
+        data_size = uploadFile.size / 1024
         data_price = request.POST['data_price']
 
         data_type = request.POST.getlist('data_type')[0]
@@ -380,7 +374,7 @@ def uploadData(request):
         data = dict()
         data['name'] = content[i][0]
         data['info'] = content[i][1]
-        data['timestamp'] = content[i][2]
+        data['timestamp'] = time_to_str(content[i][2])
         data['tag'] = content[i][3]
         data['download'] = content[i][4]
         # status = 0 审核中
@@ -430,7 +424,7 @@ def order(request):
         order['info'] = content[i][3]
         order['source'] = content[i][4]
         order['type'] = content[i][5]
-        order['timestamp'] = content[i][6]
+        order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         orders.append(order)
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})
