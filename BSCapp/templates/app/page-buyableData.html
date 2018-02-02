@@ -70,7 +70,7 @@
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
-								<li><a href="/index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
 						<!-- <li>
@@ -123,13 +123,13 @@
 										<thead>
 											<tr>
                                                 <th align="center">出售者</th>
-												<th align="center">数据名</th>
-												<th align="center">数据简介</th>
-                                                <th align="center"><button onclick = sortTime('time')>上传时间</button></th>
-												<th align="center">数据标签</th>
-												<th align="center">数据md5</th>
-                                                <th align="center">数据大小(MB)</th>
-												<th align="center">数据标价</th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_name')>数据名</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_info')>数据简介</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('timestamp')>上传时间</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_tag')>数据标签</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_md5')>数据md5</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_size')>数据大小(MB)</button></th>
+                                                <th align="center"><button value="change" onclick=sortBase('data_price')>数据标价</button></th>
                                                 <th align="center">购买数据</th>
 											</tr>
 										</thead>
@@ -170,6 +170,8 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>

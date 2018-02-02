@@ -1,12 +1,14 @@
-function sortTime(obj){
+function sortBase(obj){
     $.ajax("/BuyableData/", {
         dataType: 'json',
         type: 'POST',
         data: {
-          "type":'time'
+          "sort_name": obj
         }
       }).done(function(data){
           window.location.replace("/BuyableData/");
       })
     return;
 }
+
+

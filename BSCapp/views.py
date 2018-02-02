@@ -11,12 +11,18 @@ from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
 from time import time, localtime
 import BSCapp.root_chain.coin as COIN
+from BSCapp.function import *
 
 # Create your views here.
 
 @csrf_exempt
 def Index(request):
     request.session['username'] = ""
+    request.session['Admin_sort_name_and_type'] = ""
+    request.session['Buy_sort_name_and_type'] = ""
+    request.session['Order_sort_name_and_type'] = ""
+    request.session['Upload_sort_name_and_type'] = ""
+
     return render(request, "app/page-index.html")
 
 @csrf_exempt
@@ -41,6 +47,9 @@ def Login(request):
             tx.save_transaction()
 
             request.session['username'] = username
+            # add sort session for admin
+            request.session['Admin_sort_name_and_type'] = 'timestamp&DESC'
+
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'username': username,
@@ -68,6 +77,11 @@ def Login(request):
         tx.save_transaction()
 
         request.session['username'] = username
+        # add sort session for user
+        request.session['Buy_sort_name_and_type'] = 'timestamp&DESC'
+        request.session['Order_sort_name_and_type'] = 'timestamp&DESC'
+        request.session['Upload_sort_name_and_type'] = 'timestamp&DESC'
+
         return HttpResponse(json.dumps({
             'statCode': 0,
             'username': username,
@@ -169,6 +183,7 @@ def UserInfo(request):
 @csrf_exempt
 def BuyableData(request):
     username = request.session['username']
+
     try:
         user = User.objects.get(user_name=username)
     except Exception:
@@ -292,38 +307,44 @@ def BuyableData(request):
     except:
         pass
 
-
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price ' \
-          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 order by BSCapp_data.timestamp DESC;'
-    # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
-    #             from BSCapp_data where BSCapp_data.data_status = %s;'
+    table_name = 'BSCapp_data'
     try:
-        cursor.execute(sql, [buyer_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except :
-        cursor.close()
-        return context
-    print(content)
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['data_id'] = content[i][0]
-        seller = User.objects.get(user_id=content[i][1]).user_name
-        data['seller'] = seller
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['tag'] = content[i][5]
-        data['md5'] = content[i][7]
-        data['size'] = content[i][8]
-        data['price'] = content[i][9]
-        datas.append(data)
+        Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
+        result = Buy_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if(new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and new_sort_name != 'data_size' and
+                new_sort_name!='data_price'):
+
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC' # the same just ~
+        else:
+            new_sort_type = 'DESC' # default = DESC
+
+        request.session['Buy_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+                'statCode': 0,
+            }))
+    except Exception as e:
+        print(e)
+
+    Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
+    result = Buy_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    print(sort_sql)
+    datas = buyData_sql(buyer_id, sort_sql)
+    print(datas)
     return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
+
 
 @csrf_exempt
 def AdminDataInfo(request):
