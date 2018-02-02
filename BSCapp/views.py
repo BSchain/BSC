@@ -292,11 +292,12 @@ def BuyableData(request):
     except:
         pass
 
+
     context = {}
     cursor = connection.cursor()
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
           'data_tag, data_status, data_md5, data_size, data_price ' \
-          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1;'
+          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 order by BSCapp_data.timestamp DESC;'
     # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
     #             from BSCapp_data where BSCapp_data.data_status = %s;'
     try:
@@ -306,6 +307,7 @@ def BuyableData(request):
     except :
         cursor.close()
         return context
+    print(content)
     datas = []
     len_content = len(content)
     for i in range(len_content):
