@@ -176,6 +176,14 @@ def UserInfo(request):
             recharge['before_account'] = content[i][2]
             recharge['after_account'] = content[i][3]
             recharges.append(recharge)
+        paginator = Paginator(recharges, 10)
+        page = request.GET.get('page', 1)
+        try:
+            paged_recharges = paginator.page(page)
+        except PageNotAnInteger:
+            paged_recharges = paginator.page(1)
+        except EmptyPage:
+            paged_recharges = paginator.page(paginator.num_pages) 
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -188,7 +196,7 @@ def UserInfo(request):
             'account':account,
             'upload_data_num':upload_data_num,
             'purchase_data_num':purchase_data_num,
-            'recharges':recharges,
+            'recharges':paged_recharges,
             })
 
 @csrf_exempt
