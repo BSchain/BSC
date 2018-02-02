@@ -38,10 +38,9 @@ function downloadData(obj) {
               alert(data.message)
               var file = document.getElementById(obj.value);
               file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
-              alert(file.innerHTML)
+              alert(file.innerHTML )
               var download = document.getElementById("download")
               download.click()
-
           }
       })
     return;

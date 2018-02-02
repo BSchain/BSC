@@ -374,6 +374,7 @@ def BuyableData(request):
     datas = buyData_sql(buyer_id, sort_sql)
     # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
     paginator = Paginator(datas, 10)
+
     page = request.GET.get('page', 1)
     try:
         paged_datas = paginator.page(page)
@@ -382,7 +383,7 @@ def BuyableData(request):
     except EmptyPage:
         paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
-
+    # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -492,7 +493,7 @@ def AdminDataInfo(request):
     print(sort_sql)
     datas = adminData_sql(sort_sql)
 
-    paginator = Paginator(datas, 10)
+    paginator = Paginator(datas, 20)
     page = request.GET.get('page', 1)
     try:
         paged_datas = paginator.page(page)
@@ -501,7 +502,7 @@ def AdminDataInfo(request):
     except EmptyPage:
         paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
-
+    # return render(request, "app/page-adminDataInfo.html", {'datas': datas})
 @csrf_exempt
 def Upload(request):
     username = request.session['username']

@@ -17,7 +17,7 @@ def buyData_sql(buyer_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price ' \
+          'data_tag, data_status, data_md5, data_size, data_price, data_address ' \
           'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
 
     sql = sql + sort_sql
@@ -25,7 +25,8 @@ def buyData_sql(buyer_id, sort_sql):
         cursor.execute(sql, [buyer_id])
         content = cursor.fetchall()
         cursor.close()
-    except:
+    except Exception as e:
+        print(str(e))
         cursor.close()
         return context
     datas = []
@@ -42,6 +43,7 @@ def buyData_sql(buyer_id, sort_sql):
         data['md5'] = content[i][7]
         data['size'] = content[i][8]
         data['price'] = content[i][9]
+        data['address'] = content[i][10]
         datas.append(data)
     return datas
 
@@ -50,7 +52,7 @@ def orderData_sql(user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
+          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address from BSCapp_data \
           ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
 
     sql = sql + sort_sql
@@ -74,6 +76,7 @@ def orderData_sql(user_id, sort_sql):
         order['type'] = content[i][5]
         order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
+        order['address'] = content[i][8]
         orders.append(order)
     return orders
 
