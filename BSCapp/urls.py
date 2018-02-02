@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^AdminDataInfo/$',views.AdminDataInfo),
     url(r'^BuyableData/$',views.BuyableData),
     url(r'^Upload/$',views.Upload),
-    url(r'^UploadData/$',views.UploadData),
+    url(r'^MyData/$',views.MyData),
     url(r'^Order/$',views.Order),
     url(r'^Recharge/$',views.Recharge),
 ]

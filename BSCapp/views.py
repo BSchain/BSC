@@ -11,12 +11,17 @@ from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
 from time import time, localtime
 import BSCapp.root_chain.coin as COIN
+from BSCapp.function import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
 @csrf_exempt
 def Index(request):
     request.session['username'] = ""
+    request.session['Admin_sort_name_and_type'] = ""
+    request.session['Buy_sort_name_and_type'] = ""
+    request.session['Order_sort_name_and_type'] = ""
+
     return render(request, "app/page-index.html")
 
 @csrf_exempt
@@ -41,6 +46,9 @@ def Login(request):
             tx.save_transaction()
 
             request.session['username'] = username
+            # add sort session for admin
+            request.session['Admin_sort_name_and_type'] = 'timestamp&DESC'
+
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'username': username,
@@ -68,6 +76,11 @@ def Login(request):
         tx.save_transaction()
 
         request.session['username'] = username
+        # add sort session for user
+        request.session['Buy_sort_name_and_type'] = 'timestamp&DESC'
+        request.session['Order_sort_name_and_type'] = 'timestamp&DESC'
+        request.session['Upload_sort_name_and_type'] = 'timestamp&DESC'
+
         return HttpResponse(json.dumps({
             'statCode': 0,
             'username': username,
@@ -202,6 +215,7 @@ def UserInfo(request):
 @csrf_exempt
 def BuyableData(request):
     username = request.session['username']
+
     try:
         user = User.objects.get(user_name=username)
     except Exception:
@@ -215,7 +229,6 @@ def BuyableData(request):
         now_op = request.POST['op']
         if now_op == 'download':
             try:
-                print('data_id',now_data_id)
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
                 return HttpResponse(json.dumps({
                     'statCode': 0,
@@ -325,35 +338,42 @@ def BuyableData(request):
     except:
         pass
 
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price ' \
-          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1;'
-    # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
-    #             from BSCapp_data where BSCapp_data.data_status = %s;'
+
     try:
-        cursor.execute(sql, [buyer_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except :
-        cursor.close()
-        return context
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['data_id'] = content[i][0]
-        seller = User.objects.get(user_id=content[i][1]).user_name
-        data['seller'] = seller
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['tag'] = content[i][5]
-        data['md5'] = content[i][7]
-        data['size'] = content[i][8]
-        data['price'] = content[i][9]
-        datas.append(data)
+        Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
+        result = Buy_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if(new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
+                new_sort_name != 'timestamp' and new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and
+                new_sort_name != 'data_size' and new_sort_name!='data_price'):
+
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC' # the same just ~
+        else:
+            new_sort_type = 'DESC' # default = DESC
+
+        request.session['Buy_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+                'statCode': 0,
+            }))
+    except Exception as e:
+        print(e)
+
+    Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
+    result = Buy_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    table_name = 'BSCapp_data'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    datas = buyData_sql(buyer_id, sort_sql)
+    # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
     paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)
     try:
@@ -363,6 +383,7 @@ def BuyableData(request):
     except EmptyPage:
         paged_datas = paginator.page(paginator.num_pages) 
     return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
+
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -433,37 +454,45 @@ def AdminDataInfo(request):
     except Exception:
         pass
 
-    # else it is after logging in
-    cursor = connection.cursor()
-    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_source, data_type, data_status, data_price from BSCapp_data;'
     try:
-        cursor.execute(sql, [])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-        return {}
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['dataid'] = content[i][0]
-        seller = User.objects.get(user_id = content[i][1])
-        data['seller'] = seller.user_realName
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['source'] = content[i][5]
-        data['type'] = content[i][6]
-        if content[i][7] == 0:
-            data['status'] = '审核中'
-        elif content[i][7] == 1:
-            data['status'] = '审核通过'
+        Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
+        result = Admin_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
+                new_sort_name != 'data_status'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
         else:
-            data['status'] = '审核不通过'
-        data['price'] = content[i][8]
-        datas.append(data)
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Admin_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
+    result = Admin_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    if default_sort_name == 'user_id':
+        table_name = 'BSCapp_user'
+    else:
+        table_name = 'BSCapp_data'
+
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    print(sort_sql)
+    datas = adminData_sql(sort_sql)
+
     paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)
     try:
@@ -471,7 +500,7 @@ def AdminDataInfo(request):
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
+        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
 
 @csrf_exempt
@@ -484,7 +513,7 @@ def Upload(request):
     return render(request, "app/page-upload.html", {"username": username})
 
 @csrf_exempt
-def UploadData(request):
+def MyData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -559,48 +588,18 @@ def UploadData(request):
         except Exception:
             pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
+
     user_id = user.user_id
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price from BSCapp_data where BSCapp_data.user_id = %s ;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except :
-        cursor.close()
-        return context
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['name'] = content[i][0]
-        data['info'] = content[i][1]
-        data['timestamp'] = time_to_str(content[i][2])
-        data['tag'] = content[i][3]
-        data['download'] = content[i][4]
-        # status = 0 审核中
-        # status = 1 审核通过
-        # status = 2 审核不通过
-        # data['status'] = content[i][5]
-        if content[i][5] == 0:
-            data['status'] = '审核中'
-        elif content[i][5] == 1:
-            data['status'] = '审核通过'
-        else:
-            data['status'] = '审核不通过'
-        data['purchase'] = content[i][6]
-        data['price'] = content[i][7]
-        datas.append(data)
-        paginator = Paginator(datas, 10)
+    datas = uploadData_sql(user_id)
+    paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)
     try:
         paged_datas = paginator.page(page)
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
-    return render(request, "app/page-uploadData.html", {'datas': paged_datas, 'id':username})
+        paged_datas = paginator.page(paginator.num_pages)
+    return render(request, "app/page-myData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
 def Order(request):
@@ -610,32 +609,41 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
-          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
+
     try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
+        Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
+        result = Buy_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        # check name in data table
+        if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
+                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and new_sort_name != 'price'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Order_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
     except Exception as e:
-        cursor.close()
-        return context
-    orders = []
-    len_content = len(content)
-    for i in range(len_content):
-        order = dict()
-        order['dataid'] = content[i][0]
-        seller = User.objects.get(user_id=content[i][1])
-        order['seller'] = seller.user_name
-        order['name'] = content[i][2]
-        order['info'] = content[i][3]
-        order['source'] = content[i][4]
-        order['type'] = content[i][5]
-        order['timestamp'] = time_to_str(content[i][6])
-        order['price'] = content[i][7]
-        orders.append(order)
+        print(e)
+
+    Order_sort_name_and_type = request.session['Order_sort_name_and_type']
+    result = Order_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+    table_name = 'BSCapp_data'
+    if default_sort_name == 'price' or default_sort_name == 'timestamp':
+        table_name = 'BSCapp_transaction'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    orders = orderData_sql(user_id, sort_sql)
     paginator = Paginator(orders, 10)
     page = request.GET.get('page', 1)
     try:
@@ -643,8 +651,8 @@ def Order(request):
     except PageNotAnInteger:
         paged_orders = paginator.page(1)
     except EmptyPage:
-        paged_orders = paginator.page(paginator.num_pages) 
-    return render(request, "app/page-order.html", {'orders': paged_orders, 'id':username})
+        paged_orders = paginator.page(paginator.num_pages)
+    return render(request, "app/page-order.html", {'orders': paged_orders, 'id': username})
 
 @csrf_exempt
 def Recharge(request):
