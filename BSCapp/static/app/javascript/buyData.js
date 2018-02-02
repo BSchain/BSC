@@ -1,6 +1,6 @@
 function buyData(obj) {
     data_id = obj.value
-    $.ajax("/buyableData/", {
+    $.ajax("/BuyableData/", {
         dataType: 'json',
         type: 'POST',
         data: {
@@ -22,7 +22,7 @@ function buyData(obj) {
 
 function downloadData(obj) {
     data_id = obj.value
-    $.ajax("/buyableData/", {
+    $.ajax("/BuyableData/", {
         dataType: 'json',
         type: 'POST',
         data: {
@@ -36,7 +36,7 @@ function downloadData(obj) {
           }
           else{
               alert(data.message)
-              window.location.replace("/order/");
+              window.location.replace("/Order/");
           }
       })
     return;

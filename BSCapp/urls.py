@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^Signup/$',views.Signup),
     url(r'^UserInfo/$',views.UserInfo),
     url(r'^AdminDataInfo/$',views.AdminDataInfo),
-    url(r'^UserAckData/$',views.UserAckData),
+    url(r'^BuyableData/$',views.BuyableData),
     url(r'^Upload/$',views.Upload),
     url(r'^UploadData/$',views.UploadData),
     url(r'^Order/$',views.Order),
