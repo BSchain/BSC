@@ -70,7 +70,7 @@
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
-								<li><a href="/index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
 						<!-- <li>
@@ -86,16 +86,16 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/index/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li><a href="/Index/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/index/" class="">登出</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/adminDataInfo/" class="active"><i class="lnr lnr-dice"></i> <span>数据审核</span></a></li>
+						<li><a href="/AdminDataInfo/" class="active"><i class="lnr lnr-dice"></i> <span>数据审核</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -156,7 +156,7 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %} 
+										{% for i in datas.paginator.page_range %}
 											{% if datas.number == i %}
 											<li class="active">
 												<span>{{ i }}
@@ -167,13 +167,13 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} 
+											{% endif %}
 										{% endfor %}
 										{% if datas.has_next %}
 											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
-										{% endif %}	
+										{% endif %}
 									</ul>
 									{% endif %}
 								</div>

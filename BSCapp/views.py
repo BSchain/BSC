@@ -183,7 +183,7 @@ def UserInfo(request):
         except PageNotAnInteger:
             paged_recharges = paginator.page(1)
         except EmptyPage:
-            paged_recharges = paginator.page(paginator.num_pages) 
+            paged_recharges = paginator.page(paginator.num_pages)
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -328,7 +328,7 @@ def BuyableData(request):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price ' \
+          'data_tag, data_status, data_md5, data_size, data_price, data_address ' \
           'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1;'
     # sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price \
     #             from BSCapp_data where BSCapp_data.data_status = %s;'
@@ -353,6 +353,7 @@ def BuyableData(request):
         data['md5'] = content[i][7]
         data['size'] = content[i][8]
         data['price'] = content[i][9]
+        data['address'] = content[i][10]
         datas.append(data)
     paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)
@@ -361,7 +362,7 @@ def BuyableData(request):
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
+        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
@@ -471,7 +472,7 @@ def AdminDataInfo(request):
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
+        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
 
 @csrf_exempt
@@ -495,12 +496,12 @@ def UploadData(request):
         if not uploadFile:
             return render(request, "app/page-upload.html")
         # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
-        data_path = os.path.join("upload",uploadFile.name)
+        data_path = os.path.join("BSCapp/static/upload",uploadFile.name)
         destination = open(data_path,'wb+')
         for chunk in uploadFile.chunks():      # 分块写入文件
             destination.write(chunk)
         destination.close()
-        data_address = data_path + generate_uuid(uploadFile.name)
+        data_address = os.path.join("../static/upload",uploadFile.name)
         data_name = request.POST["data_name"]   #获取数据信息
         data_id = generate_uuid(data_name)
         user_id = user.user_id
@@ -599,7 +600,7 @@ def UploadData(request):
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
+        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-uploadData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
@@ -643,7 +644,7 @@ def Order(request):
     except PageNotAnInteger:
         paged_orders = paginator.page(1)
     except EmptyPage:
-        paged_orders = paginator.page(paginator.num_pages) 
+        paged_orders = paginator.page(paginator.num_pages)
     return render(request, "app/page-order.html", {'orders': paged_orders, 'id':username})
 
 @csrf_exempt
@@ -700,7 +701,7 @@ def Recharge(request):
         notice_type = 3
         timestamp = datetime.datetime.utcnow().timestamp()
         notice_info = '{} 在 {} 充值成功'.format(username, time_to_str(timestamp))
-        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type, 
+        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
                                        notice_info, timestamp])
     return render(request, "app/page-recharge.html", {'id':username})
 
