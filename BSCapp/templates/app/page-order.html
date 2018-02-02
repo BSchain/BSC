@@ -129,6 +129,7 @@
                                                 <th align="center">数据来源</th>
                                                 <th align="center">数据类型</th>
 												<th align="center">购买价格</th>
+												<th align="center">下载链接</th>
 											</tr>
 										</thead>
 
@@ -142,6 +143,9 @@
                                                 <td align="">  {{order.source}}</td>
                                                 <td align="">  {{order.type}}</td>
 												<td align="">  {{order.price}}</td>
+												<td align="">
+													<a class="fa fa-download" href="{{order.data_address}}" download="{{order.name}}">下载</a>
+												</td>
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -155,7 +159,7 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in orders.paginator.page_range %} 
+										{% for i in orders.paginator.page_range %}
 											{% if orders.number == i %}
 											<li class="active">
 												<span>{{ i }}
@@ -166,13 +170,13 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} 
+											{% endif %}
 										{% endfor %}
 										{% if orders.has_next %}
 											<li><a href="?page={{ orders.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
-										{% endif %}	
+										{% endif %}
 									</ul>
 									{% endif %}
 								</div>

@@ -614,13 +614,14 @@ def Order(request):
     context = {}
     cursor = connection.cursor()
     sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
+          'BSCapp_data.data_type, BSCapp_data.data_address, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
           ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
     try:
         cursor.execute(sql, [user_id])
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
+        print(str(e))
         cursor.close()
         return context
     orders = []
@@ -634,8 +635,9 @@ def Order(request):
         order['info'] = content[i][3]
         order['source'] = content[i][4]
         order['type'] = content[i][5]
-        order['timestamp'] = time_to_str(content[i][6])
-        order['price'] = content[i][7]
+        order['data_address'] = content[i][6]
+        order['timestamp'] = time_to_str(content[i][7])
+        order['price'] = content[i][8]
         orders.append(order)
     paginator = Paginator(orders, 10)
     page = request.GET.get('page', 1)
