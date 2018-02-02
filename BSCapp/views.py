@@ -21,7 +21,6 @@ def Index(request):
     request.session['Admin_sort_name_and_type'] = ""
     request.session['Buy_sort_name_and_type'] = ""
     request.session['Order_sort_name_and_type'] = ""
-    request.session['Upload_sort_name_and_type'] = ""
 
     return render(request, "app/page-index.html")
 
@@ -306,16 +305,16 @@ def BuyableData(request):
     except:
         pass
 
-    table_name = 'BSCapp_data'
+
     try:
         Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
         default_sort_name = result[0]
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
-        if(new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
-                new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and new_sort_name != 'data_size' and
-                new_sort_name!='data_price'):
+        if(new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
+                new_sort_name != 'timestamp' and new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and
+                new_sort_name != 'data_size' and new_sort_name!='data_price'):
 
             new_sort_name = 'timestamp'
 
@@ -337,6 +336,7 @@ def BuyableData(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
+    table_name = 'BSCapp_data'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = buyData_sql(buyer_id, sort_sql)
@@ -391,37 +391,45 @@ def AdminDataInfo(request):
     except Exception:
         pass
 
-    # else it is after logging in
-    cursor = connection.cursor()
-    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_source, data_type, data_status, data_price from BSCapp_data;'
     try:
-        cursor.execute(sql, [])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-        return {}
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['dataid'] = content[i][0]
-        seller = User.objects.get(user_id = content[i][1])
-        data['seller'] = seller.user_realName
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['source'] = content[i][5]
-        data['type'] = content[i][6]
-        if content[i][7] == 0:
-            data['status'] = '审核中'
-        elif content[i][7] == 1:
-            data['status'] = '审核通过'
+        Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
+        result = Admin_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
+                new_sort_name != 'data_status'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
         else:
-            data['status'] = '审核不通过'
-        data['price'] = content[i][8]
-        datas.append(data)
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Admin_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
+    result = Admin_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    if default_sort_name == 'user_id':
+        table_name = 'BSCapp_user'
+    else:
+        table_name = 'BSCapp_data'
+
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    print(sort_sql)
+    datas = adminData_sql(sort_sql)
+    print(datas)
     return render(request, "app/page-adminDataInfo.html", {'datas': datas})
 
 @csrf_exempt
@@ -435,7 +443,7 @@ def Upload(request):
     return render(request, "app/page-upload.html", {"username": username})
 
 @csrf_exempt
-def UploadData(request):
+def MyData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -510,40 +518,11 @@ def UploadData(request):
         except Exception:
             pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
+
     user_id = user.user_id
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price from BSCapp_data where BSCapp_data.user_id = %s ;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except :
-        cursor.close()
-        return context
-    datas = []
-    len_content = len(content)
-    for i in range(len_content):
-        data = dict()
-        data['name'] = content[i][0]
-        data['info'] = content[i][1]
-        data['timestamp'] = time_to_str(content[i][2])
-        data['tag'] = content[i][3]
-        data['download'] = content[i][4]
-        # status = 0 审核中
-        # status = 1 审核通过
-        # status = 2 审核不通过
-        # data['status'] = content[i][5]
-        if content[i][5] == 0:
-            data['status'] = '审核中'
-        elif content[i][5] == 1:
-            data['status'] = '审核通过'
-        else:
-            data['status'] = '审核不通过'
-        data['purchase'] = content[i][6]
-        data['price'] = content[i][7]
-        datas.append(data)
-    return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
+    datas = uploadData_sql(user_id)
+
+    return render(request, "app/page-myData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
 def Order(request):
@@ -561,8 +540,8 @@ def Order(request):
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
         # check name in data table
-        if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
-                new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'price'):
+        if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
+                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and new_sort_name != 'price'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -585,7 +564,6 @@ def Order(request):
     table_name = 'BSCapp_data'
     if default_sort_name == 'price' or default_sort_name == 'timestamp':
         table_name = 'BSCapp_transaction'
-
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     orders = orderData_sql(user_id, sort_sql)

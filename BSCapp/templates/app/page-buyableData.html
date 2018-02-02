@@ -99,7 +99,7 @@
                         <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
 						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
-                        <li><a href="/UploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+                        <li><a href="/MyData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
                         <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
@@ -122,7 +122,7 @@
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center">出售者</th>
+                                                <th align="center" onclick=buySortBase('user_id')>出售者</th>
                                                 <th align="center" onclick=buySortBase('data_name')>数据名</th>
                                                 <th align="center" onclick=buySortBase('data_info')>数据简介</th>
                                                 <th align="center" onclick=buySortBase('timestamp')>上传时间</th>

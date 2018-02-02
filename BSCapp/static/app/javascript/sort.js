@@ -24,3 +24,16 @@ function orderSortBase(obj){
     return;
 }
 
+function adminDataSortBase(obj){
+    $.ajax("/AdminDataInfo/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/AdminDataInfo/");
+      })
+    return;
+}
+

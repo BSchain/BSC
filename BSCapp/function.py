@@ -72,8 +72,80 @@ def orderData_sql(user_id, sort_sql):
         order['info'] = content[i][3]
         order['source'] = content[i][4]
         order['type'] = content[i][5]
-        # order['timestamp'] = time_to_str(content[i][6])
-        order['timestamp'] = content[i][6]
+        order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         orders.append(order)
     return orders
+
+def uploadData_sql(user_id):
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price ' \
+          'from BSCapp_data where BSCapp_data.user_id = %s order by timestamp DESC;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except:
+        cursor.close()
+        return context
+    datas = []
+    len_content = len(content)
+    for i in range(len_content):
+        data = dict()
+        data['name'] = content[i][0]
+        data['info'] = content[i][1]
+        data['timestamp'] = time_to_str(content[i][2])
+        data['tag'] = content[i][3]
+        data['download'] = content[i][4]
+        # status = 0 审核中
+        # status = 1 审核通过
+        # status = 2 审核不通过
+        # data['status'] = content[i][5]
+        if content[i][5] == 0:
+            data['status'] = '审核中'
+        elif content[i][5] == 1:
+            data['status'] = '审核通过'
+        else:
+            data['status'] = '审核不通过'
+        data['purchase'] = content[i][6]
+        data['price'] = content[i][7]
+        datas.append(data)
+    return datas
+
+def adminData_sql(sort_sql):
+    cursor = connection.cursor()
+    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
+          'data_source, data_type, data_status, data_price from BSCapp_data '
+    sql = sql + sort_sql
+    print(sql)
+    try:
+        cursor.execute(sql)
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print('edadsadas')
+        cursor.close()
+        return {}
+    print(content)
+    datas = []
+    len_content = len(content)
+    for i in range(len_content):
+        data = dict()
+        data['dataid'] = content[i][0]
+        seller = User.objects.get(user_id=content[i][1])
+        data['seller'] = seller.user_realName
+        data['name'] = content[i][2]
+        data['info'] = content[i][3]
+        data['timestamp'] = time_to_str(content[i][4])
+        data['source'] = content[i][5]
+        data['type'] = content[i][6]
+        if content[i][7] == 0:
+            data['status'] = '审核中'
+        elif content[i][7] == 1:
+            data['status'] = '审核通过'
+        else:
+            data['status'] = '审核不通过'
+        data['price'] = content[i][8]
+        datas.append(data)
+    return datas
