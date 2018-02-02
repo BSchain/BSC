@@ -117,15 +117,15 @@
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center">出售者</th>
-												<th align="center">数据名</th>
-                                                <th align="center">数据简介</th>
-												<th align="center">上传时间</th>
-                                                <th align="center">数据来源</th>
-                                                <th align="center">数据类型</th>
-                                                <th align="center">数据标价</th>
-												<th align="center">数据状态</th>
-                                                <th align="center">审核操作</th>
+                                                <th align="center" onclick=adminDataSortBase('user_id')>出售者</th>
+												<th align="center" onclick=adminDataSortBase('data_name')>数据名</th>
+                                                <th align="center" onclick=adminDataSortBase('data_info')>数据简介</th>
+												<th align="center" onclick=adminDataSortBase('timestamp')>上传时间</th>
+                                                <th align="center" onclick=adminDataSortBase('data_source')>数据来源</th>
+                                                <th align="center" onclick=adminDataSortBase('data_type')>数据类型</th>
+                                                <th align="center" onclick=adminDataSortBase('data_price')>数据标价</th>
+												<th align="center" onclick=adminDataSortBase('data_status')>数据状态</th>
+                                                <th align="center" >审核操作</th>
 											</tr>
 										</thead>
 
@@ -203,6 +203,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 	<script src="../static/app/javascript/review.js"></script>
+    <script src="../static/app/javascript/sort.js"></script>
 </body>
 
 </html>

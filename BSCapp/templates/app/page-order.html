@@ -99,7 +99,7 @@
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
 						<li><a href="/Order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
-                        <li><a href="/UploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+                        <li><a href="/MyData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
                         <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
@@ -122,14 +122,14 @@
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center">出售者</th>
-												<th align="center">数据名称</th>
-                                                <th align="center">数据简介</th>
-												<th align="center">购买时间</th>
-                                                <th align="center">数据来源</th>
-                                                <th align="center">数据类型</th>
-												<th align="center">购买价格</th>
-												<th align="center">下载链接</th>
+                                                <th align="center" onclick=orderSortBase('user_id')>出售者</th>
+                                                <th align="center" onclick=orderSortBase('data_name')>数据名称</th>
+                                                <th align="center" onclick=orderSortBase('data_info')>数据简介</th>
+                                                <th align="center" onclick=orderSortBase('timestamp')>购买时间</th>
+                                                <th align="center" onclick=orderSortBase('data_source')>数据来源</th>
+                                                <th align="center" onclick=orderSortBase('data_type')>数据类型</th>
+                                                <th align="center" onclick=orderSortBase('price')>购买价格</th>
+                                                <th align="center">下载链接</th>
 											</tr>
 										</thead>
 
@@ -205,6 +205,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+    <script src="../static/app/javascript/sort.js"></script>
 </body>
 
 </html>
