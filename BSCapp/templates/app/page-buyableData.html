@@ -70,7 +70,7 @@
 								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
-								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+								<li><a href="/index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
 						<!-- <li>
@@ -86,21 +86,21 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/UserInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li><a href="/userInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">个人信息</a></li>
-									<li><a href="/Index/" class="">登出</a></li>
+									<li><a href="/userInfo/" class="">个人信息</a></li>
+									<li><a href="/index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/UserAckData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
-						<li><a href="/Order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
-                        <li><a href="/UploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
-                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
+                        <li><a href="/upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/buyableData/" class="active"><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
+						<li><a href="/order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/uploadData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
+                        <li><a href="/recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -116,32 +116,37 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">历史订单</h3>
+									<h3 class="panel-title">可购买数据</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
                                                 <th align="center">出售者</th>
-												<th align="center">数据名称</th>
-                                                <th align="center">数据简介</th>
-												<th align="center">购买时间</th>
-                                                <th align="center">数据来源</th>
-                                                <th align="center">数据类型</th>
-												<th align="center">购买价格</th>
+												<th align="center">数据名</th>
+												<th align="center">数据简介</th>
+												<th align="center">上传时间</th>
+												<th align="center">数据标签</th>
+												<th align="center">数据md5</th>
+                                                <th align="center">数据大小(MB)</th>
+												<th align="center">数据标价</th>
+                                                <th align="center">购买数据</th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for order in orders %}
+										{% for data in datas %}
 											<tr>
-                                                <td align="">  {{order.seller}}</td>
-												<td align="">  {{order.name}}</td>
-                                                <td align="">  {{order.info}}</td>
-												<td align="">  {{order.timestamp}}</td>
-                                                <td align="">  {{order.source}}</td>
-                                                <td align="">  {{order.type}}</td>
-												<td align="">  {{order.price}}</td>
+                                                <td align="">  {{data.seller}}</td>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
+												<td align="">  {{data.timestamp}}</td>
+												<td align="">  {{data.tag}}</td>
+												<td align="">  {{data.md5}}</td>
+                                                <td align="">  {{data.size}}</td>
+												<td align=""> {{data.price}}</td>
+                                                <td><button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}} " onclick="buyData(this);">购买</button>
+                                                    <button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}} " onclick="downloadData(this);">下载</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -173,6 +178,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 	<script src="../static/app/javascript/orderManage.js"></script>
+    <script src="../static/app/javascript/buyData.js"></script>
 </body>
 
 </html>

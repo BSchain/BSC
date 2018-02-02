@@ -1,5 +1,5 @@
 function reviewAcknowledge(obj) {
-    $.ajax("/adminDataInfo/", {
+    $.ajax("/AdminDataInfo/", {
         dataType: 'json',
         type: 'POST',
         data: {
@@ -7,13 +7,13 @@ function reviewAcknowledge(obj) {
           "op": "1",
         }
       }).done(function(data){
-          window.location.replace("/adminDataInfo/");
+          window.location.replace("/AdminDataInfo/");
       })
     return;
 }
 
 function reviewReject(obj) {
-    $.ajax("/adminDataInfo/", {
+    $.ajax("/AdminDataInfo/", {
         dataType: 'json',
         type: 'POST',
         data: {
@@ -21,7 +21,7 @@ function reviewReject(obj) {
           "op": "2",
         }
       }).done(function(data){
-          window.location.replace("/adminDataInfo/");
+          window.location.replace("/AdminDataInfo/");
       })
     return;
 }
