@@ -173,7 +173,7 @@ def UserInfo(request):
         #get the recharge record
         content = {}
         cursor = connection.cursor()
-        sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s;'
+        sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
         try:
             cursor.execute(sql, [user.user_id])
             content = cursor.fetchall()
