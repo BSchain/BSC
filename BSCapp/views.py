@@ -36,7 +36,7 @@ def Login(request):
                         }))
         else:
             tx = TX.Transaction()
-            tx.new_transaction(in_coins=[], out_coins=[],timestamp=time(), action='login',
+            tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
                                seller=a.admin_id, buyer='',data_uuid='',credit=0.0, reviewer='')
             tx.save_transaction()
 
@@ -63,7 +63,7 @@ def Login(request):
             }))
     else:
         tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=[],timestamp=time(), action='login',
+        tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
                            seller=u.user_id, buyer='',data_uuid='',credit=0.0, reviewer='')
         tx.save_transaction()
 
@@ -251,7 +251,7 @@ def BuyableData(request):
 
             # generate new transactions
             tx = TX.Transaction()
-            tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(time()), action='buy',
+            tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(datetime.datetime.utcnow().timestamp()), action='buy',
                                seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
             tx.save_transaction()
 
@@ -265,9 +265,9 @@ def BuyableData(request):
             # insert new coin for buyer and seller
             if left_credit > 0:
                 Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
-                     is_spent=False, timestamp=str(time()), coin_credit=left_credit).save()
+                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=left_credit).save()
             Coin(coin_id=seller_out_coin.to_dict()['coin_uuid'], owner_id=seller_id,
-                     is_spent=False, timestamp=str(time()), coin_credit=now_data_price).save()
+                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=now_data_price).save()
 
             # update the wallet of buyer and seller
             sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
@@ -279,7 +279,7 @@ def BuyableData(request):
 
             # generate a new transaction
             Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
-                        data_id=now_data_id, timestamp=str(time()), price=now_data_price).save()
+                        data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price).save()
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'message': '购买成功!'
@@ -356,26 +356,47 @@ def AdminDataInfo(request):
         elif now_data_status == 2:
             now_action = 'review_reject'
 
-        now_time = str(time())
+        now_time = str(datetime.datetime.utcnow().timestamp())
         tx = TX.Transaction()
         tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
                            seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
         tx.save_transaction()
-
+        # insert the review into history and save a notice
         try:
             review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
             review_history.review_status = now_data_status
             review_history.timestamp = now_time
             review_history.save()
-
+            # generate notice for a successful recharge
+            cursor = connection.cursor()
+            notice_insert = 'insert into BSCapp_notice \
+                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
+                values \
+                (%s, %s, %s, %s, %s, 0, %s);'
+            sender_id = now_admin_id
+            notice_id = generate_uuid(sender_id)
+            receiver_id = now_data.user_id
+            timestamp = datetime.datetime.utcnow().timestamp()
+            if now_action == 'review_pass':
+                notice_type = 1
+                notice_info = '{} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp), now_data.data_name)
+            else:
+                notice_type = 2
+                notice_info = '{} 在 {} 审核 {} 不通过'.format(now_admin.admin_name, time_to_str(timestamp), now_data.data_name)
+            cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
+                                           notice_info, timestamp])
+            cursor.close()
             return HttpResponse(json.dumps({
                 'statCode': 0,
             }))
-        except Exception:
+        except Exception as e:
+            print(e)
+            cursor.close()
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 }))
+
     except Exception:
         pass
 
@@ -427,7 +448,6 @@ def Upload(request):
         user = User.objects.get(user_name=username)
     except Exception:
         return render(request, "app/page-login.html")
-
     return render(request, "app/page-upload.html", {"username": username})
 
 @csrf_exempt
@@ -460,13 +480,13 @@ def UploadData(request):
         data_type = request.POST.getlist('data_type')[0]
         data_tag = request.POST.getlist('data_tag')[0]
 
-        Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(time()),
+        Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
              data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
 
-        now_time = str(time())
+        now_time = str(datetime.datetime.utcnow().timestamp())
         # TODO: 1. generate new coin_id for the user_id
-        # to keep the coin_id is unique, we use time() in generate_uuid
+        # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
         default_coin_number = 1.0
 
@@ -603,9 +623,9 @@ def Recharge(request):
     user_id = user.user_id
     if (request.method=="POST"):
         amount = request.POST["amount"]
-        now_time = str(time())
+        now_time = str(datetime.datetime.utcnow().timestamp())
         #1. generate new coin_id for the user_id
-        # to keep the coin_id is unique, we use time() in generate_uuid amount means the recharge money
+        # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid amount means the recharge money
         new_coin_id = generate_uuid(user_id)
 
         Coin(coin_id=new_coin_id, owner_id=user_id, is_spent=False,
@@ -630,12 +650,25 @@ def Recharge(request):
         cursor = connection.cursor()
         sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
         try:
-            timestamp = time()
+            timestamp = datetime.datetime.utcnow().timestamp()
             cursor.execute(sql, [recharge_id, user_id, timestamp, amount, before_account, after_account, new_coin_id])
             cursor.close()
         except Exception as e:
             cursor.close()
-
+        # 4. generate notice for a successful recharge
+        cursor = connection.cursor()
+        notice_insert = 'insert into BSCapp_notice \
+            (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
+            values \
+            (%s, %s, %s, %s, %s, 0, %s)'
+        sender_id = 'system'
+        notice_id = generate_uuid(sender_id)
+        receiver_id = user_id
+        notice_type = 3
+        timestamp = datetime.datetime.utcnow().timestamp()
+        notice_info = '{} 在 {} 充值成功'.format(username, time_to_str(timestamp))
+        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type, 
+                                       notice_info, timestamp])
     return render(request, "app/page-recharge.html", {'id':username})
 
 def GetAccount(user_id):
