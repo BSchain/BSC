@@ -124,13 +124,13 @@
 									<div class="profile-stat">
 										<div class="row">
 											<div class="col-md-4 stat-item">
-												{{order_cal}} <span>Orders</span>
+												{{upload_data_num}} <span>已上传数据</span>
 											</div>
 											<div class="col-md-4 stat-item">
-												{{finished_order_cal}} <span>Finished</span>
+												{{purchase_data_num}} <span>已购买数据</span>
 											</div>
 											<div class="col-md-4 stat-item">
-												{{account}} <span>Money</span>
+												{{account}} <span>账户余额</span>
 											</div>
 										</div>
 									</div>
@@ -141,8 +141,6 @@
 									<div class="profile-info" id="profile">
 										<h4 class="heading">用户信息</h4>
 										<ul class="list-unstyled list-justify">
-
-                                            <li>账户余额 <span id="balancetext"> {{ balance }}</span></li>
 											<li>姓名 <span id="nametext">{{name}}</span></li>
 											<li>邮箱 <span id="emailtext">{{email}}</span></li>
 											<li>电话 <span id="phonetext">{{phone}}</span></li>
@@ -168,46 +166,68 @@
 							<!-- END LEFT COLUMN -->
 							<!-- RIGHT COLUMN -->
 							<div class="profile-right">
-								<h4 class="heading">Samuel's Awards</h4>
-								<!-- AWARDS -->
-								<div class="awards">
-									<div class="row">
-										<div class="col-md-3 col-sm-6">
-											<div class="award-item">
-												<div class="hexagon">
-													<span class="lnr lnr-sun award-icon"></span>
-												</div>
-												<span>Most Bright Idea</span>
-											</div>
-										</div>
-										<div class="col-md-3 col-sm-6">
-											<div class="award-item">
-												<div class="hexagon">
-													<span class="lnr lnr-clock award-icon"></span>
-												</div>
-												<span>Most On-Time</span>
-											</div>
-										</div>
-										<div class="col-md-3 col-sm-6">
-											<div class="award-item">
-												<div class="hexagon">
-													<span class="lnr lnr-magic-wand award-icon"></span>
-												</div>
-												<span>Problem Solver</span>
-											</div>
-										</div>
-										<div class="col-md-3 col-sm-6">
-											<div class="award-item">
-												<div class="hexagon">
-													<span class="lnr lnr-heart award-icon"></span>
-												</div>
-												<span>Most Loved</span>
-											</div>
-										</div>
+								<!-- RECHARGE RECORD -->
+								<div class="panel">
+									<div class="panel-heading">
+										<h3 class="panel-title">充值记录</h3>
 									</div>
-									<div class="text-center"><a href="#" class="btn btn-default">See all awards</a></div>
+									<div class="panel-body">
+										<table class="table table-striped">
+											<thead>
+												<tr>
+	                                                <th align="center">充值时间</th>
+													<th align="center">充值金额</th>
+	                                                <th align="center">充值前账户余额</th>
+													<th align="center">充值后账户余额</th>
+												</tr>
+											</thead>
+
+											<tbody>
+											{% for recharge in recharges %}
+												<tr>
+	                                                <td align="">  {{recharge.timestamp}}</td>
+													<td align="">  {{recharge.credits}}</td>
+	                                                <td align="">  {{recharge.before_account}}</td>
+													<td align="">  {{recharge.after_account}}</td>
+												</tr>
+											{% endfor %}
+											</tbody>
+										</table>
+
+										{% if recharges.has_other_pages %}
+											<ul class="pagination">
+											{% if recharges.has_previous %}
+											<li>
+												<a href="?page={{ recharges.previous_page_number }}">&laquo;</a>
+											</li>
+											{% else %}
+											<li class="disabled">
+												<span>&laquo;</span>
+											</li>
+											{% endif %} {% for i in recharges.paginator.page_range %} {% if recharges.number == i %}
+											<li class="active">
+												<span>{{ i }}
+													<span class="sr-only">(current)</span>
+												</span>
+											</li>
+											{% else %}
+											<li>
+												<a href="?page={{ i }}">{{ i }}</a>
+											</li>
+											{% endif %} {% endfor %} {% if recharges.has_next %}
+											<li>
+												<a href="?page={{ recharges.next_page_number }}">&raquo;</a>
+											</li>
+											{% else %}
+											<li class="disabled">
+												<span>&raquo;</span>
+											</li>
+											{% endif %}
+									</ul>
+									{% endif %}
+									</div>
 								</div>
-								<!-- END AWARDS -->
+								<!-- END RECORD -->
 								<!-- TABBED CONTENT -->
 								<div class="custom-tabs-line tabs-line-bottom left-aligned">
 									<ul class="nav" role="tablist">

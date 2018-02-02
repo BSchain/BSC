@@ -90,9 +90,9 @@ class Review(models.Model):
 
 class Notice(models.Model):
     notice_id = models.CharField(max_length=64,primary_key=True) # 通知信息id
-    sender_id = models.CharField(max_length=64) # 信息发送方id (系统id 设置为generate_uuid(SCOPE, name=''+time()))
+    sender_id = models.CharField(max_length=64) # 信息发送方id (系统id 设置为generate_uuid(SCOPE, name='system'+time()))
     receiver_id = models.CharField(max_length=64)  # 信息接收方id
-    notice_type = models.IntegerField() # 信息类型 (0: 用户提交新的数据待审核， 1: 数据审核通过信息，  2: 数据审核不通过信息， 3: 用户充值成功信息， 4: 用户购买数据成功信息， 5:系统信息 )
-    notice_info = models.CharField(max_length=200) # 通知信息内容 (sender_name + '在'+time() + switch notince_type: (different_notices)  需要提前进行构造)
+    notice_type = models.IntegerField() # 信息类型 ( 1: 数据审核通过信息，  2: 数据审核不通过信息， 3: 用户充值成功信息， 4:系统信息 )
+    notice_info = models.CharField(max_length=200) # 通知信息内容 (sender_name + '在'+time() + switch notice_type: (different_notices)  需要提前进行构造)
     if_check = models.BooleanField(default=False) # 用户是否查看信息
     timestamp = models.CharField(max_length=32) # 此通知信息生成的时间

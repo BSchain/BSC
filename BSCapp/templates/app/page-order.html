@@ -146,6 +146,35 @@
 										{% endfor %}
 										</tbody>
 									</table>
+									{% if orders.has_other_pages %}
+									<ul class="pagination">
+										{% if orders.has_previous %}
+      										<li><a href="?page={{ orders.previous_page_number }}">&laquo;</a></li>
+									 	{% else %}
+											<li class="disabled">
+											<span>&laquo;</span>
+											</li>
+										{% endif %}
+										{% for i in orders.paginator.page_range %} 
+											{% if orders.number == i %}
+											<li class="active">
+												<span>{{ i }}
+													<span class="sr-only">(current)</span>
+												</span>
+											</li>
+											{% else %}
+											<li>
+												<a href="?page={{ i }}">{{ i }}</a>
+											</li>
+											{% endif %} 
+										{% endfor %}
+										{% if orders.has_next %}
+											<li><a href="?page={{ orders.next_page_number }}">&raquo;</a></li>
+									 	{% else %}
+											<li class="disabled"><span>&raquo;</span></li>
+										{% endif %}	
+									</ul>
+									{% endif %}
 								</div>
 							</div>
 							<!-- END TABLE STRIPED -->
