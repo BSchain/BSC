@@ -91,7 +91,7 @@
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/index/" class="">登出</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
@@ -156,7 +156,7 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %} 
+										{% for i in datas.paginator.page_range %}
 											{% if datas.number == i %}
 											<li class="active">
 												<span>{{ i }}
@@ -167,13 +167,13 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} 
+											{% endif %}
 										{% endfor %}
 										{% if datas.has_next %}
 											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
-										{% endif %}	
+										{% endif %}
 									</ul>
 									{% endif %}
 								</div>

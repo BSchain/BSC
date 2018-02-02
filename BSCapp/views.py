@@ -196,7 +196,7 @@ def UserInfo(request):
         except PageNotAnInteger:
             paged_recharges = paginator.page(1)
         except EmptyPage:
-            paged_recharges = paginator.page(paginator.num_pages) 
+            paged_recharges = paginator.page(paginator.num_pages)
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -338,7 +338,6 @@ def BuyableData(request):
     except:
         pass
 
-
     try:
         Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
@@ -381,7 +380,7 @@ def BuyableData(request):
     except PageNotAnInteger:
         paged_datas = paginator.page(1)
     except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages) 
+        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
 
 
@@ -524,12 +523,12 @@ def MyData(request):
         if not uploadFile:
             return render(request, "app/page-upload.html")
         # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
-        data_path = os.path.join("upload",uploadFile.name)
+        data_path = os.path.join("BSCapp/static/upload",uploadFile.name)
         destination = open(data_path,'wb+')
         for chunk in uploadFile.chunks():      # 分块写入文件
             destination.write(chunk)
         destination.close()
-        data_address = data_path + generate_uuid(uploadFile.name)
+        data_address = os.path.join("../static/upload",uploadFile.name)
         data_name = request.POST["data_name"]   #获取数据信息
         data_id = generate_uuid(data_name)
         user_id = user.user_id
@@ -609,7 +608,6 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
-
     try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
@@ -708,7 +706,7 @@ def Recharge(request):
         notice_type = 3
         timestamp = datetime.datetime.utcnow().timestamp()
         notice_info = '{} 在 {} 充值成功'.format(username, time_to_str(timestamp))
-        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type, 
+        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
                                        notice_info, timestamp])
     return render(request, "app/page-recharge.html", {'id':username})
 

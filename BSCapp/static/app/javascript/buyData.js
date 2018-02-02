@@ -21,7 +21,7 @@ function buyData(obj) {
 }
 
 function downloadData(obj) {
-    data_id = obj.value
+    data_id = obj.value;
     $.ajax("/BuyableData/", {
         dataType: 'json',
         type: 'POST',
@@ -36,7 +36,12 @@ function downloadData(obj) {
           }
           else{
               alert(data.message)
-              window.location.replace("/Order/");
+              var file = document.getElementById(obj.value);
+              file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
+              alert(file.innerHTML)
+              var download = document.getElementById("download")
+              download.click()
+
           }
       })
     return;

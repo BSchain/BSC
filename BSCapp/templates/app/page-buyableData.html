@@ -145,8 +145,11 @@
 												<td align="">  {{data.md5}}</td>
                                                 <td align="">  {{data.size}}</td>
 												<td align=""> {{data.price}}</td>
-                                                <td><button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}} " onclick="buyData(this);">购买</button>
-                                                    <button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}} " onclick="downloadData(this);">下载</button></td>
+                                                <td>
+													<button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button>
+                                                    <button class="btn-primary" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
+													<div id="{{data.data_id}}"> </div>
+												</td>
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -160,7 +163,7 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %} 
+										{% for i in datas.paginator.page_range %}
 											{% if datas.number == i %}
 											<li class="active">
 												<span>{{ i }}
@@ -171,13 +174,13 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} 
+											{% endif %}
 										{% endfor %}
 										{% if datas.has_next %}
 											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
-										{% endif %}	
+										{% endif %}
 									</ul>
 									{% endif %}
 								</div>
