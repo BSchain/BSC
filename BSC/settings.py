@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bsc_db',
         'USER':'root',
-        'PASSWORD':'zfonemore',
+        'PASSWORD':'newpass',
         'HOST':'127.0.0.1',
         'PORT':'3306',
     }
