@@ -14,7 +14,7 @@ function buyData(obj) {
           }
           else{
               alert(data.message)
-              window.location.replace("/order/");
+              window.location.replace("/Order/");
           }
       })
     return;
