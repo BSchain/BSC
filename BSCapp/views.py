@@ -137,8 +137,7 @@ def UserInfo(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
-        account = GetAccount(user.user_id)
-    except Exception:
+    except Exception as e:
         return render(request, "app/page-login.html")
     try:
         user.user_realName = request.POST['realname']
@@ -152,9 +151,32 @@ def UserInfo(request):
             'statCode': 0
             }))
     except Exception as e:
-        user_balance = Wallet.objects.get(user_id = user.user_id).account
+        #get the account of user and accurate to the second decimal place
+        account = round(GetAccount(user.user_id),2)
+        #get the number of upload data
+        upload_data_num = len(GetUploadData(user.user_id))
+        #get the number of purchase data
+        purchase_data_num = len(GetPurchaseData(user.user_id))
+        #get the recharge record
+        content = {}
+        cursor = connection.cursor()
+        sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s;'
+        try:
+            cursor.execute(sql, [user.user_id])
+            content = cursor.fetchall()
+            cursor.close()
+        except Exception as e:
+            cursor.close()
+        recharges = []
+        print(len(content))
+        for i in range(len(content)):
+            recharge = dict()
+            recharge['timestamp'] = time_to_str(content[i][0])
+            recharge['credits'] = content[i][1]
+            recharge['before_account'] = content[i][2]
+            recharge['after_account'] = content[i][3]
+            recharges.append(recharge)
         return render(request, "app/page-userInfo.html",{
-            'balance': user_balance,
             'id': user.user_name,
             'name': user.user_realName,
             'email':user.user_email,
@@ -164,6 +186,9 @@ def UserInfo(request):
             'company':user.user_company,
             'title':user.user_title,
             'account':account,
+            'upload_data_num':upload_data_num,
+            'purchase_data_num':purchase_data_num,
+            'recharges':recharges,
             })
 
 @csrf_exempt
@@ -607,7 +632,7 @@ def Recharge(request):
     return render(request, "app/page-recharge.html", {'id':username})
 
 def GetAccount(user_id):
-    #get the wallet account before recharge
+    #get the wallet account
     content = {}
     cursor = connection.cursor()
     sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
@@ -618,3 +643,29 @@ def GetAccount(user_id):
     except Exception as e:
         cursor.close()
     return content[0][0]
+
+def GetUploadData(user_id):
+    #get upload data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
+
+def GetPurchaseData(user_id):
+    #get purchase data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_purchase where BSCapp_purchase.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
