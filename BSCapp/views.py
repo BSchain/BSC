@@ -11,7 +11,7 @@ from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
 from time import time, localtime
 import BSCapp.root_chain.coin as COIN
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
 @csrf_exempt
@@ -321,7 +321,15 @@ def BuyableData(request):
         data['size'] = content[i][8]
         data['price'] = content[i][9]
         datas.append(data)
-    return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
+    paginator = Paginator(datas, 10)
+    page = request.GET.get('page', 1)
+    try:
+        paged_datas = paginator.page(page)
+    except PageNotAnInteger:
+        paged_datas = paginator.page(1)
+    except EmptyPage:
+        paged_datas = paginator.page(paginator.num_pages) 
+    return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -402,7 +410,15 @@ def AdminDataInfo(request):
             data['status'] = '审核不通过'
         data['price'] = content[i][8]
         datas.append(data)
-    return render(request, "app/page-adminDataInfo.html", {'datas': datas})
+    paginator = Paginator(datas, 10)
+    page = request.GET.get('page', 1)
+    try:
+        paged_datas = paginator.page(page)
+    except PageNotAnInteger:
+        paged_datas = paginator.page(1)
+    except EmptyPage:
+        paged_datas = paginator.page(paginator.num_pages) 
+    return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
 
 @csrf_exempt
 def Upload(request):
@@ -523,7 +539,15 @@ def UploadData(request):
         data['purchase'] = content[i][6]
         data['price'] = content[i][7]
         datas.append(data)
-    return render(request, "app/page-uploadData.html", {'datas': datas, 'id':username})
+        paginator = Paginator(datas, 10)
+    page = request.GET.get('page', 1)
+    try:
+        paged_datas = paginator.page(page)
+    except PageNotAnInteger:
+        paged_datas = paginator.page(1)
+    except EmptyPage:
+        paged_datas = paginator.page(paginator.num_pages) 
+    return render(request, "app/page-uploadData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
 def Order(request):
@@ -559,7 +583,15 @@ def Order(request):
         order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         orders.append(order)
-    return render(request, "app/page-order.html", {'orders': orders, 'id':username})
+    paginator = Paginator(orders, 10)
+    page = request.GET.get('page', 1)
+    try:
+        paged_orders = paginator.page(page)
+    except PageNotAnInteger:
+        paged_orders = paginator.page(1)
+    except EmptyPage:
+        paged_orders = paginator.page(paginator.num_pages) 
+    return render(request, "app/page-order.html", {'orders': paged_orders, 'id':username})
 
 @csrf_exempt
 def Recharge(request):
