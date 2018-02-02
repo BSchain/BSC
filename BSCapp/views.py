@@ -167,7 +167,7 @@ def UserInfo(request):
             })
 
 @csrf_exempt
-def buyableData(request):
+def BuyableData(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
