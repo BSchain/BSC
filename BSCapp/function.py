@@ -121,16 +121,13 @@ def adminData_sql(sort_sql):
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
           'data_source, data_type, data_status, data_price from BSCapp_data '
     sql = sql + sort_sql
-    print(sql)
     try:
         cursor.execute(sql)
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print('edadsadas')
         cursor.close()
         return {}
-    print(content)
     datas = []
     len_content = len(content)
     for i in range(len_content):

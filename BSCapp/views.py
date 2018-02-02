@@ -493,7 +493,7 @@ def AdminDataInfo(request):
     print(sort_sql)
     datas = adminData_sql(sort_sql)
 
-    paginator = Paginator(datas, 20)
+    paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)
     try:
         paged_datas = paginator.page(page)
