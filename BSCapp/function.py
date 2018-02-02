@@ -44,3 +44,36 @@ def buyData_sql(buyer_id, sort_sql):
         data['price'] = content[i][9]
         datas.append(data)
     return datas
+
+def orderData_sql(user_id, sort_sql):
+
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
+          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
+          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
+
+    sql = sql + sort_sql
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+        return context
+    orders = []
+    len_content = len(content)
+    for i in range(len_content):
+        order = dict()
+        order['dataid'] = content[i][0]
+        seller = User.objects.get(user_id=content[i][1])
+        order['seller'] = seller.user_name
+        order['name'] = content[i][2]
+        order['info'] = content[i][3]
+        order['source'] = content[i][4]
+        order['type'] = content[i][5]
+        # order['timestamp'] = time_to_str(content[i][6])
+        order['timestamp'] = content[i][6]
+        order['price'] = content[i][7]
+        orders.append(order)
+    return orders

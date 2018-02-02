@@ -197,7 +197,6 @@ def BuyableData(request):
         now_op = request.POST['op']
         if now_op == 'download':
             try:
-                print('data_id',now_data_id)
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
                 return HttpResponse(json.dumps({
                     'statCode': 0,
@@ -340,9 +339,7 @@ def BuyableData(request):
 
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    print(sort_sql)
     datas = buyData_sql(buyer_id, sort_sql)
-    print(datas)
     return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
 
@@ -556,32 +553,43 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
-    context = {}
-    cursor = connection.cursor()
-    sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price from BSCapp_data \
-          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s;'
+
     try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
+        Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
+        result = Buy_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        # check name in data table
+        if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'price'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Order_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
     except Exception as e:
-        cursor.close()
-        return context
-    orders = []
-    len_content = len(content)
-    for i in range(len_content):
-        order = dict()
-        order['dataid'] = content[i][0]
-        seller = User.objects.get(user_id=content[i][1])
-        order['seller'] = seller.user_name
-        order['name'] = content[i][2]
-        order['info'] = content[i][3]
-        order['source'] = content[i][4]
-        order['type'] = content[i][5]
-        order['timestamp'] = time_to_str(content[i][6])
-        order['price'] = content[i][7]
-        orders.append(order)
+        print(e)
+
+    Order_sort_name_and_type = request.session['Order_sort_name_and_type']
+    result = Order_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+    table_name = 'BSCapp_data'
+    if default_sort_name == 'price' or default_sort_name == 'timestamp':
+        table_name = 'BSCapp_transaction'
+
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    orders = orderData_sql(user_id, sort_sql)
+
     return render(request, "app/page-order.html", {'orders': orders, 'id':username})
 
 @csrf_exempt
