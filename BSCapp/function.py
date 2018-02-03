@@ -8,6 +8,7 @@
 from django.db import connection
 from BSCapp.root_chain.utils import *
 from BSCapp.models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def generate_sort_sql(table_name, sort_name, sort_type):
     sort_sql = 'order by ' + table_name + '.' + sort_name+' '+sort_type+';'
@@ -36,7 +37,7 @@ def buyData_sql(request, buyer_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
+        print(e)
         cursor.close()
         return context
     datas = []
@@ -137,7 +138,7 @@ def uploadData_sql(user_id):
         datas.append(data)
     return datas
 
-def adminData_sql(sort_sql, request):
+def adminData_sql(request, sort_sql):
     cursor = connection.cursor()
     search_sql = ''
     try:
@@ -160,7 +161,6 @@ def adminData_sql(sort_sql, request):
     except Exception as e:
         cursor.close()
         return {}
-    print(content)
     datas = []
     len_content = len(content)
     for i in range(len_content):
@@ -182,3 +182,131 @@ def adminData_sql(sort_sql, request):
         data['price'] = content[i][8]
         datas.append(data)
     return datas
+
+def rechargeData_sql(user_id):
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    recharges = []
+    for i in range(len(content)):
+        recharge = dict()
+        recharge['timestamp'] = time_to_str(content[i][0])
+        recharge['credits'] = content[i][1]
+        recharge['before_account'] = content[i][2]
+        recharge['after_account'] = content[i][3]
+        recharges.append(recharge)
+    return recharges
+
+
+def noticeData_sql(user_id, sort_sql):
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select notice_id, sender_id, notice_type, notice_info, timestamp, if_check from BSCapp_notice where receiver_id = %s '
+
+    sql = sql + sort_sql
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(e)
+        cursor.close()
+        return context
+    notices = []
+    len_content = len(content)
+    unread_number = 0
+    unread_notices = []
+    show_unread_number = 5
+
+    for i in range(len_content):
+        notice = dict()
+        notice['notice_id'] = content[i][0]
+        sender_id = content[i][1]
+        notice_type = content[i][2]
+        if notice_type == 1 or notice_type == 2: # review pass or reject
+            notice['sender'] = Admin.objects.get(admin_id=sender_id).admin_name
+        elif notice_type == 3: # recharge success
+            notice['sender'] = '系统'
+        notice['info'] = content[i][3]
+        notice['timestamp'] = time_to_str(content[i][4])
+        if_check= content[i][5]
+        if if_check == True:
+            notice['if_check'] = '已读'
+        else:
+            notice['if_check'] = '未读'
+            unread_number+=1
+            if (unread_number <= show_unread_number):
+                unread_notices.append(notice)
+        notices.append(notice)
+
+    return notices, unread_notices, unread_number
+
+
+def pagingData(request, datas, each_num):
+    paginator = Paginator(datas, each_num)
+    page = request.GET.get('page', 1)
+    try:
+        paged_recharges = paginator.page(page)
+    except PageNotAnInteger:
+        paged_recharges = paginator.page(1)
+    except EmptyPage:
+        paged_recharges = paginator.page(paginator.num_pages)
+    return paged_recharges
+
+
+def get_notices(request, user_id):
+    Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
+    result = Notice_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    table_name = 'BSCapp_notice'
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    notices, unread_notices, unread_number = noticeData_sql(user_id, sort_sql)
+    return notices, unread_notices, unread_number
+
+
+def GetAccount(user_id):
+    #get the wallet account
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content[0][0]
+
+def GetUploadData(user_id):
+    #get upload data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
+
+def GetPurchaseData(user_id):
+    #get purchase data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_purchase where BSCapp_purchase.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
