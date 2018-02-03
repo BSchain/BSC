@@ -684,8 +684,12 @@ def Order(request):
     paged_orders = pagingData(request, orders, each_num=10)
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
+    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, order_sort_list)
+
     return render(request, "app/page-order.html", {'orders': paged_orders,
                                                    'id': username,
+                                                   'sort_class':sort_class,
                                                    'unread_number':unread_number,
                                                    'unread_notices':unread_notices})
 
