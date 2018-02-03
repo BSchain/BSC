@@ -474,21 +474,9 @@ def AdminDataInfo(request):
     paged_datas = pagingData(request, datas, each_num=10)
 
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
-    
-@csrf_exempt
-def Upload(request):
-    username = request.session['username']
-    try:
-        user = User.objects.get(user_name=username)
-    except Exception:
-        return render(request, "app/page-login.html")
-    notices, unread_notices, unread_number = get_notices(request, user.user_id)
-    return render(request, "app/page-upload.html", {"username": username,
-                                                    'unread_number':unread_number,
-                                                    'unread_notices':unread_notices})
 
 @csrf_exempt
-def MyData(request):
+def Upload(request):
     username = request.session['username']
     try:
         user = User.objects.get(user_name=username)
@@ -516,6 +504,22 @@ def MyData(request):
 
         data_type = request.POST.getlist('data_type')[0]
         data_tag = request.POST.getlist('data_tag')[0]
+
+        #find out whether there is same data uploaded before
+        content = {}
+        cursor = connection.cursor()
+        sql = 'select data_id from BSCapp_data where BSCapp_data.data_md5 = %s'
+        try:
+            # get the data where md5 is the same as upload data
+            cursor.execute(sql, [data_md5])
+            content = cursor.fetchall()
+        except Exception:
+            pass # something wrong in cursor, just pass, and use the wallet.account
+        #if there are some data with the same md5, then return error statCode
+        if (len(content)>0):
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+            }))
 
         Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
@@ -563,6 +567,21 @@ def MyData(request):
         except Exception:
             pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    notices, unread_notices, unread_number = get_notices(request, user.user_id)
+    return render(request, "app/page-upload.html", {"username": username,
+                                                    'unread_number':unread_number,
+                                                    'unread_notices':unread_notices})
+
+@csrf_exempt
+def MyData(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
 
     user_id = user.user_id
     datas = uploadData_sql(user_id)

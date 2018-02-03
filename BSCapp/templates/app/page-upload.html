@@ -113,7 +113,7 @@
 				<div class="container-fluid">
 					<h3 class="page-title">上传新的数据</h3>
 					<div class="row">
-						<form class="form-auth-small" enctype="multipart/form-data" method = "POST" onsubmit="checkUpload()" action="/MyData/">
+						<form class="form-auth-small" enctype="multipart/form-data">
 							<div class="col-md-12">
 								<div class="panel">
 									<div class="panel-heading">
@@ -146,7 +146,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control" name="data_source">
+													<select class="form-control" id="data_source">
 														<option value="北京航空航天大学">北京航空航天大学</option>
 														<option value="北京大学">北京大学</option>
 														<option value="清华大学">清华大学</option>
@@ -161,7 +161,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control" name="data_type">
+													<select class="form-control" id="data_type">
 														<option value="excel">excel</option>
 														<option value="csv">csv</option>
 														<option value="mp3">mp3</option>
@@ -176,7 +176,7 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control" name="data_tag">
+													<select class="form-control" id="data_tag">
 														<option value="交通">交通</option>
 														<option value="医疗">医疗</option>
 														<option value="教育">教育</option>
@@ -198,7 +198,7 @@
 										<div class="form-group">
 										　　　	<input type="file" id="file" name="file" /> <br />
 										</div>
-										<button type="submit" class="btn btn-primary " style="float:right"> 上传 </button>
+										<button type="button" class="btn btn-primary" onclick="checkUpload()" style="float:right"> 上传 </button>
 									</div>
 								</div>
 							</div>
