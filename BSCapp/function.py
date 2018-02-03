@@ -8,6 +8,7 @@
 from django.db import connection
 from BSCapp.root_chain.utils import *
 from BSCapp.models import *
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def generate_sort_sql(table_name, sort_name, sort_type):
     sort_sql = 'order by ' + table_name + '.' + sort_name+' '+sort_type+';'
@@ -36,7 +37,7 @@ def buyData_sql(request, buyer_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(str(e))
+        print(e)
         cursor.close()
         return context
     datas = []
@@ -160,7 +161,6 @@ def adminData_sql(sort_sql, request):
     except Exception as e:
         cursor.close()
         return {}
-    print(content)
     datas = []
     len_content = len(content)
     for i in range(len_content):
@@ -182,3 +182,74 @@ def adminData_sql(sort_sql, request):
         data['price'] = content[i][8]
         datas.append(data)
     return datas
+
+def rechargeData_sql(user_id):
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    recharges = []
+    for i in range(len(content)):
+        recharge = dict()
+        recharge['timestamp'] = time_to_str(content[i][0])
+        recharge['credits'] = content[i][1]
+        recharge['before_account'] = content[i][2]
+        recharge['after_account'] = content[i][3]
+        recharges.append(recharge)
+    return recharges
+
+def pagingData(request, datas, each_num):
+    paginator = Paginator(datas, each_num)
+    page = request.GET.get('page', 1)
+    try:
+        paged_recharges = paginator.page(page)
+    except PageNotAnInteger:
+        paged_recharges = paginator.page(1)
+    except EmptyPage:
+        paged_recharges = paginator.page(paginator.num_pages)
+    return paged_recharges
+
+
+def GetAccount(user_id):
+    #get the wallet account
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content[0][0]
+
+def GetUploadData(user_id):
+    #get upload data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
+
+def GetPurchaseData(user_id):
+    #get purchase data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select data_id from BSCapp_purchase where BSCapp_purchase.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content

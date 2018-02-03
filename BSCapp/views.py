@@ -171,32 +171,9 @@ def UserInfo(request):
         #get the number of purchase data
         purchase_data_num = len(GetPurchaseData(user.user_id))
         #get the recharge record
-        content = {}
-        cursor = connection.cursor()
-        sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
-        try:
-            cursor.execute(sql, [user.user_id])
-            content = cursor.fetchall()
-            cursor.close()
-        except Exception as e:
-            cursor.close()
-        recharges = []
-        print(len(content))
-        for i in range(len(content)):
-            recharge = dict()
-            recharge['timestamp'] = time_to_str(content[i][0])
-            recharge['credits'] = content[i][1]
-            recharge['before_account'] = content[i][2]
-            recharge['after_account'] = content[i][3]
-            recharges.append(recharge)
-        paginator = Paginator(recharges, 10)
-        page = request.GET.get('page', 1)
-        try:
-            paged_recharges = paginator.page(page)
-        except PageNotAnInteger:
-            paged_recharges = paginator.page(1)
-        except EmptyPage:
-            paged_recharges = paginator.page(paginator.num_pages)
+        recharges = rechargeData_sql(user.user_id)
+        paged_recharges = pagingData(request, recharges, each_num = 10)
+
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -371,19 +348,12 @@ def BuyableData(request):
     table_name = 'BSCapp_data'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    datas = buyData_sql(request, buyer_id, sort_sql)
-    # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
-    paginator = Paginator(datas, 10)
 
-    page = request.GET.get('page', 1)
-    try:
-        paged_datas = paginator.page(page)
-    except PageNotAnInteger:
-        paged_datas = paginator.page(1)
-    except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages)
+    datas = buyData_sql(request, buyer_id, sort_sql)
+
+    paged_datas = pagingData(request, datas, each_num= 10)
+
     return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
-    # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -491,17 +461,9 @@ def AdminDataInfo(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(sort_sql, request)
+    paged_datas = pagingData(request, datas, each_num=10)
 
-    paginator = Paginator(datas, 10)
-    page = request.GET.get('page', 1)
-    try:
-        paged_datas = paginator.page(page)
-    except PageNotAnInteger:
-        paged_datas = paginator.page(1)
-    except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
-    # return render(request, "app/page-adminDataInfo.html", {'datas': datas})
     
 @csrf_exempt
 def Upload(request):
@@ -591,14 +553,7 @@ def MyData(request):
 
     user_id = user.user_id
     datas = uploadData_sql(user_id)
-    paginator = Paginator(datas, 10)
-    page = request.GET.get('page', 1)
-    try:
-        paged_datas = paginator.page(page)
-    except PageNotAnInteger:
-        paged_datas = paginator.page(1)
-    except EmptyPage:
-        paged_datas = paginator.page(paginator.num_pages)
+    paged_datas = pagingData(request, datas, each_num=10)
     return render(request, "app/page-myData.html", {'datas': paged_datas, 'id':username})
 
 @csrf_exempt
@@ -643,14 +598,8 @@ def Order(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     orders = orderData_sql(request, user_id, sort_sql)
-    paginator = Paginator(orders, 10)
-    page = request.GET.get('page', 1)
-    try:
-        paged_orders = paginator.page(page)
-    except PageNotAnInteger:
-        paged_orders = paginator.page(1)
-    except EmptyPage:
-        paged_orders = paginator.page(paginator.num_pages)
+    paged_orders = pagingData(request, orders, each_num=10)
+
     return render(request, "app/page-order.html", {'orders': paged_orders, 'id': username})
 
 @csrf_exempt
@@ -709,43 +658,5 @@ def Recharge(request):
         notice_info = '{} 在 {} 充值成功'.format(username, time_to_str(timestamp))
         cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
                                        notice_info, timestamp])
+
     return render(request, "app/page-recharge.html", {'id':username})
-
-def GetAccount(user_id):
-    #get the wallet account
-    content = {}
-    cursor = connection.cursor()
-    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-    return content[0][0]
-
-def GetUploadData(user_id):
-    #get upload data
-    content = {}
-    cursor = connection.cursor()
-    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-    return content
-
-def GetPurchaseData(user_id):
-    #get purchase data
-    content = {}
-    cursor = connection.cursor()
-    sql = 'select data_id from BSCapp_purchase where BSCapp_purchase.user_id = %s;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-    return content
