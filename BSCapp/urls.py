@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^MyData/$',views.MyData),
     url(r'^Order/$',views.Order),
     url(r'^Recharge/$',views.Recharge),
+    url(r'^Notify/$',views.Notify),
 ]

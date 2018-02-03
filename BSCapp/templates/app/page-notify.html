@@ -87,18 +87,18 @@
 					<ul class="nav">
 						<li><a href="/UserInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse">
+							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse in">
 								<ul class="nav">
 									<li><a href="/UserInfo/" class="">个人信息</a></li>
-                                    <li><a href="/Notify/" class="">通知中心</a></li>
+                                    <li><a href="/Notify/" class="active">通知中心</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
-						<li><a href="/Order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
                         <li><a href="/MyData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
                         <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
@@ -116,60 +116,51 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">历史订单</h3>
+									<h3 class="panel-title">通知中心</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >出售者</th>
-                                                <th align="center" onclick=orderSortBase('data_name')>数据名称</th>
-                                                <th align="center" onclick=orderSortBase('data_info')>数据简介</th>
-                                                <th align="center" onclick=orderSortBase('timestamp')>购买时间</th>
-                                                <th align="center" onclick=orderSortBase('data_source')>数据来源</th>
-                                                <th align="center" onclick=orderSortBase('data_type')>数据类型</th>
-                                                <th align="center" onclick=orderSortBase('price')>购买价格</th>
-                                                <th align="center">下载链接</th>
+                                                <th align="center" >消息发送方</th>
+                                                <th align="center" onclick=notifyDataSortBase('timestamp')>通知时间</th>
+                                                <th align="center" onclick=notifyDataSortBase('notice_info')>消息内容</th>
+                                                <th align="center" onclick=notifyDataSortBase('if_check')>是否查看</th>
+                                                <th align="center">操作</th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for order in orders %}
+										{% for notice in notices %}
 											<tr>
-                                                <td align="">  {{order.seller}}</td>
-												<td align="">  {{order.name}}</td>
-                                                <td align="">  {{order.info}}</td>
-												<td align="">  {{order.timestamp}}</td>
-                                                <td align="">  {{order.source}}</td>
-                                                <td align="">  {{order.type}}</td>
-												<td align="">  {{order.price}}</td>
-												<td align="">
-													<a class="fa fa-download" href="{{order.address}}" download="{{order.name}}">下载</a>
-												</td>
+                                                <td align="">  {{notice.sender}}</td>
+												<td align="">  {{notice.timestamp}}</td>
+                                                <td align="">  {{notice.info}}</td>
+                                                {% if notice.if_check == '已读' %}
+                                                    <td align="" bgcolor="#7fffd4">  {{notice.if_check}}</td>
+                                                {% else %}
+                                                    <td align="" bgcolor="#faebd7">  {{notice.if_check}}</td>
+                                                {% endif %}
+                                                <td>
+                                                    <button class="label label-success" id="{{notice.notice_id}}" onclick="read_notice(this);">已查看</button>
+                                                    <button class="label label-danger" id="{{notice.notice_id}}" onclick="unread_notice(this);">未查看</button>
+                                                </td>
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/Order/">
-											<select id="searchBase" name="searchBase">
-												<option value="data_name">数据名</option>
-												<option value="data_info">数据简介</option>
-											</select>
-											<input type="text" id="searchField" name="searchField" value="">
-											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
-										</form>
 									</table>
-									{% if orders.has_other_pages %}
+									{% if notices.has_other_pages %}
 									<ul class="pagination">
-										{% if orders.has_previous %}
-      										<li><a href="?page={{ orders.previous_page_number }}">&laquo;</a></li>
+										{% if notices.has_previous %}
+      										<li><a href="?page={{ notices.previous_page_number }}">&laquo;</a></li>
 									 	{% else %}
 											<li class="disabled">
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in orders.paginator.page_range %}
-											{% if orders.number == i %}
+										{% for i in notices.paginator.page_range %}
+											{% if notices.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -181,8 +172,8 @@
 											</li>
 											{% endif %}
 										{% endfor %}
-										{% if orders.has_next %}
-											<li><a href="?page={{ orders.next_page_number }}">&raquo;</a></li>
+										{% if notices.has_next %}
+											<li><a href="?page={{ notices.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
 										{% endif %}
@@ -215,6 +206,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
+    <script src="../static/app/javascript/notice.js"></script>
 </body>
 
 </html>

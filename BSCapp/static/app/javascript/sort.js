@@ -37,3 +37,16 @@ function adminDataSortBase(obj){
     return;
 }
 
+
+function notifyDataSortBase(obj){
+    $.ajax("/Notify/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/Notify/");
+      })
+    return;
+}

@@ -21,6 +21,7 @@ def Index(request):
     request.session['Admin_sort_name_and_type'] = ""
     request.session['Buy_sort_name_and_type'] = ""
     request.session['Order_sort_name_and_type'] = ""
+    request.session['Notice_sort_name_and_type'] = ""
 
     return render(request, "app/page-index.html")
 
@@ -80,6 +81,7 @@ def Login(request):
         request.session['Buy_sort_name_and_type'] = 'timestamp&DESC'
         request.session['Order_sort_name_and_type'] = 'timestamp&DESC'
         request.session['Upload_sort_name_and_type'] = 'timestamp&DESC'
+        request.session['Notice_sort_name_and_type'] = "timestamp&DESC"
 
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -174,6 +176,8 @@ def UserInfo(request):
         recharges = rechargeData_sql(user.user_id)
         paged_recharges = pagingData(request, recharges, each_num = 10)
 
+        notices, unread_notices, unread_number = get_notices(request, user.user_id)
+
         return render(request, "app/page-userInfo.html",{
             'id': user.user_name,
             'name': user.user_realName,
@@ -187,6 +191,8 @@ def UserInfo(request):
             'upload_data_num':upload_data_num,
             'purchase_data_num':purchase_data_num,
             'recharges':paged_recharges,
+            'unread_number': unread_number,
+            'unread_notices': unread_notices
             })
 
 @csrf_exempt
@@ -352,8 +358,12 @@ def BuyableData(request):
     datas = buyData_sql(request, buyer_id, sort_sql)
 
     paged_datas = pagingData(request, datas, each_num= 10)
+    notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
-    return render(request, "app/page-buyableData.html", {'datas': paged_datas, 'id':username})
+    return render(request, "app/page-buyableData.html", {'datas': paged_datas,
+                                                         'id':username,
+                                                         'unread_number':unread_number,
+                                                         'unread_notices':unread_notices})
 
 @csrf_exempt
 def AdminDataInfo(request):
@@ -460,7 +470,7 @@ def AdminDataInfo(request):
 
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    datas = adminData_sql(sort_sql, request)
+    datas = adminData_sql(request,sort_sql)
     paged_datas = pagingData(request, datas, each_num=10)
 
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
@@ -472,7 +482,10 @@ def Upload(request):
         user = User.objects.get(user_name=username)
     except Exception:
         return render(request, "app/page-login.html")
-    return render(request, "app/page-upload.html", {"username": username})
+    notices, unread_notices, unread_number = get_notices(request, user.user_id)
+    return render(request, "app/page-upload.html", {"username": username,
+                                                    'unread_number':unread_number,
+                                                    'unread_notices':unread_notices})
 
 @csrf_exempt
 def MyData(request):
@@ -554,7 +567,13 @@ def MyData(request):
     user_id = user.user_id
     datas = uploadData_sql(user_id)
     paged_datas = pagingData(request, datas, each_num=10)
-    return render(request, "app/page-myData.html", {'datas': paged_datas, 'id':username})
+
+    notices, unread_notices, unread_number = get_notices(request, user_id)
+
+    return render(request, "app/page-myData.html", {'datas': paged_datas,
+                                                    'id':username,
+                                                    'unread_number':unread_number,
+                                                    'unread_notices':unread_notices})
 
 @csrf_exempt
 def Order(request):
@@ -599,8 +618,12 @@ def Order(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     orders = orderData_sql(request, user_id, sort_sql)
     paged_orders = pagingData(request, orders, each_num=10)
+    notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    return render(request, "app/page-order.html", {'orders': paged_orders, 'id': username})
+    return render(request, "app/page-order.html", {'orders': paged_orders,
+                                                   'id': username,
+                                                   'unread_number':unread_number,
+                                                   'unread_notices':unread_notices})
 
 @csrf_exempt
 def Recharge(request):
@@ -658,5 +681,67 @@ def Recharge(request):
         notice_info = '{} 在 {} 充值成功'.format(username, time_to_str(timestamp))
         cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
                                        notice_info, timestamp])
+    notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    return render(request, "app/page-recharge.html", {'id':username})
+    return render(request, "app/page-recharge.html",
+                  {'id':username,
+                   'unread_number':unread_number,
+                   'unread_notices':unread_notices})
+
+@csrf_exempt
+def Notify(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
+    user_id = user.user_id
+    try:
+        now_notice_id = request.POST['id']
+        now_op = request.POST['op']
+        print(now_notice_id,now_op)
+        notice = Notice.objects.get(notice_id=now_notice_id)
+        print('now_notice_id',now_notice_id)
+        if notice.if_check != now_op:
+            sql = 'update BSCapp_notice set if_check = %s where notice_id = %s;'
+            cursor = connection.cursor()
+            cursor.execute(sql, [now_op,now_notice_id])
+            cursor.close()
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    try:
+        Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
+        result = Notice_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        # check name in data table
+        if (new_sort_name!='timestamp' and new_sort_name != 'notice_info' and new_sort_name != 'if_check'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Notice_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    notices, unread_notices, unread_number = get_notices(request, user_id)
+    paged_notices = pagingData(request, notices, each_num=10)
+
+    return render(request, "app/page-notify.html",
+                  {'notices': paged_notices,
+                   'id': username,
+                   'unread_number':unread_number,
+                   'unread_notices':unread_notices
+                   })

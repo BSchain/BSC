@@ -138,7 +138,7 @@ def uploadData_sql(user_id):
         datas.append(data)
     return datas
 
-def adminData_sql(sort_sql, request):
+def adminData_sql(request, sort_sql):
     cursor = connection.cursor()
     search_sql = ''
     try:
@@ -203,6 +203,51 @@ def rechargeData_sql(user_id):
         recharges.append(recharge)
     return recharges
 
+
+def noticeData_sql(user_id, sort_sql):
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select notice_id, sender_id, notice_type, notice_info, timestamp, if_check from BSCapp_notice where receiver_id = %s '
+
+    sql = sql + sort_sql
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(e)
+        cursor.close()
+        return context
+    notices = []
+    len_content = len(content)
+    unread_number = 0
+    unread_notices = []
+    show_unread_number = 5
+
+    for i in range(len_content):
+        notice = dict()
+        notice['notice_id'] = content[i][0]
+        sender_id = content[i][1]
+        notice_type = content[i][2]
+        if notice_type == 1 or notice_type == 2: # review pass or reject
+            notice['sender'] = Admin.objects.get(admin_id=sender_id).admin_name
+        elif notice_type == 3: # recharge success
+            notice['sender'] = '系统'
+        notice['info'] = content[i][3]
+        notice['timestamp'] = time_to_str(content[i][4])
+        if_check= content[i][5]
+        if if_check == True:
+            notice['if_check'] = '已读'
+        else:
+            notice['if_check'] = '未读'
+            unread_number+=1
+            if (unread_number <= show_unread_number):
+                unread_notices.append(notice)
+        notices.append(notice)
+
+    return notices, unread_notices, unread_number
+
+
 def pagingData(request, datas, each_num):
     paginator = Paginator(datas, each_num)
     page = request.GET.get('page', 1)
@@ -213,6 +258,18 @@ def pagingData(request, datas, each_num):
     except EmptyPage:
         paged_recharges = paginator.page(paginator.num_pages)
     return paged_recharges
+
+
+def get_notices(request, user_id):
+    Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
+    result = Notice_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    table_name = 'BSCapp_notice'
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    notices, unread_notices, unread_number = noticeData_sql(user_id, sort_sql)
+    return notices, unread_notices, unread_number
 
 
 def GetAccount(user_id):
