@@ -633,7 +633,6 @@ def MyData(request):
     paged_datas = pagingData(request, datas, each_num=10)
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
-    print(default_sort_name,default_sort_type)
 
     return render(request, "app/page-myData.html", {'datas': paged_datas,
                                                     'id':username,
