@@ -478,8 +478,10 @@ def AdminDataInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(request,sort_sql)
     paged_datas = pagingData(request, datas, each_num=10)
+    adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price', 'data_status']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
-    return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
+    return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas, 'sort_class': sort_class})
 
 @csrf_exempt
 def Upload(request):
