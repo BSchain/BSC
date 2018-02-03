@@ -490,8 +490,7 @@ def AdminDataInfo(request):
 
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    print(sort_sql)
-    datas = adminData_sql(sort_sql)
+    datas = adminData_sql(sort_sql, request)
 
     paginator = Paginator(datas, 10)
     page = request.GET.get('page', 1)

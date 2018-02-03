@@ -116,18 +116,30 @@ def uploadData_sql(user_id):
         datas.append(data)
     return datas
 
-def adminData_sql(sort_sql):
+def adminData_sql(sort_sql, request):
     cursor = connection.cursor()
-    sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_source, data_type, data_status, data_price from BSCapp_data '
-    sql = sql + sort_sql
+    search_sql = ''
     try:
-        cursor.execute(sql)
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'where {} like %s '.format(search_base)
+    except Exception as e:
+        print(e)
+    
+    sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
+           data_source, data_type, data_status, data_price from BSCapp_data '
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, ["%"+search_field+"%"])
+        else:
+            cursor.execute(sql) 
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
         cursor.close()
         return {}
+
     datas = []
     len_content = len(content)
     for i in range(len_content):
