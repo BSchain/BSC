@@ -153,7 +153,17 @@
 											</tr>
 										{% endfor %}
 										</tbody>
+										<br>
+										<form method="POST" action="/BuyableData/">
+											<select id="searchBase" name="searchBase">
+												<option value="data_name">数据名</option>
+												<option value="data_info">数据简介</option>
+											</select>
+											<input type="text" id="searchField" name="searchField" value="">
+											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
+										</form>
 									</table>
+									
 									{% if datas.has_other_pages %}
 									<ul class="pagination">
 										{% if datas.has_previous %}

@@ -371,7 +371,7 @@ def BuyableData(request):
     table_name = 'BSCapp_data'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    datas = buyData_sql(buyer_id, sort_sql)
+    datas = buyData_sql(request, buyer_id, sort_sql)
     # return render(request, "app/page-buyableData.html", {'datas': datas, 'id':username})
     paginator = Paginator(datas, 10)
 
@@ -642,7 +642,7 @@ def Order(request):
         table_name = 'BSCapp_transaction'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    orders = orderData_sql(user_id, sort_sql)
+    orders = orderData_sql(request, user_id, sort_sql)
     paginator = Paginator(orders, 10)
     page = request.GET.get('page', 1)
     try:

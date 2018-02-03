@@ -13,16 +13,26 @@ def generate_sort_sql(table_name, sort_name, sort_type):
     sort_sql = 'order by ' + table_name + '.' + sort_name+' '+sort_type+';'
     return sort_sql
 
-def buyData_sql(buyer_id, sort_sql):
+def buyData_sql(request, buyer_id, sort_sql):
     context = {}
     cursor = connection.cursor()
+
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
           'data_tag, data_status, data_md5, data_size, data_price, data_address ' \
           'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
-
-    sql = sql + sort_sql
+    search_sql = ''
     try:
-        cursor.execute(sql, [buyer_id])
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'and {} like %s '.format(search_base)
+    except Exception as e:
+        print(e) 
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, [buyer_id, "%"+search_field+"%"])
+        else:
+            cursor.execute(sql, [buyer_id])
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -47,22 +57,33 @@ def buyData_sql(buyer_id, sort_sql):
         datas.append(data)
     return datas
 
-def orderData_sql(user_id, sort_sql):
+def orderData_sql(request, user_id, sort_sql):
 
     context = {}
     cursor = connection.cursor()
     sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
           'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address from BSCapp_data \
           ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
-
-    sql = sql + sort_sql
+    search_sql = ''
     try:
-        cursor.execute(sql, [user_id])
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'and {} like %s '.format(search_base)
+    except:
+        pass
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, [user_id, "%"+search_field+"%"])
+        else:
+            cursor.execute(sql, [user_id])
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
+        print(e)
         cursor.close()
         return context
+    
     orders = []
     len_content = len(content)
     for i in range(len_content):
