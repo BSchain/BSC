@@ -102,18 +102,31 @@ def orderData_sql(request, user_id, sort_sql):
         orders.append(order)
     return orders
 
-def uploadData_sql(user_id):
+def uploadData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price ' \
-          'from BSCapp_data where BSCapp_data.user_id = %s order by timestamp DESC;'
+          'from BSCapp_data where BSCapp_data.user_id = %s '
+    search_sql = ''
     try:
-        cursor.execute(sql, [user_id])
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'and {} like %s '.format(search_base)
+    except:
+        pass
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, [user_id, "%" + search_field + "%"])
+        else:
+            cursor.execute(sql, [user_id])
         content = cursor.fetchall()
         cursor.close()
-    except:
+    except Exception as e:
+        print(e)
         cursor.close()
         return context
+
     datas = []
     len_content = len(content)
     for i in range(len_content):
@@ -310,3 +323,15 @@ def GetPurchaseData(user_id):
     except Exception as e:
         cursor.close()
     return content
+
+def generate_sort_class(sort_name, sort_type, sort_list):
+    sort_class = {}
+    for item in sort_list :
+        sort_class[item] = ''
+
+    if sort_type == 'DESC':
+        sort_class[sort_name] = 'fa fa-caret-down text-danger' # DESC down
+    else:
+        sort_class[sort_name] = 'fa fa-caret-up text-success' # ASC up
+    return sort_class
+

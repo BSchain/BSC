@@ -67,9 +67,8 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
-								<li><a href="#"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
-								<li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
-								<li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li>
+								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
+								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
@@ -85,11 +84,12 @@
 					<ul class="nav">
 						<li><a href="/UserInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>页面</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse in">
 								<ul class="nav">
 									<li><a href="/UserInfo/" class="active">个人信息</a></li>
                                     <li><a href="/Notify/" class="">通知中心</a></li>
+                                    <li><a href="/MyData/" class="">我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
@@ -97,7 +97,6 @@
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
 						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
-                        <li><a href="/MyData/" class=""><i class="lnr lnr-dice"></i> <span>已上传数据</span></a></li>
                         <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
 					</ul>
 				</nav>
@@ -357,6 +356,11 @@
 		</div>
 		<!-- END MAIN -->
 		<div class="clearfix"></div>
+        <footer>
+			<div class="container-fluid">
+				<p align="center" class="copyright" >&copy; 2018 <a href="#" target="_blank">BUAA</a>. All Rights Reserved.</p>
+			</div>
+		</footer>
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
