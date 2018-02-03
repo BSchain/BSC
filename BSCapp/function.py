@@ -139,7 +139,7 @@ def adminData_sql(sort_sql, request):
     except Exception as e:
         cursor.close()
         return {}
-
+    print(content)
     datas = []
     len_content = len(content)
     for i in range(len_content):

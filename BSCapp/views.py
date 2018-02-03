@@ -502,6 +502,7 @@ def AdminDataInfo(request):
         paged_datas = paginator.page(paginator.num_pages)
     return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas})
     # return render(request, "app/page-adminDataInfo.html", {'datas': datas})
+    
 @csrf_exempt
 def Upload(request):
     username = request.session['username']

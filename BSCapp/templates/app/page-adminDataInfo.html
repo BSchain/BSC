@@ -147,12 +147,14 @@
 										{% endfor %}
 										</tbody>
 										<br>
-										<select id="searchBase">
-											<option value="data_name">数据名</option>
-											<option value="data_info">数据简介</option>
-										</select>
-										<input type="text" id="searchField" name="datafield" value="">
-										<button class="btn btn-primary btn-xs" onclick="searchData(this);">搜索</button>
+										<form method="POST" action="/AdminDataInfo/">
+											<select id="searchBase" name="searchBase">
+												<option value="data_name">数据名</option>
+												<option value="data_info">数据简介</option>
+											</select>
+											<input type="text" id="searchField" name="searchField" value="">
+											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
+										</form>
 									</table>
 									{% if datas.has_other_pages %}
 									<ul class="pagination">
@@ -211,7 +213,6 @@
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 	<script src="../static/app/javascript/review.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
-    <script src="../static/app/javascript/search.js"></script>
 </body>
 
 </html>
