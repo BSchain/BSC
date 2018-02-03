@@ -22,6 +22,7 @@ def Index(request):
     request.session['Buy_sort_name_and_type'] = ""
     request.session['Order_sort_name_and_type'] = ""
     request.session['Notice_sort_name_and_type'] = ""
+    request.session['MyData_sort_name_and_type'] = ""
 
     return render(request, "app/page-index.html")
 
@@ -82,6 +83,7 @@ def Login(request):
         request.session['Order_sort_name_and_type'] = 'timestamp&DESC'
         request.session['Upload_sort_name_and_type'] = 'timestamp&DESC'
         request.session['Notice_sort_name_and_type'] = "timestamp&DESC"
+        request.session['MyData_sort_name_and_type'] = "timestamp&DESC"
 
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -99,7 +101,7 @@ def Signup(request):
         user_email = request.POST['email']
         user_id = generate_uuid(user_name)
     except Exception as e:
-        return render(request, "app/page-signup.html")
+        return render(request, "app/page-signUp.html")
     # client cannot overwrite admin users
     try:
         u = Admin.objects.get(admin_name=user_name)
@@ -360,8 +362,12 @@ def BuyableData(request):
     paged_datas = pagingData(request, datas, each_num= 10)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
+    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, buyData_sort_list)
+
     return render(request, "app/page-buyableData.html", {'datas': paged_datas,
                                                          'id':username,
+                                                         'sort_class': sort_class,
                                                          'unread_number':unread_number,
                                                          'unread_notices':unread_notices})
 
@@ -584,13 +590,52 @@ def MyData(request):
         return render(request, "app/page-login.html")
 
     user_id = user.user_id
-    datas = uploadData_sql(user_id)
+
+    try:
+        MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
+        result = MyData_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'data_tag' and new_sort_name != 'data_status' and new_sort_name != 'data_purchase' and
+                new_sort_name!='data_download' and new_sort_name != 'data_price'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['MyData_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
+    result = MyData_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status', 'data_purchase', 'data_download', 'data_price']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
+
+    table_name = 'BSCapp_data'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+
+    datas = uploadData_sql(request, user_id, sort_sql)
+
     paged_datas = pagingData(request, datas, each_num=10)
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
+    print(default_sort_name,default_sort_type)
 
     return render(request, "app/page-myData.html", {'datas': paged_datas,
                                                     'id':username,
+                                                    'sort_class':sort_class,
                                                     'unread_number':unread_number,
                                                     'unread_notices':unread_notices})
 
@@ -718,9 +763,7 @@ def Notify(request):
     try:
         now_notice_id = request.POST['id']
         now_op = request.POST['op']
-        print(now_notice_id,now_op)
         notice = Notice.objects.get(notice_id=now_notice_id)
-        print('now_notice_id',now_notice_id)
         if notice.if_check != now_op:
             sql = 'update BSCapp_notice set if_check = %s where notice_id = %s;'
             cursor = connection.cursor()
@@ -756,11 +799,20 @@ def Notify(request):
         print(e)
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
+
+    Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
+    result = Notice_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+    notify_sort_list = ['timestamp', 'notice_info', 'if_check']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, notify_sort_list)
+
     paged_notices = pagingData(request, notices, each_num=10)
 
     return render(request, "app/page-notify.html",
                   {'notices': paged_notices,
                    'id': username,
+                   'sort_class': sort_class,
                    'unread_number':unread_number,
                    'unread_notices':unread_notices
                    })

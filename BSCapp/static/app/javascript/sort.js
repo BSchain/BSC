@@ -50,3 +50,16 @@ function notifyDataSortBase(obj){
       })
     return;
 }
+
+function myDataSortBase(obj){
+    $.ajax("/MyData/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/MyData/");
+      })
+    return;
+}
