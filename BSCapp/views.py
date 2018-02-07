@@ -525,6 +525,30 @@ def Upload(request):
             pass # something wrong in cursor, just pass, and use the wallet.account
         #if there are some data with the same md5, then return error statCode
         if (len(content)>0):
+            conflict_data_id = content[0][0] # get the data_id
+            confilct_data = Data.objects.get(data_id = conflict_data_id)
+
+            conflict_data_name = confilct_data.data_name # get the data name
+            owner_id = confilct_data.user_id # get the data owner_id
+            sender_id = 'system'
+            owner_notice_id = generate_uuid(sender_id)
+            timestamp = time()
+            owner_notice_type = 4
+            owner_notice_info = '{} 在 {} 上传冲突数据 {}.'.format(username, time_to_str(timestamp), conflict_data_name)
+
+            # send notice to data owner
+            Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=owner_id,
+                   notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
+                   timestamp=timestamp).save()
+
+            conflict_notice_type = 4
+            conflict_notice_info = '{} 在 {} 上传冲突数据 {}, 该数据md5为 {}.'.format(username, time_to_str(timestamp), conflict_data_name, confilct_data.data_md5)
+
+            conflict_notice_id = generate_uuid(sender_id)
+            # send notict to data uploader
+            Notice(notice_id = conflict_notice_id, sender_id = sender_id, receiver_id= user.user_id,
+                   notice_type= conflict_notice_type, notice_info= conflict_notice_info, if_check=False, timestamp=timestamp).save()
+
             return HttpResponse(json.dumps({
                 'statCode': -1,
             }))

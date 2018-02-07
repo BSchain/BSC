@@ -244,7 +244,9 @@ def noticeData_sql(user_id, sort_sql):
         notice_type = content[i][2]
         if notice_type == 1 or notice_type == 2: # review pass or reject
             notice['sender'] = Admin.objects.get(admin_id=sender_id).admin_name
-        elif notice_type == 3: # recharge success
+        elif notice_type == 3 or  notice_type == 4: # recharge success
+            notice['sender'] = '系统'
+        else:
             notice['sender'] = '系统'
         notice['info'] = content[i][3]
         notice['timestamp'] = time_to_str(content[i][4])
