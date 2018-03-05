@@ -8,6 +8,7 @@
 from BSCapp.root_chain.block import *
 import requests
 from BSCapp.root_chain.utils import *
+import BSCapp.root_chain.transaction as TX
 
 class Chain:
     def __init__(self):
@@ -81,14 +82,29 @@ class Chain:
                 block = json.load(f)
             self.chain.append(block)
 
+    def get_current_transaction(self):
+        assert os.path.exists(TRANSACTION_SAVE_ROOT), ('blocks file not exist')
+        transaction_list = os.listdir(TRANSACTION_SAVE_ROOT)
+        for each_transaction in transaction_list:
+            with open(TRANSACTION_SAVE_ROOT + each_transaction, 'r') as f:
+                transaction = json.load(f)
+                # tx = TX.Transaction.json_to_transaction(transaction)
+                # tx.valid_transaction()
+            self.current_transactions.append(transaction)
+
     def add_block(self,block): # save block to file and add block to chain
         block.save_block()
-        self.chain.append(block)
+        self.chain.append(block.to_dict())
 
     def add_transaction(self,transaction):
-        self.current_transactions.append(transaction)
+        self.current_transactions.append(transaction.to_dict())
 
-    def reset_transaction(self): # when mining a new block, then empty the current_transaction
+    def reset_transaction(self, deleteFile): # when mining a new block, then empty the current_transaction
+        assert os.path.exists(TRANSACTION_SAVE_ROOT), ('blocks file not exist')
+        if deleteFile:
+            transaction_list = os.listdir(TRANSACTION_SAVE_ROOT)
+            for each_transaction in transaction_list:
+                os.remove(TRANSACTION_SAVE_ROOT + each_transaction)
         self.current_transactions = []
 
     def generate_block(self, nonce, prev_hash): # generate according to nonce and prev_hash

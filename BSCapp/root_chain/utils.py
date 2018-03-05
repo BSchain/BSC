@@ -16,12 +16,11 @@ import os
 import datetime
 
 
-TRANSACTION_SAVE_ROOT = r'transactions/'
+TRANSACTION_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/transactions/'
 TRANSACTION_SAVE_SUFFIX = '.json'
-BLOCK_SAVE_ROOT = r'blocks/' # the blocks saving root
+BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocks/' # the blocks saving root
 BLOCK_SAVE_SUFFIX = '.json' # block suffix
 BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
-
 
 def hash_block(block): # json block
     block_str = json.dumps(block, sort_keys=True).encode() # here generate the block string
@@ -61,7 +60,6 @@ def get_block_by_index_json(index):
 
 def get_block_by_index_object(index):
     return Block.json_to_bloc(get_block_by_index_json(index))
-
 
 def get_block_file(index):
     return BLOCK_SAVE_ROOT + str(index) + BLOCK_SAVE_SUFFIX
