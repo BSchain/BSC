@@ -129,7 +129,7 @@
                                                 <th align="center" onclick=buySortBase('data_md5')>数据md5 <i class="{{ sort_class.data_md5 }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('data_size')>数据大小(MB) <i class="{{ sort_class.data_size }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
-                                                <th align="center">购买数据</th>
+                                                <th align="center">数据操作</th>
 											</tr>
 										</thead>
 
@@ -145,8 +145,8 @@
                                                 <td align="">  {{data.size}}</td>
 												<td align=""> {{data.price}}</td>
                                                 <td>
-													<button class="btn-primary" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button>
-                                                    <button class="btn-primary" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
+													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button>
+                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
 													<div id="{{data.data_id}}"> </div>
 												</td>
 											</tr>

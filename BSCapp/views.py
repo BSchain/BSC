@@ -212,9 +212,16 @@ def BuyableData(request):
         # print(request.POST['data_id'])
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
+        seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
+                # add action: download to file
+                tx = TX.Transaction()
+                tx.new_transaction(in_coins=[], out_coins=[],
+                                   timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
+                                   seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
+                tx.save_transaction()
                 return HttpResponse(json.dumps({
                     'statCode': 0,
                     'message': '已购买此数据,可以下载!'
@@ -242,8 +249,6 @@ def BuyableData(request):
                 'statCode': -2,
                 'message': '余额不足!'
             }))
-
-        seller_id = Data.objects.get(data_id=now_data_id).user_id # get seller
 
         # get user unspent coins
         try:
@@ -280,7 +285,7 @@ def BuyableData(request):
             # insert one purchase log into table
             Purchase(user_id=buyer_id,data_id=now_data_id).save()
 
-            # generate new transactions
+            # generate new transactions for action: buy
             tx = TX.Transaction()
             tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(datetime.datetime.utcnow().timestamp()), action='buy',
                                seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
@@ -308,7 +313,7 @@ def BuyableData(request):
             cursor.execute(sql, [now_data_id])
             cursor.close()
 
-            # generate a new transaction
+            # generate a new transaction for mysql
             Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
                         data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price).save()
             return HttpResponse(json.dumps({
@@ -673,6 +678,33 @@ def Order(request):
         return render(request, "app/page-login.html")
     user_id = user.user_id
     try:
+        # add download action in Order page
+        now_data_id = request.POST['data_id']
+        now_op = request.POST['op']
+        seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
+
+        if now_op == 'download':
+            try:
+                Purchase.objects.get(user_id=user_id, data_id=now_data_id)
+                # add action: download to file
+                tx = TX.Transaction()
+                tx.new_transaction(in_coins=[], out_coins=[],
+                                   timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
+                                   seller=seller_id, buyer=user_id, data_uuid=now_data_id, credit=0, reviewer='')
+                tx.save_transaction()
+                return HttpResponse(json.dumps({
+                    'statCode': 0,
+                    'message': '已购买此数据,可以下载!'
+                }))
+            except:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '未购买此数据,无法下载!'
+                }))
+        # insert new purchase_log for buyer
+    except Exception as e:
+        print(e)
+    try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
         default_sort_name = result[0]
@@ -820,6 +852,7 @@ def Notify(request):
             new_sort_type = 'DESC'  # default = DESC
 
         request.session['Notice_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+
 
         return HttpResponse(json.dumps({
             'statCode': 0,

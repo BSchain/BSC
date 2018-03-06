@@ -143,7 +143,11 @@
                                                 <td align="">  {{order.type}}</td>
 												<td align="">  {{order.price}}</td>
 												<td align="">
-													<a class="fa fa-download" href="{{order.address}}" download="{{order.name}}">下载</a>
+{#                                                    <button class="btn-primary" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>#}
+                                                    <button class="fa fa-download" style="font-size: 16px" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>
+                                                    <div id="{{order.dataid}}"> </div>
+                                                    <!-- need to change to click and add download to file-->
+{#                                                    <a class="fa fa-download" href="{{order.address}}" download="{{order.name}}">下载</a>#}
 												</td>
 											</tr>
 										{% endfor %}
@@ -214,6 +218,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
+    <script src="../static/app/javascript/downloadData.js"></script>
 </body>
 
 </html>

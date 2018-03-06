@@ -245,8 +245,17 @@ class Transaction:
             assert self.buyer is '', ('Login, buyer should be None, buyer:', self.buyer)
             assert self.seller is not '', ('Login, seller should not be None, seller:', self.seller)
             assert self.data_uuid is '', ('Login, data_uuid should be None, data_uuid:', self.data_uuid)
-            assert self.credit ==0.0, ('Login, credit should be None, credit:', self.credit)
+            assert self.credit == 0.0, ('Login, credit should be None, credit:', self.credit)
             assert self.reviewer is '', ('Login, reviewer should be None, reviewer:', self.reviewer)
+            return True
+        elif self.action == 'logout':
+            assert len(self.in_coins) == 0 , ('Logout, in_coins should be None, in_coins:', self.in_coins)
+            assert len(self.out_coins) == 0 , ('Logout, out_coins should be None, out_coins:', self.out_coins)
+            assert self.buyer is '', ('Logout, buyer should be None, buyer:', self.buyer)
+            assert self.seller is not '', ('Logout, seller should not be None, seller:', self.seller)
+            assert self.data_uuid is '', ('Logout, data_uuid should be None, data_uuid:', self.data_uuid)
+            assert self.credit == 0.0, ('Logout, credit should be None, credit:', self.credit)
+            assert self.reviewer is '', ('Logout, reviewer should be None, reviewer:', self.reviewer)
             return True
         elif self.action == 'download':
             assert len(self.in_coins) == 0 , ('Download data, in_coins should be None, in_coins:', self.in_coins)
