@@ -18,10 +18,10 @@ while True:
     mineChain.get_current_transaction()
     if len(mineChain.current_transactions) == 0 :
         print('now is empty transaction')
-        time.sleep(60)  # sleep one minute
+        time.sleep(600)  # sleep one minute -> change to 10 minutes
         continue
     MINE.mine(mineChain, deleteFile=True) # mine the block
 
     round_number+=1
     print('round_number:',round_number)
-    time.sleep(60) # sleep one minute
+    time.sleep(600)  # sleep one minute -> change to 10 minutes
