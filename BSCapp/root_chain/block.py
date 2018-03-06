@@ -47,6 +47,7 @@ class Block:
         save_block_path = BLOCK_SAVE_ROOT+ str(self.index) + BLOCK_SAVE_SUFFIX
         with open(save_block_path, 'w') as json_file:
             json_file.write(json.dumps(self.to_dict()))
+        return os.path.getsize(save_block_path)/(1024*1024) # get the block size
 
     def to_dict(self): # don't have self.hash_self
         block = {

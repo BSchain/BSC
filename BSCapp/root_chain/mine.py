@@ -8,7 +8,7 @@
 from BSCapp.root_chain.chain import *
 
 # type block_chain is class <chain>
-def mine(block_chain, deleteFile=True): # TODO: need to consider some condition
+def mine(block_chain): # TODO: need to consider some condition
     """
     transaction
     :param in_coins:
@@ -35,12 +35,15 @@ def mine(block_chain, deleteFile=True): # TODO: need to consider some condition
         # transactions = 20
         # or other
         block.new_block(index=index, timestamp=time(), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
-        block.save_block() # save to file (one block one file)
-        block_chain.reset_transaction(deleteFile) # reset the current_transaction and delete the file
+        block_size = block.save_block() # save to file (one block one file)
+        timestamp = datetime.datetime.utcnow().timestamp()
+        block_chain.reset_transaction() # reset the current_transaction and delete the file
+        chain_height = index
+
         if block_chain.is_valid():
-            print('current chain is valid, the chain length is ', len(block_chain.chain))  # valid the chain
-            block_chain.chain.append(block.to_dict()) # add the new block to now block_chain
-        return True
+            print('current chain is valid, the chain height is ', chain_height)  # valid the chain
+        block_chain.chain.append(block.to_dict()) # add the new block to now block_chain
+        return chain_height, timestamp, block_size, block.to_dict()
+
     except Exception as e:
         print(str(e))
-        return False

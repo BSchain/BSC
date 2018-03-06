@@ -884,22 +884,21 @@ def Notify(request):
 @csrf_exempt
 def ChainInfo(request):
     username = request.session['username']
-    userIsAdmin = request.session['isAdmin']
-    if userIsAdmin == False:
-        try:
-            user = User.objects.get(user_name=username)
-            user_id = user.user_id
-            notices, unread_notices, unread_number = get_notices(request, user_id)
-            return render(request, "app/page-chainInfo.html",
-                          {'id': username,
-                           'unread_number':unread_number,
-                           'unread_notices':unread_notices})
-        except Exception:
-            return render(request, "app/page-login.html")
-    else:
-        try:
-            user = Admin.objects.get(admin_name=username)
-            user_id = user.admin_id
-        except Exception:
-            return render(request, "app/page-login.html")
+    user = User.objects.get(user_name=username)
+    user_id = user.user_id
+    try:
+        now_block_height = request.POST['height']
+        now_op = request.POST['op']
+    except Exception:
+        pass
+
+    notices, unread_notices, unread_number = get_notices(request, user_id)
+    blocks = chainData_sql()
+    paged_blocks = pagingData(request, blocks, each_num=10)
+
+    return render(request, "app/page-chainInfo.html",
+                  {'id': username,
+                   'blocks': paged_blocks,
+                   'unread_number': unread_number,
+                   'unread_notices': unread_notices})
 

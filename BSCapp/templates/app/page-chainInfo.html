@@ -124,22 +124,21 @@
                                                 <th align="center" >区块高度 </th>
                                                 <th align="center" >时间戳 </th>
                                                 <th align="center" >区块大小(MB) </th>
-                                                <th align="center" >交易数量 </th>
+                                                <th align="center" >Transaction数量 </th>
                                                 <th align="center" >区块详情 </th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for block in chain %}
+										{% for block in blocks %}
 											<tr>
                                                 <td align="">  {{block.height}}</td>
 												<td align="">  {{block.timestamp}}</td>
 												<td align="">  {{block.size}}</td>
 												<td align="">  {{block.tx_number}}</td>
                                                 <td>
-													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button>
-                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
-													<div id="{{data.data_id}}"> </div>
+													<button class="fa fa-shopping-cart" style="font-size: 16px" name="block_height" id="block_height" value="{{block.block_height}}" onclick="showBlockDetail(this);">详情</button>
+													<div id="{{block.height}}"> </div>
 												</td>
 											</tr>
 										{% endfor %}
@@ -212,7 +211,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-
+    <script src="../static/app/javascript/blockInfo.js"></script>
 </body>
 
 </html>

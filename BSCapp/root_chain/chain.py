@@ -77,20 +77,23 @@ class Chain:
         block_list = os.listdir(BLOCK_SAVE_ROOT)
         for each_block in block_list:
             index = each_block.split('.')[0]
-            assert str(len(self.chain)+1) == str(index), ('lost index',index)
+            # assert str(len(self.chain)+1) == str(index), ('lost index',index)
             with open(BLOCK_SAVE_ROOT+each_block,'r') as f:
                 block = json.load(f)
             self.chain.append(block)
 
-    def get_current_transaction(self):
+    def get_current_transaction(self, deleteFile):
         assert os.path.exists(TRANSACTION_SAVE_ROOT), ('blocks file not exist')
         transaction_list = os.listdir(TRANSACTION_SAVE_ROOT)
         for each_transaction in transaction_list:
-            with open(TRANSACTION_SAVE_ROOT + each_transaction, 'r') as f:
+            tx_file = TRANSACTION_SAVE_ROOT + each_transaction
+            with open(tx_file, 'r') as f:
                 transaction = json.load(f)
                 # tx = TX.Transaction.json_to_transaction(transaction)
                 # tx.valid_transaction()
             self.current_transactions.append(transaction)
+            if deleteFile:
+                os.remove(tx_file)
 
     def add_block(self,block): # save block to file and add block to chain
         block.save_block()
@@ -99,12 +102,7 @@ class Chain:
     def add_transaction(self,transaction):
         self.current_transactions.append(transaction.to_dict())
 
-    def reset_transaction(self, deleteFile): # when mining a new block, then empty the current_transaction
-        assert os.path.exists(TRANSACTION_SAVE_ROOT), ('blocks file not exist')
-        if deleteFile:
-            transaction_list = os.listdir(TRANSACTION_SAVE_ROOT)
-            for each_transaction in transaction_list:
-                os.remove(TRANSACTION_SAVE_ROOT + each_transaction)
+    def reset_transaction(self): # when mining a new block, then empty the current_transaction
         self.current_transactions = []
 
     def generate_block(self, nonce, prev_hash): # generate according to nonce and prev_hash

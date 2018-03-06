@@ -103,6 +103,7 @@ chain for science data sharing
 >`python3 manage.py createsuperuser`
 >
 >运行项目 `python3 manage.py runserver`
+>删除block数据信息 `delete from BSCapp_block;`
 >
 >在浏览器网站中输入 `http://127.0.0.1:8000/admin/` 即可管理数据库
 
