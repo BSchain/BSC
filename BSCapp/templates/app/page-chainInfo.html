@@ -84,19 +84,19 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/ChainInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li><a href="/ChainInfo/" class="active"><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
-							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-							<div id="subPages" class="collapse in">
+							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse">
 								<ul class="nav">
 									<li><a href="/UserInfo/" class="">个人信息</a></li>
-									<li><a href="/Notify/" class="">通知中心</a></li>
-                                    <li><a href="/MyData/" class="active">我的数据</a></li>
-                                    <li><a href="/Index/" class="">登出</a></li>
+                                    <li><a href="/Notify/" class="">通知中心</a></li>
+                                    <li><a href="/MyData/" >我的数据</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+                        <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
 						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
@@ -115,53 +115,46 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">已上传数据</h3>
+									<h3 class="panel-title">区块链详情</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-												<th align="center" onclick=myDataSortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
+                                                <th align="center" >区块高度 </th>
+                                                <th align="center" >时间戳 </th>
+                                                <th align="center" >区块大小(MB) </th>
+                                                <th align="center" >交易数量 </th>
+                                                <th align="center" >区块详情 </th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for data in datas %}
+										{% for block in chain %}
 											<tr>
-												<td align="">  {{data.name}}</td>
-												<td align="">  {{data.info}}</td>
-												<td align="">  {{data.timestamp}}</td>
-												<td align="">  {{data.tag}}</td>
-                                                {% if data.status == '审核中' %}
-												    <td align="" bgcolor="aqua">  {{data.status}}</td>
-                                                {% elif data.status == '审核通过' %}
-                                                    <td align="" bgcolor="#7fffd4">  {{data.status}}</td>
-                                                {% elif data.status == '审核不通过' %}
-                                                    <td align="" bgcolor="#deb887">  {{data.status}}</td>
-                                                {% endif %}
-												<td align="">  {{data.purchase}}</td>
-												<td align="">  {{data.download}}</td>
-												<td align="">  {{data.price}}</td>
+                                                <td align="">  {{block.height}}</td>
+												<td align="">  {{block.timestamp}}</td>
+												<td align="">  {{block.size}}</td>
+												<td align="">  {{block.tx_number}}</td>
+                                                <td>
+													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button>
+                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
+													<div id="{{data.data_id}}"> </div>
+												</td>
 											</tr>
 										{% endfor %}
 										</tbody>
-                                        <form method="POST" action="/MyData/">
-                                            <select id="searchBase" name="searchBase">
-                                                <option value="data_name">数据名</option>
-                                                <option value="data_info">数据简介</option>
-                                                <option value="data_tag">数据标签</option>
-                                            </select>
-                                            <input type="text" id="searchField" name="searchField" value="">
-                                            <button class="btn btn-primary btn-xs" type="submit">搜索</button>
-                                        </form>
+										<br>
+										<form method="POST" action="/ChainInfo/">
+											<select id="searchBase" name="searchBase">
+												<option value="height">区块高度</option>
+												<option value="tx_hash">交易hash</option>
+											</select>
+											<input type="text" id="searchField" name="searchField" value="">
+											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
+										</form>
 									</table>
+									
 									{% if datas.has_other_pages %}
 									<ul class="pagination">
 										{% if datas.has_previous %}
@@ -171,7 +164,7 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %} 
+										{% for i in datas.paginator.page_range %}
 											{% if datas.number == i %}
 											<li class="active">
 												<span>{{ i }}
@@ -182,13 +175,13 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} 
+											{% endif %}
 										{% endfor %}
 										{% if datas.has_next %}
 											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
-										{% endif %}	
+										{% endif %}
 									</ul>
 									{% endif %}
 								</div>
@@ -210,6 +203,8 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
@@ -217,7 +212,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-    <script src="../static/app/javascript/sort.js"></script>
+
 </body>
 
 </html>

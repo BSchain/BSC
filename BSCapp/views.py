@@ -18,6 +18,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 @csrf_exempt
 def Index(request):
     request.session['username'] = ""
+    request.session['isAdmin'] = False
     request.session['Admin_sort_name_and_type'] = ""
     request.session['Buy_sort_name_and_type'] = ""
     request.session['Order_sort_name_and_type'] = ""
@@ -48,6 +49,7 @@ def Login(request):
             tx.save_transaction()
 
             request.session['username'] = username
+            request.session['isAdmin'] = True
             # add sort session for admin
             request.session['Admin_sort_name_and_type'] = 'timestamp&DESC'
 
@@ -78,6 +80,7 @@ def Login(request):
         tx.save_transaction()
 
         request.session['username'] = username
+        request.session['isAdmin'] = False
         # add sort session for user
         request.session['Buy_sort_name_and_type'] = 'timestamp&DESC'
         request.session['Order_sort_name_and_type'] = 'timestamp&DESC'
@@ -878,3 +881,25 @@ def Notify(request):
                    'unread_number':unread_number,
                    'unread_notices':unread_notices
                    })
+@csrf_exempt
+def ChainInfo(request):
+    username = request.session['username']
+    userIsAdmin = request.session['isAdmin']
+    if userIsAdmin == False:
+        try:
+            user = User.objects.get(user_name=username)
+            user_id = user.user_id
+            notices, unread_notices, unread_number = get_notices(request, user_id)
+            return render(request, "app/page-chainInfo.html",
+                          {'id': username,
+                           'unread_number':unread_number,
+                           'unread_notices':unread_notices})
+        except Exception:
+            return render(request, "app/page-login.html")
+    else:
+        try:
+            user = Admin.objects.get(admin_name=username)
+            user_id = user.admin_id
+        except Exception:
+            return render(request, "app/page-login.html")
+
