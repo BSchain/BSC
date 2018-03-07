@@ -121,11 +121,11 @@
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >区块高度 </th>
-                                                <th align="center" >时间戳 </th>
-                                                <th align="center" >区块大小(B) </th>
-                                                <th align="center" >Transaction数量 </th>
-                                                <th align="center" >区块hash </th>
+                                                <th align="center" onclick=blockSortBase('height')>区块高度 <i class="{{ sort_class.height }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('block_size')>区块大小(B) <i class="{{ sort_class.block_size }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('tx_number')>Transaction数量 <i class="{{ sort_class.tx_number }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('block_hash')>区块hash <i class="{{ sort_class.block_hash }}"> </i></th>
                                                 <th align="center" >区块详情 </th>
 											</tr>
 										</thead>
@@ -139,7 +139,7 @@
 												<td align="">  {{block.tx_number}}</td>
                                                 <td align="">  {{block.block_hash}}</td>
                                                 <td>
-													<button class="fa fa-shopping-cart" style="font-size: 16px" name="block_height" id="block_height" value="{{block.block_height}}" onclick="showBlockDetail(this);">详情</button>
+													<button class="fa fa-shopping-cart" style="font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">详情</button>
 													<div id="{{block.height}}"> </div>
 												</td>
 											</tr>
@@ -149,7 +149,7 @@
 										<form method="POST" action="/ChainInfo/">
 											<select id="searchBase" name="searchBase">
 												<option value="height">区块高度</option>
-												<option value="tx_hash">区块hash</option>
+												<option value="block_hash">区块hash</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
@@ -214,6 +214,7 @@
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
     <script src="../static/app/javascript/blockInfo.js"></script>
+    <script src="../static/app/javascript/sort.js"></script>
 </body>
 
 </html>

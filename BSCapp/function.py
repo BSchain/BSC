@@ -337,17 +337,32 @@ def generate_sort_class(sort_name, sort_type, sort_list):
         sort_class[sort_name] = 'fa fa-caret-up text-success' # ASC up
     return sort_class
 
-def chainData_sql():
-    content = {}
+def chainData_sql(request, sort_sql):
+    context = {}
     cursor = connection.cursor()
     sql = 'select height, timestamp, block_size, tx_number, block_hash ' \
-          'from BSCapp_block order by height DESC;'
+          'from BSCapp_block '
+
+    search_sql = ''
     try:
-        cursor.execute(sql)
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'where {} like %s '.format(search_base)
+    except Exception as e:
+        print(e)
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, ["%"+search_field+"%"])
+        else:
+            cursor.execute(sql)
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
+        print(e)
         cursor.close()
+        return context
+
     blocks = []
     len_content = len(content)
     for i in range(len_content):

@@ -5,19 +5,19 @@ function showBlockDetail(obj) {
         type: 'POST',
         data: {
             "height": block_height,
-            "op":'show'
         }
-      }).done(function(data){
-          if (data.statCode !=0){
-              alert(data.message)
-              return false
-          }
-          else{
-              alert(data.message)
-              // download transaction in the view.py file
-              var file = document.getElementById(obj.value);
-              file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
-          }
-      })
+    }).done(function (data) {
+        if (data.statCode != 0) {
+            alert(data.message)
+            return false
+        }
+        else {
+            // alert('index: '+ data.block.index+
+            // 'timestamp: ' + data.block.timestamp+
+            // ' prev_hash: ' + data.block.prev_hash +
+            // ' transactions: ' + data.block.transactions)
+            alert(data.block)
+        }
+    })
     return;
 }

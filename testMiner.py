@@ -75,7 +75,7 @@ def run_mine(mineChain, sleepTime, insert_gensis = False):
     mine_block(mineChain, sleepTime)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 60 # sleep one minute -> change to 10 minutes
+sleepTime = 10 # change to 10 minutes
 
 self_insert_gensis = False
 input_str = input('input insert gensis (y: yes, n: no)')
