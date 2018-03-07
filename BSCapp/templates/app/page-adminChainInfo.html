@@ -42,6 +42,19 @@
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i class="lnr lnr-alarm"></i>
+                                <span class="badge bg-danger">{{ unread_number }}</span>
+							</a>
+							<ul class="dropdown-menu notifications">
+                                {% for notice in unread_notices %}
+                                    <li><a href="#" class="notification-item"><span class="dot bg-warning"></span>{{ notice.info }}</a></li>
+                                {% endfor %}
+
+								<li><a href="/Notify/" class="more">See all notifications</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
 								<li><a href="#">Basic Use</a></li>
@@ -51,8 +64,10 @@
 							</ul>
 						</li>
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
+								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
+								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
 								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
@@ -94,62 +109,58 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">用户上传</h3>
+									<h3 class="panel-title">区块链详情</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >出售者</th>
-												<th align="center" onclick=adminDataSortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
-												<th align="center" onclick=adminDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_source')>数据来源 <i class="{{ sort_class.data_source }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
-												<th align="center" onclick=adminDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
-                                                <th align="center" >审核操作</th>
+                                                <th align="center" onclick=adminBlockSortBase('height')>区块高度 <i class="{{ sort_class.height }}"> </i></th>
+                                                <th align="center" onclick=adminBlockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
+                                                <th align="center" onclick=adminBlockSortBase('block_size')>区块大小(B) <i class="{{ sort_class.block_size }}"> </i></th>
+                                                <th align="center" onclick=adminBlockSortBase('tx_number')>Transaction数量 <i class="{{ sort_class.tx_number }}"> </i></th>
+                                                <th align="center" onclick=adminBlockSortBase('block_hash')>区块hash <i class="{{ sort_class.block_hash }}"> </i></th>
+                                                <th align="center" >区块详情 </th>
 											</tr>
 										</thead>
 
 										<tbody>
-                                        <!-- data.status = 0 待审核， =1 审核通过，=2 审核不通过 -->
-										{% for data in datas %}
+										{% for block in blocks %}
 											<tr>
-                                                <td align="">  {{data.seller}}</td>
-												<td align="">  {{data.name}}</td>
-												<td align="">  {{data.info}}</td>
-												<td align="">  {{data.timestamp}}</td>
-                                                <td align="">  {{data.source}}</td>
-                                                <td align="">  {{data.type}}</td>
-                                                <td align="">  {{data.price}}</td>
-                                                <td align="">  {{data.status}}</td>
-												<td><button class="label label-success" id="{{data.dataid}}" onclick="reviewAcknowledge(this);">审核通过</button>
-													<button class="label label-warning" id="{{data.dataid}}" onclick="reviewReject(this);">审核不通过</button></td>
+                                                <td align="">  {{block.height}}</td>
+												<td align="">  {{block.timestamp}}</td>
+												<td align="">  {{block.block_size}}</td>
+												<td align="">  {{block.tx_number}}</td>
+                                                <td align="">  {{block.block_hash}}</td>
+                                                <td>
+													<button class="fa fa-shopping-cart" style="font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="adminShowBlockDetail(this);">详情</button>
+													<div id="{{block.height}}"> </div>
+												</td>
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/AdminDataInfo/">
+										<form method="POST" action="/ChainInfo/">
 											<select id="searchBase" name="searchBase">
-												<option value="data_name">数据名</option>
-												<option value="data_info">数据简介</option>
+												<option value="height">区块高度</option>
+												<option value="block_hash">区块hash</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
 										</form>
 									</table>
-									{% if datas.has_other_pages %}
+
+									{% if blocks.has_other_pages %}
 									<ul class="pagination">
-										{% if datas.has_previous %}
-      										<li><a href="?page={{ datas.previous_page_number }}">&laquo;</a></li>
+										{% if blocks.has_previous %}
+      										<li><a href="?page={{ blocks.previous_page_number }}">&laquo;</a></li>
 									 	{% else %}
 											<li class="disabled">
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %}
-											{% if datas.number == i %}
+										{% for i in blocks.paginator.page_range %}
+											{% if blocks.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -161,8 +172,8 @@
 											</li>
 											{% endif %}
 										{% endfor %}
-										{% if datas.has_next %}
-											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
+										{% if blocks.has_next %}
+											<li><a href="?page={{ blocks.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
 										{% endif %}
@@ -187,6 +198,8 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
@@ -194,7 +207,7 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
-	<script src="../static/app/javascript/review.js"></script>
+    <script src="../static/app/javascript/blockInfo.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
 </body>
 

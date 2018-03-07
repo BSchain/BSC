@@ -96,3 +96,10 @@ class Notice(models.Model):
     notice_info = models.CharField(max_length=200) # 通知信息内容 (sender_name + '在'+time() + switch notice_type: (different_notices)  需要提前进行构造)
     if_check = models.BooleanField(default=False) # 用户是否查看信息
     timestamp = models.CharField(max_length=32) # 此通知信息生成的时间
+
+class Block(models.Model):
+    height = models.IntegerField() # 保存区块高度 唯一
+    timestamp = models.CharField(max_length=32) # 当前区块生成的时间
+    block_size = models.FloatField() # 当前区块的大小
+    tx_number = models.IntegerField() # 当前区块中保存的transaction数量
+    block_hash = models.CharField(max_length=64) # 当前区块自身hash

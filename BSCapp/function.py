@@ -218,7 +218,7 @@ def rechargeData_sql(user_id):
 
 
 def noticeData_sql(user_id, sort_sql):
-    context = {}
+    content = {}
     cursor = connection.cursor()
     sql = 'select notice_id, sender_id, notice_type, notice_info, timestamp, if_check from BSCapp_notice where receiver_id = %s '
 
@@ -230,7 +230,7 @@ def noticeData_sql(user_id, sort_sql):
     except Exception as e:
         print(e)
         cursor.close()
-        return context
+        return content
     notices = []
     len_content = len(content)
     unread_number = 0
@@ -337,3 +337,40 @@ def generate_sort_class(sort_name, sort_type, sort_list):
         sort_class[sort_name] = 'fa fa-caret-up text-success' # ASC up
     return sort_class
 
+def chainData_sql(request, sort_sql):
+    context = {}
+    cursor = connection.cursor()
+    sql = 'select height, timestamp, block_size, tx_number, block_hash ' \
+          'from BSCapp_block '
+
+    search_sql = ''
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        search_sql = 'where {} like %s '.format(search_base)
+    except Exception as e:
+        print(e)
+    sql = sql + search_sql + sort_sql
+    try:
+        if search_sql:
+            cursor.execute(sql, ["%"+search_field+"%"])
+        else:
+            cursor.execute(sql)
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(e)
+        cursor.close()
+        return context
+
+    blocks = []
+    len_content = len(content)
+    for i in range(len_content):
+        block = dict()
+        block['height'] = content[i][0]
+        block['timestamp'] = time_to_str(content[i][1])
+        block['block_size'] = content[i][2]
+        block['tx_number'] = content[i][3]
+        block['block_hash'] = content[i][4]
+        blocks.append(block)
+    return blocks

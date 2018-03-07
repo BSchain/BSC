@@ -8,7 +8,7 @@
 from BSCapp.root_chain.chain import *
 
 # type block_chain is class <chain>
-def mine(block_chain, deleteFile=True): # TODO: need to consider some condition
+def mine(block_chain): # TODO: need to consider some condition
     """
     transaction
     :param in_coins:
@@ -23,24 +23,33 @@ def mine(block_chain, deleteFile=True): # TODO: need to consider some condition
     """
     try:
         # We run the proof of work algorithm to get the next proof...
-        last_block = block_chain.chain[-1] # get last block json
+        # last_block = block_chain.chain[-1] # get last block json
+
+        last_block = block_chain.last_block # get last block json
         last_nonce = last_block['nonce'] # get last_nonce
-
         prev_hash = hash_block(last_block) # calculate the hash for now block
-
         nonce = proof_of_work(last_nonce) # get proof of work
-        index = len(block_chain.chain) + 1 # get block height
+
+        # new_block_index = len(block_chain.chain) + 1 # get block height
+
+        new_block_index = block_chain.chain_length + 1 # new block height = chain_length + 1
 
         block = Block()
-        # transactions = 20
-        # or other
-        block.new_block(index=index, timestamp=time(), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
-        block.save_block() # save to file (one block one file)
-        block_chain.reset_transaction(deleteFile) # reset the current_transaction and delete the file
-        if block_chain.is_valid():
-            print('current chain is valid, the chain length is ', len(block_chain.chain))  # valid the chain
-            block_chain.chain.append(block.to_dict()) # add the new block to now block_chain
-        return True
+        block.new_block(index=new_block_index, timestamp=time(), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
+        block_size = block.save_block() # save to file (one block one file KB)
+        timestamp = datetime.datetime.utcnow().timestamp()
+        block_chain.reset_transaction() # reset the current_transaction
+        block_chain.chain_length += 1 # add chain_length
+        block_chain.last_block = block.to_dict() # update the last block
+        if new_block_index % 5 == 0:
+            block_chain.get_block_from_to(new_block_index - 4, new_block_index) # only check the 4 blocks
+            if block_chain.is_valid():
+                print('current chain is valid, the chain height is ', new_block_index)  # valid the chain
+            block_chain.reset_chain() # reset the chain to reduce the memory.
+
+        block_chain.chain.append(block.to_dict()) # add the new block to now block_chain
+
+        return new_block_index, timestamp, block_size, hash_block(block.to_dict())
+
     except Exception as e:
         print(str(e))
-        return False

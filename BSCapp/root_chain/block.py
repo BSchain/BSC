@@ -41,12 +41,10 @@ class Block:
 
     def save_block(self):
         assert os.path.exists(BLOCK_SAVE_ROOT) , ('Blocks save root file not exist')
-        # path = 'blocks/' + str(index) + '_' + str(block_hash) + '.json'
-        #save_block_path = config.BLOCK_SAVE_ROOT+ str(self.index)+config.BLOCK_SPLIT+str(self.hash_self) + config.BLOCK_SAVE_SUFFIX
-        # path = 'blocks/' + str(index) + '.json'
-        save_block_path = BLOCK_SAVE_ROOT+ str(self.index) + BLOCK_SAVE_SUFFIX
+        save_block_path = get_block_file(self.index)
         with open(save_block_path, 'w') as json_file:
             json_file.write(json.dumps(self.to_dict()))
+        return os.path.getsize(save_block_path) # get the block size B
 
     def to_dict(self): # don't have self.hash_self
         block = {

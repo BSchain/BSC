@@ -63,3 +63,29 @@ function myDataSortBase(obj){
       })
     return;
 }
+
+function blockSortBase(obj){
+    $.ajax("/ChainInfo/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/ChainInfo/");
+      })
+    return;
+}
+
+function adminBlockSortBase(obj){
+    $.ajax("/AdminChainInfo/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/AdminChainInfo/");
+      })
+    return;
+}
