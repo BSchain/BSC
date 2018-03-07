@@ -76,3 +76,16 @@ function blockSortBase(obj){
       })
     return;
 }
+
+function adminBlockSortBase(obj){
+    $.ajax("/AdminChainInfo/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/AdminChainInfo/");
+      })
+    return;
+}

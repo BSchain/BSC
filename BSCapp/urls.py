@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^Recharge/$',views.Recharge),
     url(r'^Notify/$',views.Notify),
     url(r'^ChainInfo/$',views.ChainInfo),
+    url(r'^AdminChainInfo/$',views.AdminChainInfo),
 ]

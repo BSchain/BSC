@@ -889,6 +889,7 @@ def ChainInfo(request):
     username = request.session['username']
     user = User.objects.get(user_name=username)
     user_id = user.user_id
+    notices, unread_notices, unread_number = get_notices(request, user_id)
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
@@ -901,9 +902,69 @@ def ChainInfo(request):
     except Exception as e:
         pass
 
-
     # sort_sql = generate_sort_sql(table_name = 'BSCapp_block', sort_name = 'height', sort_type = 'DESC')
 
+    try:
+        Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+        result = Block_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
+                new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Block_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+
+    Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+    result = Block_sort_name_and_type.split('&')
+    print('result',result)
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    print(myData_sort_list)
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
+
+    table_name = 'BSCapp_block'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+
+    blocks = chainData_sql(request, sort_sql)
+    paged_blocks = pagingData(request, blocks, each_num=5)
+
+    return render(request, "app/page-chainInfo.html",
+                      {'id': username,
+                       'blocks': paged_blocks,
+                       'sort_class': sort_class,
+                       'unread_number': unread_number,
+                       'unread_notices': unread_notices})
+
+@csrf_exempt
+def AdminChainInfo(request):
+    username = request.session['username']
+    user = Admin.objects.get(admin_name=username)
+    try:
+        now_block_height = request.POST['height']
+        now_block_dict = get_block_by_index_json(now_block_height)
+        print(type(now_block_dict))
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            'message': 'block height is '+str(now_block_height),
+            'block': json.dumps(now_block_dict),
+        }))
+    except Exception as e:
+        pass
 
     try:
         Block_sort_name_and_type = request.session['Block_sort_name_and_type']
@@ -941,12 +1002,8 @@ def ChainInfo(request):
 
     blocks = chainData_sql(request, sort_sql)
     paged_blocks = pagingData(request, blocks, each_num=5)
-    notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    return render(request, "app/page-chainInfo.html",
-                  {'id': username,
-                   'blocks': paged_blocks,
-                   'sort_class':sort_class,
-                   'unread_number': unread_number,
-                   'unread_notices': unread_notices})
-
+    return render(request, "app/page-adminChainInfo.html",
+                      {'id': username,
+                       'blocks': paged_blocks,
+                       'sort_class': sort_class})
