@@ -410,40 +410,41 @@ def AdminDataInfo(request):
                            seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
         tx.save_transaction()
         # insert the review into history and save a notice
-        try:
+        try: # can change
             review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
             review_history.review_status = now_data_status
             review_history.timestamp = now_time
             review_history.save()
-            # generate notice for a successful recharge
-            cursor = connection.cursor()
-            notice_insert = 'insert into BSCapp_notice \
-                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
-                values \
-                (%s, %s, %s, %s, %s, 0, %s);'
-            sender_id = now_admin_id
-            notice_id = generate_uuid(sender_id)
-            receiver_id = now_data.user_id
-            timestamp = datetime.datetime.utcnow().timestamp()
-            if now_action == 'review_pass':
-                notice_type = 1
-                notice_info = '{} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp), now_data.data_name)
-            else:
-                notice_type = 2
-                notice_info = '{} 在 {} 审核 {} 不通过'.format(now_admin.admin_name, time_to_str(timestamp), now_data.data_name)
-            cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
-                                           notice_info, timestamp])
-            cursor.close()
-            return HttpResponse(json.dumps({
-                'statCode': 0,
-            }))
         except Exception as e:
             print(e)
-            cursor.close()
+            # the first time to review data
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
-            return HttpResponse(json.dumps({
-                'statCode': 0,
-                }))
+
+        # generate notice for a successful recharge
+        cursor = connection.cursor()
+        notice_insert = 'insert into BSCapp_notice \
+                                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
+                                values \
+                                (%s, %s, %s, %s, %s, 0, %s);'
+        sender_id = now_admin_id
+        notice_id = generate_uuid(sender_id)
+        receiver_id = now_data.user_id
+        timestamp = datetime.datetime.utcnow().timestamp()
+        if now_action == 'review_pass':
+            notice_type = 1
+            notice_info = '{} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp),
+                                                    now_data.data_name)
+        else:
+            notice_type = 2
+            notice_info = '{} 在 {} 审核 {} 不通过'.format(now_admin.admin_name, time_to_str(timestamp),
+                                                     now_data.data_name)
+        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
+                                       notice_info, timestamp])
+        cursor.close()
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
 
     except Exception:
         pass

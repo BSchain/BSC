@@ -123,8 +123,9 @@
 											<tr>
                                                 <th align="center" >区块高度 </th>
                                                 <th align="center" >时间戳 </th>
-                                                <th align="center" >区块大小(MB) </th>
+                                                <th align="center" >区块大小(B) </th>
                                                 <th align="center" >Transaction数量 </th>
+                                                <th align="center" >区块hash </th>
                                                 <th align="center" >区块详情 </th>
 											</tr>
 										</thead>
@@ -134,8 +135,9 @@
 											<tr>
                                                 <td align="">  {{block.height}}</td>
 												<td align="">  {{block.timestamp}}</td>
-												<td align="">  {{block.size}}</td>
+												<td align="">  {{block.block_size}}</td>
 												<td align="">  {{block.tx_number}}</td>
+                                                <td align="">  {{block.block_hash}}</td>
                                                 <td>
 													<button class="fa fa-shopping-cart" style="font-size: 16px" name="block_height" id="block_height" value="{{block.block_height}}" onclick="showBlockDetail(this);">详情</button>
 													<div id="{{block.height}}"> </div>
@@ -147,24 +149,24 @@
 										<form method="POST" action="/ChainInfo/">
 											<select id="searchBase" name="searchBase">
 												<option value="height">区块高度</option>
-												<option value="tx_hash">交易hash</option>
+												<option value="tx_hash">区块hash</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
 										</form>
 									</table>
 									
-									{% if datas.has_other_pages %}
+									{% if blocks.has_other_pages %}
 									<ul class="pagination">
-										{% if datas.has_previous %}
-      										<li><a href="?page={{ datas.previous_page_number }}">&laquo;</a></li>
+										{% if blocks.has_previous %}
+      										<li><a href="?page={{ blocks.previous_page_number }}">&laquo;</a></li>
 									 	{% else %}
 											<li class="disabled">
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %}
-											{% if datas.number == i %}
+										{% for i in blocks.paginator.page_range %}
+											{% if blocks.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -176,8 +178,8 @@
 											</li>
 											{% endif %}
 										{% endfor %}
-										{% if datas.has_next %}
-											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
+										{% if blocks.has_next %}
+											<li><a href="?page={{ blocks.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
 										{% endif %}

@@ -107,6 +107,24 @@ def valid_block(block):
     last_nonce = get_block_by_index_object(prev_index).nonce
     return valid_nonce(last_nonce=last_nonce, nonce=nonce)
 
+def valid_chain_index(chain, start_height, end_height):
+
+    last_block = chain[start_height-1]
+    current_index = start_height
+
+    while current_index < end_height:
+        block = chain[current_index]
+        # Check that the hash of the block is correct
+        print(block['prev_hash'], hash_block(last_block))
+        if block['prev_hash'] != hash_block(last_block):
+            return False
+        # print(last_block['nonce'], block['nonce'])
+        # Check that the Proof of Work is correct
+        if not valid_nonce(last_block['nonce'], block['nonce']):
+            return False
+        last_block = block
+        current_index += 1
+    return True
 
 def valid_chain(chain):
     last_block = chain[0]
@@ -114,17 +132,13 @@ def valid_chain(chain):
 
     while current_index < len(chain):
         block = chain[current_index]
-        # print(f'{last_block}')
-        # print(f'{block}')
-        # print("\n-----------\n")
         # Check that the hash of the block is correct
         print(block['prev_hash'],hash_block(last_block))
         if block['prev_hash'] != hash_block(last_block):
             return False
-        print(last_block['nonce'],block['nonce'])
+        # print(last_block['nonce'],block['nonce'])
         # Check that the Proof of Work is correct
         if not valid_nonce(last_block['nonce'], block['nonce']):
-            print('here!!!')
             return False
 
         last_block = block

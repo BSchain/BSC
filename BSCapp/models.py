@@ -102,3 +102,4 @@ class Block(models.Model):
     timestamp = models.CharField(max_length=32) # 当前区块生成的时间
     block_size = models.FloatField() # 当前区块的大小
     tx_number = models.IntegerField() # 当前区块中保存的transaction数量
+    block_hash = models.CharField(max_length=64) # 当前区块自身hash

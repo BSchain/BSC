@@ -340,7 +340,7 @@ def generate_sort_class(sort_name, sort_type, sort_list):
 def chainData_sql():
     content = {}
     cursor = connection.cursor()
-    sql = 'select height, timestamp, block_size, tx_number ' \
+    sql = 'select height, timestamp, block_size, tx_number, block_hash ' \
           'from BSCapp_block order by height DESC;'
     try:
         cursor.execute(sql)
@@ -356,5 +356,6 @@ def chainData_sql():
         block['timestamp'] = time_to_str(content[i][1])
         block['block_size'] = content[i][2]
         block['tx_number'] = content[i][3]
+        block['block_hash'] = content[i][4]
         blocks.append(block)
     return blocks
