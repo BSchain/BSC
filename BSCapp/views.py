@@ -276,6 +276,7 @@ def BuyableData(request):
 
             # generate out_coins
             out_coins = []
+            income_user_out_coins = []
             left_credit = coin_credicts - now_data_price
             if left_credit > 0:
                 buyer_out_coin = COIN.Coin()
@@ -286,6 +287,7 @@ def BuyableData(request):
             legal_income_user_list = []
             legal_income_user_id_list = []
             legal_income_user_ratio_list = []
+
             try:
                 cursor = connection.cursor()
                 sql = 'select user_name, ratio from BSCapp_income ' \
@@ -294,20 +296,32 @@ def BuyableData(request):
                 income_content = cursor.fetchall()
                 len_income_content = len(income_content)
 
+                # TODO: change seller_out_coin !!! add income user
+
                 for i in range(len_income_content):
                     legal_income_user_list.append(income_content[i][0]) # get income user name
-                    legal_income_user_ratio_list.append(income_content[i][1]) # get income user ratio
-                    legal_income_user_id_list.append(User.objects.get(user_name=income_content[i][0]).user_id) # get income user id
+                    income_user_ratio = income_content[i][1]
+                    legal_income_user_ratio_list.append(income_user_ratio) # get income user ratio
+
+                    income_user_id = User.objects.get(user_name=income_content[i][0]).user_id
+                    legal_income_user_id_list.append(income_user_id) # get income user id
+
+                    seller_out_coin = COIN.Coin()
+                    seller_out_coin.new_coin(coin_uuid=generate_uuid(income_user_id), number_coin=now_data_price*income_user_ratio,
+                                             owner=income_user_id)
+                    out_coins.append(seller_out_coin.to_dict()) # add income user coin to total out coins
+                    income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
+
             except Exception as e:
                 print(e)
 
-            # TODO : change seller_out_coin !!! add income user
-            # TODO: update the coin for income user
-            # TODO: update the wallet for income user
+
             # TODO: generate the transaction files
-            seller_out_coin = COIN.Coin()
-            seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
-            out_coins.append(seller_out_coin.to_dict())
+
+            #
+            # seller_out_coin = COIN.Coin()
+            # seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
+            # out_coins.append(seller_out_coin.to_dict())
 
             # insert one purchase log into table
             Purchase(user_id=buyer_id,data_id=now_data_id).save()
@@ -329,13 +343,27 @@ def BuyableData(request):
             if left_credit > 0:
                 Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
                      is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=left_credit).save()
-            Coin(coin_id=seller_out_coin.to_dict()['coin_uuid'], owner_id=seller_id,
-                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=now_data_price).save()
+
+            # TODO: update the coin for income user
+
+            len_income_user_coins = len(income_user_out_coins)
+
+            for i in range(len_income_user_coins):
+                Coin(coin_id=income_user_out_coins[i]['coin_uuid'], owner_id=income_user_out_coins[i]['owner'],
+                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=income_user_out_coins[i]['number_coin']).save()
 
             # update the wallet of buyer and seller
             sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
+
             cursor.execute(sql, [0 - now_data_price, buyer_id])
-            cursor.execute(sql, [now_data_price, seller_id])
+
+            # TODO: update the wallet for income user
+
+            print('hahahha ')
+            for i in range(len_income_user_coins):
+                cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
+
+            print('yesyesue')
             sql = 'update BSCapp_data set BSCapp_data.data_download = data_download + 1 where data_id = %s'
             cursor.execute(sql, [now_data_id])
             cursor.close()
@@ -347,7 +375,8 @@ def BuyableData(request):
                 'statCode': 0,
                 'message': '购买成功!'
             }))
-        except:
+        except Exception as e:
+            print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '系统错误!'
@@ -514,7 +543,7 @@ def AdminDataInfo(request):
     adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price', 'data_status']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
-    return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas, 'sort_class': sort_class})
+    return render(request, "app/page-adminDataInfo.html", {'id':username, 'datas': paged_datas, 'sort_class': sort_class})
 
 @csrf_exempt
 def Upload(request):
