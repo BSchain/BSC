@@ -214,7 +214,6 @@ def BuyableData(request):
     buyer_id = user.user_id  # get buyer
 
     try:
-        # print(request.POST['data_id'])
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
         seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
@@ -572,10 +571,22 @@ def Upload(request):
         # TODO: 1. generate new coin_id for the user_id
         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
-        default_coin_number = 1.0
+        default_coin_number = 1.0 # TODO: add notify to table
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
+
+        sender_id = 'system'
+        owner_notice_id = generate_uuid(sender_id)
+        timestamp = time()
+        owner_notice_type = 4
+        owner_notice_info = '{} 在 {} 上传 {} 成功，奖励积分 {}'.format(username, time_to_str(timestamp), data_name, default_coin_number)
+
+        # send notice to data owner
+        Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=user_id,
+               notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
+               timestamp=timestamp).save()
+
 
         # TODO: 2. save transaction info to file
         out_coins = []
@@ -928,12 +939,10 @@ def ChainInfo(request):
 
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
-    print('result',result)
     default_sort_name = result[0]
     default_sort_type = result[1]
 
     myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
-    print(myData_sort_list)
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
     table_name = 'BSCapp_block'
@@ -957,7 +966,6 @@ def AdminChainInfo(request):
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
-        print(type(now_block_dict))
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is '+str(now_block_height),

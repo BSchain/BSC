@@ -35,6 +35,13 @@ class Data(models.Model):
     data_price = models.FloatField() # 数据价格，信用度
     data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
 
+class Income(models.Model):
+    data_id = models.CharField(max_length=64)  # 数据id
+    user_name = models.CharField(max_length=20)  # 用户登录名
+    ratio = models.FloatField() # 该用户对此数据的收益占比
+    class Meta:
+        unique_together=("data_id","user_name") # 联合主键
+
 class Transaction(models.Model):
     transaction_id = models.CharField(max_length=64, primary_key=True) # 交易id
     buyer_id = models.CharField(max_length=64) # 购买者id
