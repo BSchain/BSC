@@ -313,8 +313,8 @@ def BuyableData(request):
                     income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
 
             except Exception as e:
-                print(e)
-
+                # print(e)
+                pass
 
             # TODO: generate the transaction files
 
@@ -359,11 +359,9 @@ def BuyableData(request):
 
             # TODO: update the wallet for income user
 
-            print('hahahha ')
             for i in range(len_income_user_coins):
                 cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
 
-            print('yesyesue')
             sql = 'update BSCapp_data set BSCapp_data.data_download = data_download + 1 where data_id = %s'
             cursor.execute(sql, [now_data_id])
             cursor.close()
@@ -376,7 +374,7 @@ def BuyableData(request):
                 'message': '购买成功!'
             }))
         except Exception as e:
-            print(str(e))
+            # print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '系统错误!'
@@ -407,7 +405,8 @@ def BuyableData(request):
                 'statCode': 0,
             }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
     result = Buy_sort_name_and_type.split('&')
@@ -419,8 +418,7 @@ def BuyableData(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     datas = buyData_sql(request, buyer_id, sort_sql)
-
-    paged_datas = pagingData(request, datas, each_num= 10)
+    paged_datas = pagingData(request, datas, each_num= 4)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price']
@@ -469,7 +467,7 @@ def AdminDataInfo(request):
             review_history.timestamp = now_time
             review_history.save()
         except Exception as e:
-            print(e)
+            # print(e)
             # the first time to review data
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
 
@@ -524,8 +522,8 @@ def AdminDataInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
     result = Admin_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -843,8 +841,8 @@ def MyData(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
     result = MyData_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -903,7 +901,8 @@ def Order(request):
                 }))
         # insert new purchase_log for buyer
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
@@ -926,8 +925,8 @@ def Order(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Order_sort_name_and_type = request.session['Order_sort_name_and_type']
     result = Order_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -1034,8 +1033,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     try:
         Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
         result = Notice_sort_name_and_type.split('&')
@@ -1058,8 +1057,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
     Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
@@ -1117,8 +1116,8 @@ def ChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -1176,8 +1175,8 @@ def AdminChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
