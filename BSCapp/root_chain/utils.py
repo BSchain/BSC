@@ -5,7 +5,7 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-# TODO: add some methods to this file!
+# add some methods to this file!
 
 from BSCapp.root_chain.block import *
 import json

@@ -17,10 +17,10 @@ class Chain:
         # 2.can also using file_list to valid the block
         # 3.save memory
         # 4.only read total chain when chain needed
-        self.chain = [] # TODO: change to record the length of block
+        self.chain = []
         self.current_transactions = []
         self.nodes = set()
-        self.chain_length = 0
+        self.chain_length = 0 # record the length of block
         self.last_block = '' # json_block
 
     def __eq__(self, other):
@@ -41,7 +41,7 @@ class Chain:
     def __le__(self, other):
         pass
 
-    def valid_from_to(self,start_height, end_height): # TODO: valid the block from start_idx to end_idx
+    def valid_from_to(self,start_height, end_height): # valid the block from start_idx to end_idx
         assert start_height <= end_height, ('start height must less than end height', start_height, end_height)
         assert start_height <= self.chain_length, ('start height must less than chain_length', start_height, self.chain_length)
         assert end_height <= self.chain_length, ( 'end height must less than chain_length', end_height, self.chain_length)
@@ -49,7 +49,7 @@ class Chain:
         pass
 
     def is_valid(self):
-        return valid_chain(self.chain) # TODO: can change to valid_from_to(self,0, chain_length)
+        return valid_chain(self.chain)
         pass
 
     def init_chain_length(self):
@@ -155,7 +155,7 @@ class Chain:
 
         # Grab and verify the chains from all the nodes in our network
         for node in neighbours:
-            response = requests.get(f'http://{node}/chain') # TODO: need to change with the request
+            response = requests.get(f'http://{node}/chain') # need to change with the request
 
             if response.status_code == 200:
                 length = response.json()['length']

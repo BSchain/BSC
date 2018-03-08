@@ -214,7 +214,6 @@ def BuyableData(request):
     buyer_id = user.user_id  # get buyer
 
     try:
-        # print(request.POST['data_id'])
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
         seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
@@ -277,15 +276,52 @@ def BuyableData(request):
 
             # generate out_coins
             out_coins = []
+            income_user_out_coins = []
             left_credit = coin_credicts - now_data_price
             if left_credit > 0:
                 buyer_out_coin = COIN.Coin()
                 buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
                 out_coins.append(buyer_out_coin.to_dict())
 
-            seller_out_coin = COIN.Coin()
-            seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
-            out_coins.append(seller_out_coin.to_dict())
+            # find the total income user
+            legal_income_user_list = []
+            legal_income_user_id_list = []
+            legal_income_user_ratio_list = []
+
+            try:
+                cursor = connection.cursor()
+                sql = 'select user_name, ratio from BSCapp_income ' \
+                      'where BSCapp_income.data_id = %s'
+                cursor.execute(sql, [now_data_id])
+                income_content = cursor.fetchall()
+                len_income_content = len(income_content)
+
+                # TODO: change seller_out_coin !!! add income user
+
+                for i in range(len_income_content):
+                    legal_income_user_list.append(income_content[i][0]) # get income user name
+                    income_user_ratio = income_content[i][1]
+                    legal_income_user_ratio_list.append(income_user_ratio) # get income user ratio
+
+                    income_user_id = User.objects.get(user_name=income_content[i][0]).user_id
+                    legal_income_user_id_list.append(income_user_id) # get income user id
+
+                    seller_out_coin = COIN.Coin()
+                    seller_out_coin.new_coin(coin_uuid=generate_uuid(income_user_id), number_coin=now_data_price*income_user_ratio,
+                                             owner=income_user_id)
+                    out_coins.append(seller_out_coin.to_dict()) # add income user coin to total out coins
+                    income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
+
+            except Exception as e:
+                # print(e)
+                pass
+
+            # TODO: generate the transaction files
+
+            #
+            # seller_out_coin = COIN.Coin()
+            # seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
+            # out_coins.append(seller_out_coin.to_dict())
 
             # insert one purchase log into table
             Purchase(user_id=buyer_id,data_id=now_data_id).save()
@@ -307,13 +343,25 @@ def BuyableData(request):
             if left_credit > 0:
                 Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
                      is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=left_credit).save()
-            Coin(coin_id=seller_out_coin.to_dict()['coin_uuid'], owner_id=seller_id,
-                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=now_data_price).save()
+
+            # TODO: update the coin for income user
+
+            len_income_user_coins = len(income_user_out_coins)
+
+            for i in range(len_income_user_coins):
+                Coin(coin_id=income_user_out_coins[i]['coin_uuid'], owner_id=income_user_out_coins[i]['owner'],
+                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=income_user_out_coins[i]['number_coin']).save()
 
             # update the wallet of buyer and seller
             sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
+
             cursor.execute(sql, [0 - now_data_price, buyer_id])
-            cursor.execute(sql, [now_data_price, seller_id])
+
+            # TODO: update the wallet for income user
+
+            for i in range(len_income_user_coins):
+                cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
+
             sql = 'update BSCapp_data set BSCapp_data.data_download = data_download + 1 where data_id = %s'
             cursor.execute(sql, [now_data_id])
             cursor.close()
@@ -325,7 +373,8 @@ def BuyableData(request):
                 'statCode': 0,
                 'message': '购买成功!'
             }))
-        except:
+        except Exception as e:
+            # print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '系统错误!'
@@ -356,7 +405,8 @@ def BuyableData(request):
                 'statCode': 0,
             }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
     result = Buy_sort_name_and_type.split('&')
@@ -368,8 +418,7 @@ def BuyableData(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     datas = buyData_sql(request, buyer_id, sort_sql)
-
-    paged_datas = pagingData(request, datas, each_num= 10)
+    paged_datas = pagingData(request, datas, each_num= 4)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price']
@@ -418,7 +467,7 @@ def AdminDataInfo(request):
             review_history.timestamp = now_time
             review_history.save()
         except Exception as e:
-            print(e)
+            # print(e)
             # the first time to review data
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
 
@@ -473,8 +522,8 @@ def AdminDataInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
     result = Admin_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -492,7 +541,7 @@ def AdminDataInfo(request):
     adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price', 'data_status']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
-    return render(request, "app/page-adminDataInfo.html", {'datas': paged_datas, 'sort_class': sort_class})
+    return render(request, "app/page-adminDataInfo.html", {'id':username, 'datas': paged_datas, 'sort_class': sort_class})
 
 @csrf_exempt
 def Upload(request):
@@ -504,7 +553,11 @@ def Upload(request):
     if (request.method=="POST"):
         uploadFile = request.FILES.get("file", None)    #获得上传文件
         if not uploadFile:
-            return render(request, "app/page-upload.html")
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '未上传数据，请上传数据!'
+            }))
+            # return render(request, "app/page-upload.html")
         # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
         data_path = os.path.join("BSCapp/static/upload",uploadFile.name)
         destination = open(data_path,'wb+')
@@ -524,6 +577,101 @@ def Upload(request):
         data_type = request.POST.getlist('data_type')[0]
         data_tag = request.POST.getlist('data_tag')[0]
 
+        data_upload_user_ratio = request.POST['data_ration0']
+        try:
+            data_upload_user_ratio = (float)(data_upload_user_ratio)
+            if data_upload_user_ratio < 0:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比不能小于0，请重新输入！！'
+                }))
+            elif data_upload_user_ratio > 100:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比不能大于100，请重新输入！！'
+                }))
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '收益占比有误，请重新输入 范围(0~100)！！'
+            }))
+        data_user_number = request.POST['data_user_number']
+        try:
+            data_user_number = (int)(data_user_number)
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '人数有误！！'
+            }))
+
+        data_income_user_list = []
+        data_income_user_id_list = []
+        data_ratio_list = []
+        total_ratio = 0.0
+        total_ratio += data_upload_user_ratio
+        for i in range(1, data_user_number+1):
+            data_income_user = request.POST['data_income_user'+str(i)]
+            data_ratio = request.POST['data_ratio'+str(i)]
+
+            if data_income_user == '' or data_ratio == '': # 空值跳过
+                continue
+            try:
+                other_user = User.objects.get(user_name=data_income_user)
+                if other_user.user_id == user.user_id:
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '其他收益者不能是当前用户 '+user.user_name+',请重新输入!'
+                    }))
+                data_income_user_id_list.append(other_user.user_id) # add other user id to list
+            except Exception as e:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '用户名: '+data_income_user+' 不存在，请重新输入!'
+                }))
+
+            try:
+                data_ratio = (float)(data_ratio)
+                if data_ratio < 0 :
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '收益占比不能小于0，请重新输入！'
+                    }))
+                elif data_ratio > 100 :
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '收益占比不能大于100，请重新输入！'
+                    }))
+                total_ratio += data_ratio # add total ratio
+            except:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比有误，请重新输入 范围(0~100)！'
+                }))
+            data_income_user_list.append(data_income_user)
+            data_ratio_list.append(data_ratio)
+
+        if data_name == '' :
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '数据名未填写，请填写数据名！'
+            }))
+        if data_info == '':
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '数据简介未填写，请填写数据简介！'
+            }))
+        try:
+            data_price = (float)(data_price)
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '价格有误,请重新输入价格！'
+            }))
+        if data_price < 0 :
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '价格有误，价格应当大于0！'
+            }))
         #find out whether there is same data uploaded before
         content = {}
         cursor = connection.cursor()
@@ -562,22 +710,65 @@ def Upload(request):
 
             return HttpResponse(json.dumps({
                 'statCode': -1,
+                'message':'数据冲突，该数据已在数据库中！'
             }))
 
         Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
              data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
 
+        # 0. save each income user info to table DONE!
+                #  send notice to each user DONE!
+        legal_income_user_number = len(data_income_user_list)
+        for index in range(legal_income_user_number+1):
+            if index == legal_income_user_number: # add upload data self to the income table DONE!
+                income_user_name = username
+                income_user_ratio = data_upload_user_ratio
+                notice_receiver_id = user_id # upload data user id
+            else:
+                income_user_name = data_income_user_list[index]
+                income_user_ratio = data_ratio_list[index]
+                notice_receiver_id = data_income_user_id_list[index]
+
+            income_ratio = income_user_ratio/total_ratio
+            Income(data_id = data_id, user_name = income_user_name, ratio = income_ratio).save()
+            sender_id = '系统'
+            owner_notice_id = generate_uuid(sender_id)
+            timestamp = time()
+            owner_notice_type = 4
+            owner_notice_info = '{} 在 {} 上传 {} 成功，' \
+                                '并设置账户 {} 收益占比为 {}/{} = {}'.format(
+                            username,time_to_str(timestamp), data_name,
+                            income_user_name,income_user_ratio,total_ratio, income_ratio )
+
+            # send notice to user
+            Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id= notice_receiver_id,
+                   notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
+                   timestamp=timestamp).save()
+
+
         now_time = str(datetime.datetime.utcnow().timestamp())
-        # TODO: 1. generate new coin_id for the user_id
+        #  1. generate new coin_id for the user_id Done!!!
         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
-        default_coin_number = 1.0
+        default_coin_number = 1.0 # add notify to table Done!!!
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
 
-        # TODO: 2. save transaction info to file
+        sender_id = '系统'
+        owner_notice_id = generate_uuid(sender_id)
+        timestamp = time()
+        owner_notice_type = 4
+        owner_notice_info = '{} 在 {} 上传 {} 成功，奖励积分 {}'.format(username, time_to_str(timestamp), data_name, default_coin_number)
+
+        # send notice to data owner
+        Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=user_id,
+               notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
+               timestamp=timestamp).save()
+
+
+        # 2. save transaction info to file Done!!!
         out_coins = []
         coin = COIN.Coin()
         coin.new_coin(new_coin_id, default_coin_number, user_id)
@@ -587,7 +778,7 @@ def Upload(request):
                            seller=user_id, buyer='', data_uuid=data_id, credit=default_coin_number, reviewer='')
         tx.save_transaction()
 
-        # TODO: 3. update the wallet of this user
+        # 3. update the wallet of this user
         # because when user signup there must have a wallet for this user
         # that's why we just need to get the result out and sum those.
         wallet = Wallet.objects.get(user_id=user_id)
@@ -613,6 +804,7 @@ def Upload(request):
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
+
     notices, unread_notices, unread_number = get_notices(request, user.user_id)
     return render(request, "app/page-upload.html", {"username": username,
                                                     'unread_number':unread_number,
@@ -649,8 +841,8 @@ def MyData(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
     result = MyData_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -709,7 +901,8 @@ def Order(request):
                 }))
         # insert new purchase_log for buyer
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
@@ -732,8 +925,8 @@ def Order(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Order_sort_name_and_type = request.session['Order_sort_name_and_type']
     result = Order_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -804,7 +997,7 @@ def Recharge(request):
             (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
             values \
             (%s, %s, %s, %s, %s, 0, %s)'
-        sender_id = 'system'
+        sender_id = '系统'
         notice_id = generate_uuid(sender_id)
         receiver_id = user_id
         notice_type = 3
@@ -840,8 +1033,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     try:
         Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
         result = Notice_sort_name_and_type.split('&')
@@ -864,8 +1057,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
     Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
@@ -893,7 +1086,6 @@ def ChainInfo(request):
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
-        print(type(now_block_dict))
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is '+str(now_block_height),
@@ -924,16 +1116,14 @@ def ChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
-    print('result',result)
     default_sort_name = result[0]
     default_sort_type = result[1]
 
     myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
-    print(myData_sort_list)
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
     table_name = 'BSCapp_block'
@@ -957,7 +1147,6 @@ def AdminChainInfo(request):
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
-        print(type(now_block_dict))
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is '+str(now_block_height),
@@ -986,8 +1175,8 @@ def AdminChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
