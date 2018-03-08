@@ -8,7 +8,7 @@
 from BSCapp.root_chain.chain import *
 
 # type block_chain is class <chain>
-def mine(block_chain): # TODO: need to consider some condition
+def mine(block_chain): # need to consider some condition
     """
     transaction
     :param in_coins:

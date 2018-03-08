@@ -282,7 +282,7 @@ def BuyableData(request):
                 buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
                 out_coins.append(buyer_out_coin.to_dict())
 
-            # TODO: find the total income user!!!
+            # find the total income user
             legal_income_user_list = []
             legal_income_user_id_list = []
             legal_income_user_ratio_list = []
@@ -300,6 +300,7 @@ def BuyableData(request):
                     legal_income_user_id_list.append(User.objects.get(user_name=income_content[i][0]).user_id) # get income user id
             except Exception as e:
                 print(e)
+
 
             seller_out_coin = COIN.Coin()
             seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
@@ -686,11 +687,11 @@ def Upload(request):
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
              data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
 
-        # TODO: 0. save each income user info to table DONE!
-                # TODO: send notice to each user DONE!
+        # 0. save each income user info to table DONE!
+                #  send notice to each user DONE!
         legal_income_user_number = len(data_income_user_list)
         for index in range(legal_income_user_number+1):
-            if index == legal_income_user_number: # TODO: add upload data self to the income table DONE!
+            if index == legal_income_user_number: # add upload data self to the income table DONE!
                 income_user_name = username
                 income_user_ratio = data_upload_user_ratio
                 notice_receiver_id = user_id # upload data user id
@@ -717,10 +718,10 @@ def Upload(request):
 
 
         now_time = str(datetime.datetime.utcnow().timestamp())
-        # TODO: 1. generate new coin_id for the user_id Done!!!
+        #  1. generate new coin_id for the user_id Done!!!
         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
-        default_coin_number = 1.0 # TODO: add notify to table Done!!!
+        default_coin_number = 1.0 # add notify to table Done!!!
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
@@ -737,7 +738,7 @@ def Upload(request):
                timestamp=timestamp).save()
 
 
-        # TODO: 2. save transaction info to file Done!!!
+        # 2. save transaction info to file Done!!!
         out_coins = []
         coin = COIN.Coin()
         coin.new_coin(new_coin_id, default_coin_number, user_id)
@@ -747,7 +748,7 @@ def Upload(request):
                            seller=user_id, buyer='', data_uuid=data_id, credit=default_coin_number, reviewer='')
         tx.save_transaction()
 
-        # TODO: 3. update the wallet of this user
+        # 3. update the wallet of this user
         # because when user signup there must have a wallet for this user
         # that's why we just need to get the result out and sum those.
         wallet = Wallet.objects.get(user_id=user_id)

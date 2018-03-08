@@ -17,7 +17,7 @@ db= pymysql.connect(host="localhost",user="root", password="zpflyfe",db="bsc_db"
 cursor = db.cursor()
 
 # insert the first block info to database!
-# FIXME: only run following code once!!!
+# only run following code once!!!
 def insert_gensis_block():
     gensis_block = CHAIN.Chain().get_gensis_block()
     gensis_index = 1

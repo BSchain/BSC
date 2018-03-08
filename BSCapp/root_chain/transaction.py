@@ -34,7 +34,7 @@ class Transaction:
         return self.__eq__(other)
 
     def to_dict(self):
-        # FIXME: change to different kinds of structure
+        # change to different kinds of structure
         transaction = {
             'in_coins': self.in_coins,
             'out_coins': self.out_coins,
@@ -209,7 +209,7 @@ class Transaction:
         data_uuid = 'mydata_uuid'
         credit = 100.0
     """
-    # FIXME: later can change into more flexible
+    # later can change into more flexible
     def valid_transaction(self):
         assert self.action is not None, ('action should not be None')
         assert self.timestamp is not None, ('timestamp should not be None')
@@ -231,7 +231,7 @@ class Transaction:
             assert self.credit >=0, ('Upload data, should have (+) credit reward. credit:',self.credit)
             assert self.reviewer is '', ('Upload data, reviewer should be None, reviewer:', self.reviewer)
             return True
-        elif self.action == 'buy': #TODO: need to fix those logist
+        elif self.action == 'buy':
             assert len(self.in_coins) > 0 , ('Buy data, in_coins should not be None, in_coins:', self.in_coins)
             assert len(self.out_coins) > 0 , ('Buy data, out_coins should not be None, out_coins:', self.out_coins)
             assert self.buyer is not '', ('Buy data, buyer should not be None, buyer:', self.buyer)

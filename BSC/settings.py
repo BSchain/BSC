@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'BSCapp' # TODO: need to add app_name
+    'BSCapp' # need to add app_name
 ]
 
 MIDDLEWARE = [
@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'BSC.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    # TODO:  change the user name and add password
+    #  change the user name and add password
 
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
