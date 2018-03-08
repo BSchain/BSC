@@ -301,7 +301,10 @@ def BuyableData(request):
             except Exception as e:
                 print(e)
 
-
+            # TODO : change seller_out_coin !!! add income user
+            # TODO: update the coin for income user
+            # TODO: update the wallet for income user
+            # TODO: generate the transaction files
             seller_out_coin = COIN.Coin()
             seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
             out_coins.append(seller_out_coin.to_dict())
