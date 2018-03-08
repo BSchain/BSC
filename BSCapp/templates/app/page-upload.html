@@ -194,11 +194,42 @@
 												</div>
 											</div>
 										</div>
-										<div class="form-group">
+
+                                        <div class="row">
+											<div class="col-md-2">
+												<span> 自身收益 </span>
+											</div>
+											<div class="col-md-10">
+												<div class="form-group">
+													<input name ="data_ration0" class="form-control" id="data_ration0" value="" placeholder="自身收益占比 范围(0~100)">
+												</div>
+											</div>
+										</div>
+
+                                    </div>
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">添加其他收益人</h3>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="deleteNewIncomeUser()" style="alignment: center"> 删除收益人 </button>
+                                    <button type="button" class="btn btn-primary" onclick="addNewIncomeUser()" style="align-self: auto"> 新增收益人 </button>
+
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-10" >
+                                                <div id="income_div">
+                                                    <div class="form-group" id="income_user1">
+                                                        <input name ="data_income1" style="background: cornsilk" class="form-control" id="data_income1" value="" placeholder="数据收益人1用户名">
+                                                        <input name ="data_ration1" style="background: cornsilk" class="form-control" id="data_ration1" value="" placeholder="收益比重1(0~100)">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <div class="form-group">
 										　　　	<input type="file" id="file" name="file" /> <br />
 										</div>
+
 										<button type="button" class="btn btn-primary" onclick="checkUpload()" style="float:right"> 上传 </button>
-									</div>
+									    </div>
+                                    </div>
 								</div>
 							</div>
 						</form>
@@ -228,3 +259,4 @@
 </body>
 
 </html>
+

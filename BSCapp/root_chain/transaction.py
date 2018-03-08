@@ -49,7 +49,7 @@ class Transaction:
         return transaction
 
     def save_transaction(self):
-        if os.path.exists(TRANSACTION_SAVE_ROOT):
+        if os.path.exists(TRANSACTION_SAVE_ROOT) == False:
             os.mkdir(TRANSACTION_SAVE_ROOT)
         assert os.path.exists(TRANSACTION_SAVE_ROOT), (TRANSACTION_SAVE_ROOT,' not exist')
         # path = 'blocks/' + str(index) + '_' + str(block_hash) + '.json'

@@ -503,7 +503,11 @@ def Upload(request):
     if (request.method=="POST"):
         uploadFile = request.FILES.get("file", None)    #获得上传文件
         if not uploadFile:
-            return render(request, "app/page-upload.html")
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '未上传数据，请上传数据!'
+            }))
+            # return render(request, "app/page-upload.html")
         # 打开特定的文件进行二进制的写操作，存在upload文件夹下，使用相对路径
         data_path = os.path.join("BSCapp/static/upload",uploadFile.name)
         destination = open(data_path,'wb+')
@@ -523,6 +527,28 @@ def Upload(request):
         data_type = request.POST.getlist('data_type')[0]
         data_tag = request.POST.getlist('data_tag')[0]
 
+        if data_name == '' :
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '数据名未填写，请填写数据名！'
+            }))
+        if data_info == '':
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '数据简介未填写，请填写数据简介！'
+            }))
+        try:
+            data_price = (float)(data_price)
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '价格有误,请重新输入价格！'
+            }))
+        if data_price < 0 :
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '价格有误，价格应当大于0！'
+            }))
         #find out whether there is same data uploaded before
         content = {}
         cursor = connection.cursor()
@@ -561,6 +587,7 @@ def Upload(request):
 
             return HttpResponse(json.dumps({
                 'statCode': -1,
+                'message':'数据冲突，该数据已在数据库中！'
             }))
 
         Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
@@ -624,6 +651,7 @@ def Upload(request):
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
+
     notices, unread_notices, unread_number = get_notices(request, user.user_id)
     return render(request, "app/page-upload.html", {"username": username,
                                                     'unread_number':unread_number,
@@ -904,7 +932,6 @@ def ChainInfo(request):
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
-        print(type(now_block_dict))
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is '+str(now_block_height),
