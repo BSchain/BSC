@@ -8,8 +8,17 @@ function checkUpload() {
     form_data.append('data_info', $('#data_info').val());
     form_data.append('data_source', $('#data_source').val());
     form_data.append('data_price', $('#data_price').val());
+    form_data.append('data_ration0', $('#data_ration0').val());
     form_data.append('data_type', $('#data_type').val());
     form_data.append('data_tag', $('#data_tag').val());
+    var temp = incomeUser
+    while(temp > 0){
+        form_data.append('data_income_user'+temp, document.getElementById("data_income_user"+temp).value);
+        form_data.append('data_ratio'+temp, document.getElementById("data_ratio"+temp).value);
+        temp -=1
+    }
+    form_data.append('data_user_number',incomeUser)
+
     $.ajax({
         url: '/Upload/',
         dataType: 'json',
@@ -42,21 +51,16 @@ function addNewIncomeUser(){
         var div = document.createElement("div")
         if (incomeUser%2 !=0){
             div.innerHTML = "<div class=\"form-group\" id=\"income_user"+incomeUser +"\">\n" +
-            " <input name =\"data_income1\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_income1\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
-            " <input name =\"data_ration1\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_ration1\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
+            " <input name =\"data_income_user"+incomeUser+"\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_income_user"+incomeUser+"\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
+            " <input name =\"data_ratio"+incomeUser+"\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_ratio"+incomeUser+"\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
             " </div>"
         }
         else{
             div.innerHTML = "<div class=\"form-group\" id=\"income_user"+incomeUser +"\">\n" +
-            " <input name =\"data_income1\" style=\"background: lightblue\" class=\"form-control\" id=\"data_income1\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
-            " <input name =\"data_ration1\" style=\"background: lightblue\" class=\"form-control\" id=\"data_ration1\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
+            " <input name =\"data_income_user"+incomeUser+"\" style=\"background: lightblue\" class=\"form-control\" id=\"data_income_user"+incomeUser+"\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
+            " <input name =\"data_ratio"+incomeUser+"\" style=\"background: lightblue\" class=\"form-control\" id=\"data_ratio"+incomeUser+"\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
             " </div>"
         }
-        // div.innerHTML = "<div class=\"form-group\" id=\"income_user"+incomeUser +"\">\n" +
-        //     "\t\t\t\t\t\t\t\t\t\t\t\t\t<input name =\"data_income1\" style=\"background: "+ style+ " class=\"form-control\" id=\"data_income"+incomeUser+"\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
-        //     "                                                    <input name =\"data_ration1\" class=\"form-control\" id=\"data_ration1\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
-        //     "\t\t\t\t\t\t\t\t\t\t\t\t</div>"
-
         var income_userId = "income_user"+(incomeUser-1)
         document.getElementById(income_userId).appendChild(div)
     }
@@ -64,12 +68,11 @@ function addNewIncomeUser(){
         incomeUser +=1
         var div = document.createElement("div")
         div.innerHTML = "<div class=\"form-group\" id=\"income_user"+incomeUser +"\">\n" +
-            " <input name =\"data_income1\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_income1\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
-            " <input name =\"data_ration1\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_ration1\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
+            " <input name =\"data_income_user"+incomeUser+"\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_income_user"+incomeUser+"\" value=\"\" placeholder=\"数据收益人"+incomeUser+"用户名\">\n" +
+            " <input name =\"data_ratio"+incomeUser+"\" style=\"background: cornsilk\" class=\"form-control\" id=\"data_ratio"+incomeUser+"\" value=\"\" placeholder=\"收益比重"+incomeUser+" 范围(0~100)\">\n" +
             " </div>"
         document.getElementById("income_div").appendChild(div)
     }
-
 }
 
 function deleteNewIncomeUser(){

@@ -282,6 +282,25 @@ def BuyableData(request):
                 buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
                 out_coins.append(buyer_out_coin.to_dict())
 
+            # TODO: find the total income user!!!
+            legal_income_user_list = []
+            legal_income_user_id_list = []
+            legal_income_user_ratio_list = []
+            try:
+                cursor = connection.cursor()
+                sql = 'select user_name, ratio from BSCapp_income ' \
+                      'where BSCapp_income.data_id = %s'
+                cursor.execute(sql, [now_data_id])
+                income_content = cursor.fetchall()
+                len_income_content = len(income_content)
+
+                for i in range(len_income_content):
+                    legal_income_user_list.append(income_content[i][0]) # get income user name
+                    legal_income_user_ratio_list.append(income_content[i][1]) # get income user ratio
+                    legal_income_user_id_list.append(User.objects.get(user_name=income_content[i][0]).user_id) # get income user id
+            except Exception as e:
+                print(e)
+
             seller_out_coin = COIN.Coin()
             seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
             out_coins.append(seller_out_coin.to_dict())
@@ -527,6 +546,79 @@ def Upload(request):
         data_type = request.POST.getlist('data_type')[0]
         data_tag = request.POST.getlist('data_tag')[0]
 
+        data_upload_user_ratio = request.POST['data_ration0']
+        try:
+            data_upload_user_ratio = (float)(data_upload_user_ratio)
+            if data_upload_user_ratio < 0:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比不能小于0，请重新输入！！'
+                }))
+            elif data_upload_user_ratio > 100:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比不能大于100，请重新输入！！'
+                }))
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '收益占比有误，请重新输入 范围(0~100)！！'
+            }))
+        data_user_number = request.POST['data_user_number']
+        try:
+            data_user_number = (int)(data_user_number)
+        except:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '人数有误！！'
+            }))
+
+        data_income_user_list = []
+        data_income_user_id_list = []
+        data_ratio_list = []
+        total_ratio = 0.0
+        total_ratio += data_upload_user_ratio
+        for i in range(1, data_user_number+1):
+            data_income_user = request.POST['data_income_user'+str(i)]
+            data_ratio = request.POST['data_ratio'+str(i)]
+
+            if data_income_user == '' or data_ratio == '': # 空值跳过
+                continue
+            try:
+                other_user = User.objects.get(user_name=data_income_user)
+                if other_user.user_id == user.user_id:
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '其他收益者不能是当前用户 '+user.user_name+',请重新输入!'
+                    }))
+                data_income_user_id_list.append(other_user.user_id) # add other user id to list
+            except Exception as e:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '用户名: '+data_income_user+' 不存在，请重新输入!'
+                }))
+
+            try:
+                data_ratio = (float)(data_ratio)
+                if data_ratio < 0 :
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '收益占比不能小于0，请重新输入！'
+                    }))
+                elif data_ratio > 100 :
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '收益占比不能大于100，请重新输入！'
+                    }))
+                total_ratio += data_ratio # add total ratio
+            except:
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '收益占比有误，请重新输入 范围(0~100)！'
+                }))
+            data_income_user_list.append(data_income_user)
+            data_ratio_list.append(data_ratio)
+
         if data_name == '' :
             return HttpResponse(json.dumps({
                 'statCode': -1,
@@ -594,16 +686,46 @@ def Upload(request):
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
              data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
 
+        # TODO: 0. save each income user info to table DONE!
+                # TODO: send notice to each user DONE!
+        legal_income_user_number = len(data_income_user_list)
+        for index in range(legal_income_user_number+1):
+            if index == legal_income_user_number: # TODO: add upload data self to the income table DONE!
+                income_user_name = username
+                income_user_ratio = data_upload_user_ratio
+                notice_receiver_id = user_id # upload data user id
+            else:
+                income_user_name = data_income_user_list[index]
+                income_user_ratio = data_ratio_list[index]
+                notice_receiver_id = data_income_user_id_list[index]
+
+            income_ratio = income_user_ratio/total_ratio
+            Income(data_id = data_id, user_name = income_user_name, ratio = income_ratio).save()
+            sender_id = '系统'
+            owner_notice_id = generate_uuid(sender_id)
+            timestamp = time()
+            owner_notice_type = 4
+            owner_notice_info = '{} 在 {} 上传 {} 成功，' \
+                                '并设置账户 {} 收益占比为 {}/{} = {}'.format(
+                            username,time_to_str(timestamp), data_name,
+                            income_user_name,income_user_ratio,total_ratio, income_ratio )
+
+            # send notice to user
+            Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id= notice_receiver_id,
+                   notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
+                   timestamp=timestamp).save()
+
+
         now_time = str(datetime.datetime.utcnow().timestamp())
-        # TODO: 1. generate new coin_id for the user_id
+        # TODO: 1. generate new coin_id for the user_id Done!!!
         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
-        default_coin_number = 1.0 # TODO: add notify to table
+        default_coin_number = 1.0 # TODO: add notify to table Done!!!
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
 
-        sender_id = 'system'
+        sender_id = '系统'
         owner_notice_id = generate_uuid(sender_id)
         timestamp = time()
         owner_notice_type = 4
@@ -615,7 +737,7 @@ def Upload(request):
                timestamp=timestamp).save()
 
 
-        # TODO: 2. save transaction info to file
+        # TODO: 2. save transaction info to file Done!!!
         out_coins = []
         coin = COIN.Coin()
         coin.new_coin(new_coin_id, default_coin_number, user_id)
@@ -843,7 +965,7 @@ def Recharge(request):
             (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
             values \
             (%s, %s, %s, %s, %s, 0, %s)'
-        sender_id = 'system'
+        sender_id = '系统'
         notice_id = generate_uuid(sender_id)
         receiver_id = user_id
         notice_type = 3
