@@ -24,9 +24,66 @@ def Index(request):
     request.session['Order_sort_name_and_type'] = ""
     request.session['Notice_sort_name_and_type'] = ""
     request.session['MyData_sort_name_and_type'] = ""
-    request.session['Block_sort_name_and_type'] = ""
+    # request.session['Block_sort_name_and_type'] = "timestamp&DESC"
 
-    return render(request, "app/page-index.html")
+    try:
+        now_block_height = request.POST['height']
+        now_block_dict = get_block_by_index_json(now_block_height)
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            'message': 'block height is ' + str(now_block_height),
+            'block': json.dumps(now_block_dict),
+        }))
+    except Exception as e:
+        pass
+
+    try:
+        try:
+            Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+        except Exception as e:
+            Block_sort_name_and_type = "timestamp&DESC"
+
+        result = Block_sort_name_and_type.split('&')
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
+                new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Block_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        # print(e)
+        pass
+    Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+    result = Block_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
+
+    table_name = 'BSCapp_block'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+
+    blocks = chainData_sql(request, sort_sql)
+    paged_blocks = pagingData(request, blocks, each_num=10)
+
+    return render(request, "app/page-index.html",
+                  {'blocks': paged_blocks,
+                   'sort_class': sort_class})
+
+
+    # return render(request, "app/page-index.html")
 
 @csrf_exempt
 def Login(request):
@@ -1131,7 +1188,7 @@ def ChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=5)
+    paged_blocks = pagingData(request, blocks, each_num=10)
 
     return render(request, "app/page-chainInfo.html",
                       {'id': username,
@@ -1190,7 +1247,7 @@ def AdminChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=5)
+    paged_blocks = pagingData(request, blocks, each_num=10)
 
     return render(request, "app/page-adminChainInfo.html",
                       {'id': username,

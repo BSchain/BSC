@@ -89,3 +89,16 @@ function adminBlockSortBase(obj){
       })
     return;
 }
+
+function indexBlockSortBase(obj){
+    $.ajax("/Index/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "sort_name": obj
+        }
+      }).done(function(data){
+          window.location.replace("/Index/");
+      })
+    return;
+}

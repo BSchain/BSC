@@ -4,6 +4,7 @@ from . import views
 #admin.autodiscover()
 
 urlpatterns = [
+    url(r'^$',views.Index),
     url(r'^Index/$',views.Index),
     url(r'^Login/$',views.Login),
     url(r'^Signup/$',views.Signup),
