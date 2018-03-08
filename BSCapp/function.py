@@ -180,7 +180,7 @@ def adminData_sql(request, sort_sql):
         data = dict()
         data['dataid'] = content[i][0]
         seller = User.objects.get(user_id=content[i][1])
-        data['seller'] = seller.user_realName
+        data['seller'] = seller.user_name
         data['name'] = content[i][2]
         data['info'] = content[i][3]
         data['timestamp'] = time_to_str(content[i][4])
