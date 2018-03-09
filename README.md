@@ -99,7 +99,7 @@ chain for science data sharing
 > `create database bsc_db DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;`
 >
 ## 数据库迁移指令
->`python3 manage.py makemigrations  BSCapp`
+>`python3 manage.py makemigrations BSCapp`
 >
 >`python3 manage.py migrate`
 
