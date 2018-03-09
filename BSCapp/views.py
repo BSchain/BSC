@@ -30,20 +30,20 @@ def Index(request):
         print(e)
 
     try:
-        try:
-            Block_sort_name_and_type = request.session['Block_sort_name_and_type']
-            if Block_sort_name_and_type == "":
-                Block_sort_name_and_type = "timestamp&DESC"
-        except Exception as e:
-            print(e)
+        Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+        if Block_sort_name_and_type == "":
             request.session['Block_sort_name_and_type'] = "timestamp&DESC"
-            Block_sort_name_and_type = "timestamp&DESC"
-
+    except Exception as e:
+        print(e)
+        request.session['Block_sort_name_and_type'] = "timestamp&DESC"
+    try:
+        Block_sort_name_and_type = request.session['Block_sort_name_and_type']
         result = Block_sort_name_and_type.split('&')
-
         default_sort_name = result[0]
         default_sort_type = result[1]
+
         new_sort_name = request.POST['sort_name']
+
         if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
                 new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
             new_sort_name = 'timestamp'
@@ -60,6 +60,7 @@ def Index(request):
     except Exception as e:
         print(e)
         pass
+
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -82,7 +83,6 @@ def Index(request):
     request.session['Order_sort_name_and_type'] = ""
     request.session['Notice_sort_name_and_type'] = ""
     request.session['MyData_sort_name_and_type'] = ""
-    request.session['Block_sort_name_and_type'] = "timestamp&DESC"
 
     return render(request, "app/page-index.html",
                   {'blocks': paged_blocks,
@@ -390,13 +390,7 @@ def BuyableData(request):
             except Exception as e:
                 print(e)
 
-
             # TODO: generate the transaction files
-
-            #
-            # seller_out_coin = COIN.Coin()
-            # seller_out_coin.new_coin(coin_uuid=generate_uuid(seller_id), number_coin=now_data_price, owner=seller_id)
-            # out_coins.append(seller_out_coin.to_dict())
 
             # insert one purchase log into table
             Purchase(user_id=buyer_id,data_id=now_data_id).save()
