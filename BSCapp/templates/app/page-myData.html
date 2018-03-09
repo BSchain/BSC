@@ -126,6 +126,7 @@
 												<th align="center" onclick=myDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
+                                                <th align="center" onclick=>收益占比</th>
 												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
                                                 <th align="center" onclick=myDataSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
@@ -148,6 +149,11 @@
                                                 {% elif data.status == '审核不通过' %}
                                                     <td align="" bgcolor="#deb887">  {{data.status}}</td>
                                                 {% endif %}
+                                                <td align="">
+                                                {% for item_info in data.income_info %}
+                                                    {{ item_info }} <br/>
+                                                {% endfor %}
+                                                </td>
 												<td align="">  {{data.purchase}}</td>
 												<td align="">  {{data.download}}</td>
                                                 <td align="">  {{data.score}}</td>

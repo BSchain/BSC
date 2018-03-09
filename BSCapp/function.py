@@ -133,7 +133,7 @@ def uploadData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_name, data_info, timestamp, data_tag, data_download, ' \
-          'data_status, data_purchase, data_price,data_score, comment_number ' \
+          'data_status, data_purchase, data_price,data_score, comment_number,data_id ' \
           'from BSCapp_data where BSCapp_data.user_id = %s '
     search_sql = ''
     try:
@@ -184,6 +184,22 @@ def uploadData_sql(request, user_id, sort_sql):
         else:
             data['score'] = score
             data['comment'] = comment_number
+        item_data_id = content[i][10]
+
+        item_cursor = connection.cursor()
+        sql = 'select BSCapp_income.user_name, BSCapp_income.ratio from BSCapp_income where BSCapp_income.data_id = %s '
+        item_cursor.execute(sql, [item_data_id])
+        income_user_result = item_cursor.fetchall()
+        len_result = len(income_user_result)
+        income_info_list = []
+        for i in range(len_result):
+            user_name = income_user_result[i][0]
+            user_ratio = income_user_result[i][1]
+            income_info_list.append('用户:'+user_name +' 收益比:'+str(round(user_ratio,8)))
+
+        data['income_info'] = income_info_list
+        item_cursor.close()
+
         datas.append(data)
     return datas
 
