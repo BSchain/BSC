@@ -52,7 +52,8 @@ class Transaction(models.Model):
     timestamp = models.CharField(max_length=32)  #交易时间戳
     price = models.FloatField() # 成交价格, 信用度
     data_score = models.IntegerField(default=0) # 数据评分 1~5 默认为0表示未评价
-    data_comment = models.CharField(max_length=200,default="") # 当前交易对数据的评价 默认评价为空
+    data_comment = models.CharField(max_length=200,default="") # 当前交易对数据的评价 默认评价为空 useless
+    last_download_time = models.CharField(max_length=32, default="") # 上次下载数据时间 defalut = "" 表示未下载
 
 
 class Coin(models.Model):
