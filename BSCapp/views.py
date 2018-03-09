@@ -288,6 +288,34 @@ def BuyableData(request):
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
+                # get last download time
+                try:
+                    old_last_download_time = Transaction.objects.get(buyer_id=buyer_id,
+                                                                     data_id=now_data_id).last_download_time
+                    if old_last_download_time == '':  # the first time to download data
+                        now_time = str(datetime.datetime.utcnow().timestamp())
+                        cursor = connection.cursor()
+                        sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
+                        cursor.execute(sql, [now_time, buyer_id, now_data_id])
+                        cursor.close()
+                    else:
+                        limit_download_time = 300  # same data only download once in 5 minutes
+                        old_last_download_time = (float)(old_last_download_time)
+                        now_time = (float)(str(datetime.datetime.utcnow().timestamp()))
+                        left_time = now_time - old_last_download_time
+                        if left_time < limit_download_time:
+                            return HttpResponse(json.dumps({
+                                'statCode': -1,
+                                'message': '同一数据5分钟内仅可下载一次! 剩余等待时间:' + str((int)(limit_download_time - left_time)) + '秒'
+                            }))
+                        else:  # between the 300 seconds
+                            now_time = str(datetime.datetime.utcnow().timestamp())
+                            cursor = connection.cursor()
+                            sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
+                            cursor.execute(sql, [now_time, buyer_id, now_data_id])
+                            cursor.close()
+                except Exception as e:
+                    print(e)
                 # add action: download to file
                 tx = TX.Transaction()
                 tx.new_transaction(in_coins=[], out_coins=[],
@@ -437,7 +465,7 @@ def BuyableData(request):
 
             # generate a new transaction for mysql
             Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
-                        data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price).save()
+                        data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price, last_download_time="").save()
 
             return HttpResponse(json.dumps({
                 'statCode': 0,
@@ -449,8 +477,8 @@ def BuyableData(request):
                 'statCode': -1,
                 'message': '系统错误!'
             }))
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
     try:
         Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
@@ -578,7 +606,8 @@ def AdminDataInfo(request):
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
-                new_sort_name != 'data_status'):
+                new_sort_name != 'data_status' and new_sort_name!= 'data_purchase' and new_sort_name != 'data_download' and
+                new_sort_name != 'data_score' and new_sort_name!= 'comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -608,7 +637,8 @@ def AdminDataInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(request,sort_sql)
     paged_datas = pagingData(request, datas, each_num=10)
-    adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price', 'data_status']
+    adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price',
+                           'data_status', 'data_purchase', 'data_download', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
     return render(request, "app/page-adminDataInfo.html", {'id':username, 'datas': paged_datas, 'sort_class': sort_class})
@@ -897,7 +927,8 @@ def MyData(request):
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_tag' and new_sort_name != 'data_status' and new_sort_name != 'data_purchase' and
-                new_sort_name!='data_download' and new_sort_name != 'data_price'):
+                new_sort_name!='data_download' and new_sort_name != 'data_price' and new_sort_name!= 'data_score' and
+                new_sort_name!='comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -917,7 +948,8 @@ def MyData(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status', 'data_purchase', 'data_download', 'data_price']
+    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status',
+                        'data_purchase', 'data_download', 'data_price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
     table_name = 'BSCapp_data'
@@ -938,8 +970,8 @@ def MyData(request):
 
 @csrf_exempt
 def Order(request):
-    username = request.session['username']
     try:
+        username = request.session['username']
         user = User.objects.get(user_name=username)
     except Exception:
         return render(request, "app/page-login.html")
@@ -1017,6 +1049,33 @@ def Order(request):
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=user_id, data_id=now_data_id)
+                # get last download time
+                try:
+                    old_last_download_time = Transaction.objects.get(buyer_id = user_id, data_id = now_data_id).last_download_time
+                    if old_last_download_time == '': # the first time to download data
+                        now_time = str(datetime.datetime.utcnow().timestamp())
+                        cursor = connection.cursor()
+                        sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
+                        cursor.execute(sql, [now_time, user_id, now_data_id])
+                        cursor.close()
+                    else:
+                        limit_download_time = 300 # same data only download once in 5 minutes
+                        old_last_download_time = (float)(old_last_download_time)
+                        now_time = (float)(str(datetime.datetime.utcnow().timestamp()))
+                        left_time = now_time - old_last_download_time
+                        if  left_time < limit_download_time:
+                            return HttpResponse(json.dumps({
+                                'statCode': -1,
+                                'message': '同一数据5分钟内仅可下载一次! 剩余等待时间:'+str((int)(limit_download_time - left_time))+'秒'
+                            }))
+                        else: # between the 300 seconds
+                            now_time = str(datetime.datetime.utcnow().timestamp())
+                            cursor = connection.cursor()
+                            sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
+                            cursor.execute(sql, [now_time, user_id, now_data_id])
+                            cursor.close()
+                except Exception as e:
+                    print(e)
                 # add action: download to file
                 tx = TX.Transaction()
                 tx.new_transaction(in_coins=[], out_coins=[],
