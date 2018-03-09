@@ -189,7 +189,8 @@ def adminData_sql(request, sort_sql):
         print(e)
 
     sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
-           data_source, data_type, data_status, data_price from BSCapp_data '
+           data_source, data_type, data_status, data_price, ' \
+          'data_download, data_purchase, data_score, comment_number from BSCapp_data '
     sql = sql + search_sql + sort_sql
     try:
         if search_sql:
@@ -220,6 +221,16 @@ def adminData_sql(request, sort_sql):
         else:
             data['status'] = '审核不通过'
         data['price'] = content[i][8]
+        data['download'] = content[i][9]
+        data['purchase'] = content[i][10]
+        score = content[i][11]
+        comment_number = content[i][12]
+        if comment_number == 0 or score == 0.0:
+            data['score'] = '0 (暂无评级)'
+            data['comment'] = '0 '
+        else:
+            data['score'] = score
+            data['comment'] = comment_number
         datas.append(data)
     return datas
 

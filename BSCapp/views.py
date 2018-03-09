@@ -606,7 +606,8 @@ def AdminDataInfo(request):
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
-                new_sort_name != 'data_status'):
+                new_sort_name != 'data_status' and new_sort_name!= 'data_purchase' and new_sort_name != 'data_download' and
+                new_sort_name != 'data_score' and new_sort_name!= 'comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -636,7 +637,8 @@ def AdminDataInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(request,sort_sql)
     paged_datas = pagingData(request, datas, each_num=10)
-    adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price', 'data_status']
+    adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price',
+                           'data_status', 'data_purchase', 'data_download', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
     return render(request, "app/page-adminDataInfo.html", {'id':username, 'datas': paged_datas, 'sort_class': sort_class})
