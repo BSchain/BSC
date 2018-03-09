@@ -18,7 +18,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 @csrf_exempt
 def Index(request):
 
-
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
@@ -37,6 +36,7 @@ def Index(request):
                 Block_sort_name_and_type = "timestamp&DESC"
         except Exception as e:
             print(e)
+            request.session['Block_sort_name_and_type'] = "timestamp&DESC"
             Block_sort_name_and_type = "timestamp&DESC"
 
         result = Block_sort_name_and_type.split('&')
@@ -44,7 +44,6 @@ def Index(request):
         default_sort_name = result[0]
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
-        print('new_sort_name',new_sort_name)
         if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
                 new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
             new_sort_name = 'timestamp'
@@ -467,7 +466,8 @@ def BuyableData(request):
         new_sort_name = request.POST['sort_name']
         if(new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
                 new_sort_name != 'timestamp' and new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and
-                new_sort_name != 'data_size' and new_sort_name!='data_price'):
+                new_sort_name != 'data_size' and new_sort_name!='data_price' and new_sort_name!= 'data_score' and
+                new_sort_name!='comment_number'):
 
             new_sort_name = 'timestamp'
 
@@ -497,8 +497,9 @@ def BuyableData(request):
     paged_datas = pagingData(request, datas, each_num= 4)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
-    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price']
+    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, buyData_sort_list)
+    print(sort_class)
 
     return render(request, "app/page-buyableData.html", {'datas': paged_datas,
                                                          'id':username,

@@ -19,9 +19,10 @@ def buyData_sql(request, buyer_id, sort_sql):
     cursor = connection.cursor()
 
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price, data_address ' \
+          'data_tag, data_status, data_md5, data_size, data_price, data_address, data_score, comment_number ' \
           'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
     search_sql = ''
+
     try:
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]
@@ -43,6 +44,7 @@ def buyData_sql(request, buyer_id, sort_sql):
         return context
     datas = []
     len_content = len(content)
+
     for i in range(len_content):
         data = dict()
         data['data_id'] = content[i][0]
@@ -56,6 +58,14 @@ def buyData_sql(request, buyer_id, sort_sql):
         data['size'] = content[i][8]
         data['price'] = content[i][9]
         data['address'] = content[i][10]
+        score = content[i][11]
+        comment_number = content[i][12]
+        if comment_number == 0 or score == 0.0:
+            data['score'] = '0 (暂无评级)'
+            data['comment'] = '0 '
+        else:
+            data['score'] = score
+            data['comment'] = comment_number
         datas.append(data)
     return datas
 
