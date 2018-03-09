@@ -128,6 +128,8 @@
 												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
 											</tr>
 										</thead>
@@ -148,6 +150,8 @@
                                                 {% endif %}
 												<td align="">  {{data.purchase}}</td>
 												<td align="">  {{data.download}}</td>
+                                                <td align="">  {{data.score}}</td>
+                                                <td align="">  {{data.comment}}</td>
 												<td align="">  {{data.price}}</td>
 											</tr>
 										{% endfor %}

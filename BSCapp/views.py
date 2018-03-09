@@ -927,7 +927,8 @@ def MyData(request):
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_tag' and new_sort_name != 'data_status' and new_sort_name != 'data_purchase' and
-                new_sort_name!='data_download' and new_sort_name != 'data_price'):
+                new_sort_name!='data_download' and new_sort_name != 'data_price' and new_sort_name!= 'data_score' and
+                new_sort_name!='comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -947,7 +948,8 @@ def MyData(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status', 'data_purchase', 'data_download', 'data_price']
+    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status',
+                        'data_purchase', 'data_download', 'data_price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
     table_name = 'BSCapp_data'

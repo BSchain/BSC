@@ -132,7 +132,8 @@ def orderData_sql(request, user_id, sort_sql):
 def uploadData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, data_status, data_purchase, data_price ' \
+    sql = 'select data_name, data_info, timestamp, data_tag, data_download, ' \
+          'data_status, data_purchase, data_price,data_score, comment_number ' \
           'from BSCapp_data where BSCapp_data.user_id = %s '
     search_sql = ''
     try:
@@ -175,6 +176,14 @@ def uploadData_sql(request, user_id, sort_sql):
             data['status'] = '审核不通过'
         data['purchase'] = content[i][6]
         data['price'] = content[i][7]
+        score = content[i][8]
+        comment_number = content[i][9]
+        if comment_number == 0 or score == 0.0:
+            data['score'] = '0 (暂无评级)'
+            data['comment'] = '0 '
+        else:
+            data['score'] = score
+            data['comment'] = comment_number
         datas.append(data)
     return datas
 
