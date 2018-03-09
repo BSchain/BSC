@@ -74,8 +74,10 @@ def orderData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address from BSCapp_data \
-          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
+          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address, ' \
+          'BSCapp_data.data_score, BSCapp_data.comment_number, BSCapp_transaction.data_score ' \
+          'from BSCapp_data, BSCapp_transaction ' \
+          'where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
     search_sql = ''
     try:
         search_base = request.POST["searchBase"]
@@ -110,6 +112,20 @@ def orderData_sql(request, user_id, sort_sql):
         order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         order['address'] = content[i][8]
+        data_avg_score = content[i][9]
+        comment_number = content[i][10]
+        if comment_number == 0 or data_avg_score == 0.0:
+            order['avg_score'] = '0 (暂无评级)'
+            order['comment_number'] = '0 '
+        else:
+            order['avg_score'] = data_avg_score
+            order['comment_number'] = comment_number
+        data_score = content[i][11]
+        if data_score ==0:
+            order['self_score'] = 0
+        else:
+            order['self_score'] = data_score
+
         orders.append(order)
     return orders
 

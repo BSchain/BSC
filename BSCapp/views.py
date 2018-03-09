@@ -499,7 +499,6 @@ def BuyableData(request):
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, buyData_sort_list)
-    print(sort_class)
 
     return render(request, "app/page-buyableData.html", {'datas': paged_datas,
                                                          'id':username,
@@ -951,6 +950,70 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
+    # TODO: get the data score Done!
+    # TODO: add the data score to the transaction table
+    # TODO: update the data_avg_score in data table
+    # TODO: update the comment_number in data table
+    try:
+        self_data_score = (int)(request.POST['data_score'])
+        rating_data_id = request.POST['rating_data_id']
+
+        print('self_data_score',self_data_score)
+        print('rating_data_id', rating_data_id)
+        print('user_id', user_id)
+        # insert self_score into transaction table
+        try:
+            cursor = connection.cursor()
+            sql = 'update BSCapp_transaction ' \
+                  'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
+            cursor.execute(sql, [self_data_score, user_id, rating_data_id])
+            cursor.close()
+
+            # get old data_avg_score and comment_number
+            rating_data = Data.objects.get(data_id= rating_data_id)
+            old_data_avg_score = rating_data.data_score
+            old_comment_number = rating_data.comment_number
+
+            # calculate the new score
+            new_data_avg_score = (float)((old_data_avg_score * old_comment_number + self_data_score) / (old_comment_number + 1))
+            new_comment_number = old_comment_number + 1
+
+
+            # update the data_avg_score and comment_number in data table
+            try:
+                cursor = connection.cursor()
+                sql = 'update BSCapp_data ' \
+                      'set BSCapp_data.data_score = %s, BSCapp_data.comment_number = %s ' \
+                      'where data_id = %s'
+                cursor.execute(sql, [new_data_avg_score, new_comment_number, rating_data_id])
+                cursor.close()
+            except Exception as e:
+                print(str(e))
+                # rechange to no score state
+                default_score = 0.0
+                cursor = connection.cursor()
+                sql = 'update BSCapp_transaction ' \
+                      'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
+                cursor.execute(sql, [default_score, user_id, rating_data_id])
+                cursor.close()
+
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '评价失败！'
+                }))
+
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '评价成功！'
+            }))
+        except Exception as e:
+            print(str(e))
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '评价失败！'
+            }))
+    except Exception as e:
+        print(e)
     try:
         # add download action in Order page
         now_data_id = request.POST['data_id']
@@ -966,6 +1029,13 @@ def Order(request):
                                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
                                    seller=seller_id, buyer=user_id, data_uuid=now_data_id, credit=0, reviewer='')
                 tx.save_transaction()
+
+                # change the download numebr
+                cursor = connection.cursor()
+                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
+                cursor.execute(sql, [now_data_id])
+                cursor.close()
+
                 return HttpResponse(json.dumps({
                     'statCode': 0,
                     'message': '已购买此数据,可以下载!'
@@ -987,7 +1057,8 @@ def Order(request):
         new_sort_name = request.POST['sort_name']
         # check name in data table
         if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
-                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and new_sort_name != 'price'):
+                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and
+                new_sort_name != 'price' and new_sort_name!='data_score' and new_sort_name!='comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -1015,7 +1086,7 @@ def Order(request):
     paged_orders = pagingData(request, orders, each_num=10)
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price']
+    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, order_sort_list)
 
     return render(request, "app/page-order.html", {'orders': paged_orders,
