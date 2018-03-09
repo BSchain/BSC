@@ -17,6 +17,64 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @csrf_exempt
 def Index(request):
+
+    try:
+        now_block_height = request.POST['height']
+        now_block_dict = get_block_by_index_json(now_block_height)
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            'message': 'block height is ' + str(now_block_height),
+            'block': json.dumps(now_block_dict),
+        }))
+    except Exception as e:
+        print(e)
+
+    try:
+        try:
+            Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+            if Block_sort_name_and_type == "":
+                Block_sort_name_and_type = "timestamp&DESC"
+        except Exception as e:
+            print(e)
+            request.session['Block_sort_name_and_type'] = "timestamp&DESC"
+            Block_sort_name_and_type = "timestamp&DESC"
+
+        result = Block_sort_name_and_type.split('&')
+
+        default_sort_name = result[0]
+        default_sort_type = result[1]
+        new_sort_name = request.POST['sort_name']
+        if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
+                new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
+            new_sort_name = 'timestamp'
+
+        if new_sort_name == default_sort_name:
+            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
+        else:
+            new_sort_type = 'DESC'  # default = DESC
+
+        request.session['Block_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
+    except Exception as e:
+        print(e)
+        pass
+    Block_sort_name_and_type = request.session['Block_sort_name_and_type']
+    result = Block_sort_name_and_type.split('&')
+    default_sort_name = result[0]
+    default_sort_type = result[1]
+
+    myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
+
+    table_name = 'BSCapp_block'
+    # default sort using session
+    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+
+    blocks = chainData_sql(request, sort_sql)
+    paged_blocks = pagingData(request, blocks, each_num=10)
+
     request.session['username'] = ""
     request.session['isAdmin'] = False
     request.session['Admin_sort_name_and_type'] = ""
@@ -24,9 +82,14 @@ def Index(request):
     request.session['Order_sort_name_and_type'] = ""
     request.session['Notice_sort_name_and_type'] = ""
     request.session['MyData_sort_name_and_type'] = ""
-    request.session['Block_sort_name_and_type'] = ""
+    request.session['Block_sort_name_and_type'] = "timestamp&DESC"
 
-    return render(request, "app/page-index.html")
+    return render(request, "app/page-index.html",
+                  {'blocks': paged_blocks,
+                   'sort_class': sort_class})
+
+
+    # return render(request, "app/page-index.html")
 
 @csrf_exempt
 def Login(request):
@@ -214,9 +277,14 @@ def BuyableData(request):
     buyer_id = user.user_id  # get buyer
 
     try:
+
         now_data_id = request.POST['data_id']
+
         now_op = request.POST['op']
-        seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
+        try:
+            seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
+        except Exception as e:
+            print(e)
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
@@ -226,6 +294,12 @@ def BuyableData(request):
                                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
                                    seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
                 tx.save_transaction()
+
+                cursor = connection.cursor()
+                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
+                cursor.execute(sql, [now_data_id])
+                cursor.close()
+
                 return HttpResponse(json.dumps({
                     'statCode': 0,
                     'message': '已购买此数据,可以下载!'
@@ -238,6 +312,7 @@ def BuyableData(request):
         # insert new purchase_log for buyer
         try:
             Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
+
             return HttpResponse(json.dumps({  # 到这一步说明已经购买过数据
                 'statCode': -3,
                 'message': '已经购买此数据，请勿重复购买！'
@@ -313,8 +388,8 @@ def BuyableData(request):
                     income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
 
             except Exception as e:
-                # print(e)
-                pass
+                print(e)
+
 
             # TODO: generate the transaction files
 
@@ -362,19 +437,20 @@ def BuyableData(request):
             for i in range(len_income_user_coins):
                 cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
 
-            sql = 'update BSCapp_data set BSCapp_data.data_download = data_download + 1 where data_id = %s'
+            sql = 'update BSCapp_data set BSCapp_data.data_purchase = BSCapp_data.data_purchase + 1 where data_id = %s'
             cursor.execute(sql, [now_data_id])
             cursor.close()
 
             # generate a new transaction for mysql
             Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
                         data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price).save()
+
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'message': '购买成功!'
             }))
         except Exception as e:
-            # print(str(e))
+            print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '系统错误!'
@@ -390,7 +466,8 @@ def BuyableData(request):
         new_sort_name = request.POST['sort_name']
         if(new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
                 new_sort_name != 'timestamp' and new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and
-                new_sort_name != 'data_size' and new_sort_name!='data_price'):
+                new_sort_name != 'data_size' and new_sort_name!='data_price' and new_sort_name!= 'data_score' and
+                new_sort_name!='comment_number'):
 
             new_sort_name = 'timestamp'
 
@@ -405,8 +482,7 @@ def BuyableData(request):
                 'statCode': 0,
             }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
 
     Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
     result = Buy_sort_name_and_type.split('&')
@@ -421,7 +497,7 @@ def BuyableData(request):
     paged_datas = pagingData(request, datas, each_num= 4)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
-    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price']
+    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, buyData_sort_list)
 
     return render(request, "app/page-buyableData.html", {'datas': paged_datas,
@@ -467,7 +543,7 @@ def AdminDataInfo(request):
             review_history.timestamp = now_time
             review_history.save()
         except Exception as e:
-            # print(e)
+            print(e)
             # the first time to review data
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
 
@@ -522,8 +598,8 @@ def AdminDataInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
     result = Admin_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -712,7 +788,6 @@ def Upload(request):
                 'statCode': -1,
                 'message':'数据冲突，该数据已在数据库中！'
             }))
-
         Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
              data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
              data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
@@ -841,8 +916,8 @@ def MyData(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
     result = MyData_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -875,6 +950,70 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
+    # TODO: get the data score Done!
+    # TODO: add the data score to the transaction table
+    # TODO: update the data_avg_score in data table
+    # TODO: update the comment_number in data table
+    try:
+        self_data_score = (int)(request.POST['data_score'])
+        rating_data_id = request.POST['rating_data_id']
+
+        print('self_data_score',self_data_score)
+        print('rating_data_id', rating_data_id)
+        print('user_id', user_id)
+        # insert self_score into transaction table
+        try:
+            cursor = connection.cursor()
+            sql = 'update BSCapp_transaction ' \
+                  'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
+            cursor.execute(sql, [self_data_score, user_id, rating_data_id])
+            cursor.close()
+
+            # get old data_avg_score and comment_number
+            rating_data = Data.objects.get(data_id= rating_data_id)
+            old_data_avg_score = rating_data.data_score
+            old_comment_number = rating_data.comment_number
+
+            # calculate the new score
+            new_data_avg_score = (float)((old_data_avg_score * old_comment_number + self_data_score) / (old_comment_number + 1))
+            new_comment_number = old_comment_number + 1
+
+
+            # update the data_avg_score and comment_number in data table
+            try:
+                cursor = connection.cursor()
+                sql = 'update BSCapp_data ' \
+                      'set BSCapp_data.data_score = %s, BSCapp_data.comment_number = %s ' \
+                      'where data_id = %s'
+                cursor.execute(sql, [new_data_avg_score, new_comment_number, rating_data_id])
+                cursor.close()
+            except Exception as e:
+                print(str(e))
+                # rechange to no score state
+                default_score = 0.0
+                cursor = connection.cursor()
+                sql = 'update BSCapp_transaction ' \
+                      'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
+                cursor.execute(sql, [default_score, user_id, rating_data_id])
+                cursor.close()
+
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '评价失败！'
+                }))
+
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '评价成功！'
+            }))
+        except Exception as e:
+            print(str(e))
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '评价失败！'
+            }))
+    except Exception as e:
+        print(e)
     try:
         # add download action in Order page
         now_data_id = request.POST['data_id']
@@ -890,6 +1029,13 @@ def Order(request):
                                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
                                    seller=seller_id, buyer=user_id, data_uuid=now_data_id, credit=0, reviewer='')
                 tx.save_transaction()
+
+                # change the download numebr
+                cursor = connection.cursor()
+                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
+                cursor.execute(sql, [now_data_id])
+                cursor.close()
+
                 return HttpResponse(json.dumps({
                     'statCode': 0,
                     'message': '已购买此数据,可以下载!'
@@ -901,8 +1047,8 @@ def Order(request):
                 }))
         # insert new purchase_log for buyer
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
         result = Buy_sort_name_and_type.split('&')
@@ -911,7 +1057,8 @@ def Order(request):
         new_sort_name = request.POST['sort_name']
         # check name in data table
         if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
-                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and new_sort_name != 'price'):
+                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and
+                new_sort_name != 'price' and new_sort_name!='data_score' and new_sort_name!='comment_number'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -925,8 +1072,7 @@ def Order(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
     Order_sort_name_and_type = request.session['Order_sort_name_and_type']
     result = Order_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -940,7 +1086,7 @@ def Order(request):
     paged_orders = pagingData(request, orders, each_num=10)
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price']
+    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, order_sort_list)
 
     return render(request, "app/page-order.html", {'orders': paged_orders,
@@ -1033,8 +1179,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     try:
         Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
         result = Notice_sort_name_and_type.split('&')
@@ -1057,8 +1203,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
     Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
@@ -1116,8 +1262,8 @@ def ChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -1131,7 +1277,7 @@ def ChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=5)
+    paged_blocks = pagingData(request, blocks, each_num=10)
 
     return render(request, "app/page-chainInfo.html",
                       {'id': username,
@@ -1175,8 +1321,8 @@ def AdminChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -1190,7 +1336,7 @@ def AdminChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=5)
+    paged_blocks = pagingData(request, blocks, each_num=10)
 
     return render(request, "app/page-adminChainInfo.html",
                       {'id': username,

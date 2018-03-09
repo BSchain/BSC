@@ -34,6 +34,8 @@ class Data(models.Model):
     data_purchase = models.IntegerField(default=0) # 数据购买量
     data_price = models.FloatField() # 数据价格，信用度
     data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
+    data_score = models.FloatField(default=0.0) # 数据平均评分结果 默认为0表示未评分
+    comment_number = models.IntegerField(default=0) # 数据评价人数 默认没有人评价
 
 class Income(models.Model):
     data_id = models.CharField(max_length=64)  # 数据id
@@ -48,7 +50,9 @@ class Transaction(models.Model):
     seller_id = models.CharField(max_length=64) # 出售者id
     data_id = models.CharField(max_length=64) # 数据id
     timestamp = models.CharField(max_length=32)  #交易时间戳
-    price = models.FloatField() # 成交价格， 信用度
+    price = models.FloatField() # 成交价格, 信用度
+    data_score = models.IntegerField(default=0) # 数据评分 1~5 默认为0表示未评价
+    data_comment = models.CharField(max_length=200,default="") # 当前交易对数据的评价 默认评价为空
 
 
 class Coin(models.Model):

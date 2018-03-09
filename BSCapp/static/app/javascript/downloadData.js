@@ -13,8 +13,7 @@ function orderDownloadData(obj) {
               return false
           }
           else{
-              alert(data.message)
-              // download transaction in the view.py file
+              // alert(data.message)
               var file = document.getElementById(obj.value);
               file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
               var download = document.getElementById("download")

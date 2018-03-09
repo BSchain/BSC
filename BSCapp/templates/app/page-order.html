@@ -128,6 +128,9 @@
                                                 <th align="center" onclick=orderSortBase('data_source')>数据来源 <i class="{{ sort_class.data_source }}"> </i></th>
                                                 <th align="center" onclick=orderSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
                                                 <th align="center" onclick=orderSortBase('price')>购买价格 <i class="{{ sort_class.price }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
+                                                <th align="center">我的评价</th>
                                                 <th align="center">下载链接</th>
 											</tr>
 										</thead>
@@ -142,13 +145,30 @@
                                                 <td align="">  {{order.source}}</td>
                                                 <td align="">  {{order.type}}</td>
 												<td align="">  {{order.price}}</td>
+                                                <td align="">  {{order.avg_score}}</td>
+												<td align="">  {{order.comment_number}}</td>
+                                                <td align="">
+                                                    {% if order.self_score == 0 or order.self_comment == '' %}
+                                                        <div >
+                                                            <select class="form-control" id="data_rating">
+                                                                <option value="5">5星级 优秀推荐资源</option>
+                                                                <option value="4">4星级 资源质量高</option>
+                                                                <option value="3">3星级 数据较好</option>
+                                                                <option value="2">2星级 数据质量差</option>
+                                                                <option value="1">1星级 数据与描述不符</option>
+                                                            </select>
+                                                            <button type="button" class="btn btn-primary" id = "rating_data_id" value="{{order.dataid}}" onclick="commentData(this)" style="float:right"> 确认评价 </button>
+                                                        </div>
+                                                    {% else %}
+                                                        {{ order.self_score }}星级
+                                                    {% endif %}
+                                                </td>
 												<td align="">
-{#                                                    <button class="btn-primary" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>#}
                                                     <button class="fa fa-download" style="font-size: 16px" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>
                                                     <div id="{{order.dataid}}"> </div>
-                                                    <!-- need to change to click and add download to file-->
-{#                                                    <a class="fa fa-download" href="{{order.address}}" download="{{order.name}}">下载</a>#}
 												</td>
+
+
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -219,6 +239,7 @@
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
     <script src="../static/app/javascript/downloadData.js"></script>
+    <script src="../static/app/javascript/commentData.js"></script>
 </body>
 
 </html>

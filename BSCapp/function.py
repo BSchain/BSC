@@ -19,16 +19,17 @@ def buyData_sql(request, buyer_id, sort_sql):
     cursor = connection.cursor()
 
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price, data_address ' \
+          'data_tag, data_status, data_md5, data_size, data_price, data_address, data_score, comment_number ' \
           'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
     search_sql = ''
+
     try:
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]
         search_sql = 'and {} like %s '.format(search_base)
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     sql = sql + search_sql + sort_sql
     try:
         if search_sql:
@@ -38,11 +39,12 @@ def buyData_sql(request, buyer_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+        print(e)
         cursor.close()
         return context
     datas = []
     len_content = len(content)
+
     for i in range(len_content):
         data = dict()
         data['data_id'] = content[i][0]
@@ -56,6 +58,14 @@ def buyData_sql(request, buyer_id, sort_sql):
         data['size'] = content[i][8]
         data['price'] = content[i][9]
         data['address'] = content[i][10]
+        score = content[i][11]
+        comment_number = content[i][12]
+        if comment_number == 0 or score == 0.0:
+            data['score'] = '0 (暂无评级)'
+            data['comment'] = '0 '
+        else:
+            data['score'] = score
+            data['comment'] = comment_number
         datas.append(data)
     return datas
 
@@ -64,8 +74,10 @@ def orderData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select BSCapp_data.data_id,BSCapp_data.user_id, BSCapp_data.data_name, BSCapp_data.data_info,BSCapp_data.data_source,' \
-          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address from BSCapp_data \
-          ,BSCapp_transaction where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
+          'BSCapp_data.data_type, BSCapp_transaction.timestamp, BSCapp_transaction.price, BSCapp_data.data_address, ' \
+          'BSCapp_data.data_score, BSCapp_data.comment_number, BSCapp_transaction.data_score ' \
+          'from BSCapp_data, BSCapp_transaction ' \
+          'where BSCapp_data.data_id = BSCapp_transaction.data_id and BSCapp_transaction.buyer_id = %s '
     search_sql = ''
     try:
         search_base = request.POST["searchBase"]
@@ -82,7 +94,7 @@ def orderData_sql(request, user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+        print(e)
         cursor.close()
         return context
     
@@ -100,6 +112,20 @@ def orderData_sql(request, user_id, sort_sql):
         order['timestamp'] = time_to_str(content[i][6])
         order['price'] = content[i][7]
         order['address'] = content[i][8]
+        data_avg_score = content[i][9]
+        comment_number = content[i][10]
+        if comment_number == 0 or data_avg_score == 0.0:
+            order['avg_score'] = '0 (暂无评级)'
+            order['comment_number'] = '0 '
+        else:
+            order['avg_score'] = data_avg_score
+            order['comment_number'] = comment_number
+        data_score = content[i][11]
+        if data_score ==0:
+            order['self_score'] = 0
+        else:
+            order['self_score'] = data_score
+
         orders.append(order)
     return orders
 
@@ -124,7 +150,7 @@ def uploadData_sql(request, user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+        print(e)
         cursor.close()
         return context
 
@@ -160,8 +186,8 @@ def adminData_sql(request, sort_sql):
         search_field = request.POST["searchField"]
         search_sql = 'where {} like %s '.format(search_base)
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
            data_source, data_type, data_status, data_price from BSCapp_data '
     sql = sql + search_sql + sort_sql
@@ -229,7 +255,7 @@ def noticeData_sql(user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+        print(e)
         cursor.close()
         return content
     notices = []
@@ -350,8 +376,8 @@ def chainData_sql(request, sort_sql):
         search_field = request.POST["searchField"]
         search_sql = 'where {} like %s '.format(search_base)
     except Exception as e:
-        # print(e)
-        pass
+        print(e)
+
     sql = sql + search_sql + sort_sql
     try:
         if search_sql:
@@ -361,7 +387,7 @@ def chainData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+        print(e)
         cursor.close()
         return context
 
