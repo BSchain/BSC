@@ -78,7 +78,7 @@ def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False):
     mine_block(mineChain, sleepTime, blockSizeLimit)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 10 # change to 5 minutes
+sleepTime = 300 # change to 5 minutes
 blockSizeLimit = 10240 # now set 1024 * 10 B
 
 self_insert_gensis = False
