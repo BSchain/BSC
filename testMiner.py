@@ -78,7 +78,7 @@ def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False, diff=5
     mine_block(mineChain, sleepTime, blockSizeLimit, diff=5)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 10 # change to 5 minutes
+sleepTime = 300 # change to 5 minutes
 blockSizeLimit = 10240 # now set 1024 * 10 B
 
 self_insert_gensis = False
@@ -86,4 +86,4 @@ input_str = input('input insert gensis (y: yes, n: no)')
 if input_str == 'y' or input_str == 'yes':
     self_insert_gensis = True
 
-run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis, diff=10)
+run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis, diff=5)
