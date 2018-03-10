@@ -163,4 +163,4 @@ def get_file_md5(file_path):
     return md5
 
 def time_to_str(timestamp):
-    return datetime.datetime.fromtimestamp(float(timestamp) + 28800).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.datetime.fromtimestamp(float(timestamp) + 28800.0).strftime('%Y-%m-%d %H:%M:%S')

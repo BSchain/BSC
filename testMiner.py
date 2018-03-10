@@ -53,7 +53,10 @@ def mine_block(mineChain, sleepTime, blockSizeLimit):
             continue
         # print(mineChain.current_transactions)
         chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain) # mine the block
-        print(chain_height, block_timestamp, block_size, now_block_hash)
+        print('chain_height',chain_height)
+        print('block_timestamp', block_timestamp)
+        print('block_size',block_size)
+        print('now_block_hash',now_block_hash)
         try:
 
             block_insert = "insert into BSCapp_block \
@@ -75,7 +78,7 @@ def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False):
     mine_block(mineChain, sleepTime, blockSizeLimit)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 300 # change to 5 minutes
+sleepTime = 10 # change to 5 minutes
 blockSizeLimit = 10240 # now set 1024 * 10 B
 
 self_insert_gensis = False

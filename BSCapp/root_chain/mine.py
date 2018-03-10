@@ -37,7 +37,7 @@ def mine(block_chain): # need to consider some condition
         block = Block()
         block.new_block(index=new_block_index, timestamp=time(), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
         block_size = block.save_block() # save to file (one block one file KB)
-        timestamp = datetime.datetime.utcnow().timestamp()
+        now_timestamp = time()
         block_chain.reset_transaction() # reset the current_transaction
         block_chain.chain_length += 1 # add chain_length
         block_chain.last_block = block.to_dict() # update the last block
@@ -49,7 +49,7 @@ def mine(block_chain): # need to consider some condition
 
         block_chain.chain.append(block.to_dict()) # add the new block to now block_chain
 
-        return new_block_index, timestamp, block_size, hash_block(block.to_dict())
+        return new_block_index, now_timestamp, block_size, hash_block(block.to_dict())
 
     except Exception as e:
         print(str(e))
