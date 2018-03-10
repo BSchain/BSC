@@ -40,7 +40,7 @@ def insert_gensis_block():
         db.rollback()
         print('insert wrong!')
 
-def mine_block(mineChain, sleepTime, blockSizeLimit):
+def mine_block(mineChain, sleepTime, blockSizeLimit, diff=5):
     # mineChain.get_total_chain()  # get total chain
     mineChain.get_last_block() # get the last block
     while True:
@@ -52,7 +52,7 @@ def mine_block(mineChain, sleepTime, blockSizeLimit):
             time.sleep(sleepTime)
             continue
         # print(mineChain.current_transactions)
-        chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain) # mine the block
+        chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain, diff=5) # mine the block
         print('chain_height',chain_height)
         print('block_timestamp', block_timestamp)
         print('block_size',block_size)
@@ -72,13 +72,13 @@ def mine_block(mineChain, sleepTime, blockSizeLimit):
             print('insert wrong!')
         time.sleep(sleepTime)
 
-def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False):
+def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False, diff=5):
     if insert_gensis:
         insert_gensis_block()
-    mine_block(mineChain, sleepTime, blockSizeLimit)
+    mine_block(mineChain, sleepTime, blockSizeLimit, diff=5)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 300 # change to 5 minutes
+sleepTime = 10 # change to 5 minutes
 blockSizeLimit = 10240 # now set 1024 * 10 B
 
 self_insert_gensis = False
@@ -86,4 +86,4 @@ input_str = input('input insert gensis (y: yes, n: no)')
 if input_str == 'y' or input_str == 'yes':
     self_insert_gensis = True
 
-run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis)
+run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis, diff=10)
