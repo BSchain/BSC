@@ -111,17 +111,20 @@ class Chain:
 
         self.last_block = json_block # get the last json block
 
-    def get_current_transaction(self, deleteFile):
+    def get_current_transaction(self, blockSizeLimit, deleteFile):
+        total_size = 0
         assert os.path.exists(TRANSACTION_SAVE_ROOT), ('blocks file not exist')
         transaction_list = os.listdir(TRANSACTION_SAVE_ROOT)
         for each_transaction in transaction_list: # get the total transaction
+            if total_size > blockSizeLimit: # more than blocksize
+                print('transaction size now is over than '+ str(blockSizeLimit)+' B')
+                break
             tx_file = TRANSACTION_SAVE_ROOT + each_transaction
+            total_size += os.path.getsize(tx_file)  # update the total block size
             with open(tx_file, 'r') as f:
                 transaction = json.load(f)
             self.current_transactions.append(transaction)
-            # tx = TX.Transaction.json_to_transaction(transaction)
             if deleteFile:
-                # if tx.valid_transaction() :
                 os.remove(tx_file)
 
     def add_block(self,block): # save block to file and add block to chain

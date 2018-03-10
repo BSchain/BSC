@@ -40,12 +40,12 @@ def insert_gensis_block():
         db.rollback()
         print('insert wrong!')
 
-def mine_block(mineChain, sleepTime):
+def mine_block(mineChain, sleepTime, blockSizeLimit):
     # mineChain.get_total_chain()  # get total chain
     mineChain.get_last_block() # get the last block
     while True:
         # get current transaction not contain empty transaction
-        mineChain.get_current_transaction(deleteFile=True)
+        mineChain.get_current_transaction(blockSizeLimit, deleteFile=True)
         transaction_number = len(mineChain.current_transactions) # transaction numbers !!!
         if transaction_number == 0 :
             print('now is empty transaction')
@@ -69,17 +69,18 @@ def mine_block(mineChain, sleepTime):
             print('insert wrong!')
         time.sleep(sleepTime)
 
-def run_mine(mineChain, sleepTime, insert_gensis = False):
+def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False):
     if insert_gensis:
         insert_gensis_block()
-    mine_block(mineChain, sleepTime)
+    mine_block(mineChain, sleepTime, blockSizeLimit)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 10 # change to 10 minutes
+sleepTime = 300 # change to 5 minutes
+blockSizeLimit = 10240 # now set 1024 * 10 B
 
 self_insert_gensis = False
 input_str = input('input insert gensis (y: yes, n: no)')
 if input_str == 'y' or input_str == 'yes':
     self_insert_gensis = True
 
-run_mine(mineChain, sleepTime, insert_gensis=self_insert_gensis)
+run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis)
