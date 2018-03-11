@@ -350,18 +350,18 @@ def get_notices(request, user_id):
     return notices, unread_notices, unread_number
 
 
-def GetAccount(user_id):
-    #get the wallet account
-    content = {}
-    cursor = connection.cursor()
-    sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-    return content[0][0]
+# def GetAccount(user_id):
+#     #get the wallet account
+#     content = {}
+#     cursor = connection.cursor()
+#     sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
+#     try:
+#         cursor.execute(sql, [user_id])
+#         content = cursor.fetchall()
+#         cursor.close()
+#     except Exception as e:
+#         cursor.close()
+#     return content[0][0]
 
 def GetUploadData(user_id):
     #get upload data
