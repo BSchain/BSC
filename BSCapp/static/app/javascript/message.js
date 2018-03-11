@@ -84,3 +84,28 @@ function deleteNewIncomeUser(){
         alert('无法删除，没有其他收益者！')
     }
 }
+
+function rechagreAccount(obj) {
+    account = document.getElementById("account").value
+    reaccount = document.getElementById("reaccount").value
+    amount = document.getElementById("amount").value
+    $.ajax("/Recharge/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+            "account":account,
+            "reaccount":reaccount,
+            "amount": amount
+        }
+      }).done(function(data){
+          if (data.statCode !=0){
+              alert(data.message)
+              return false
+          }
+          else{
+              alert(data.message)
+              window.location.replace("/UserInfo/");
+          }
+      })
+    return;
+}
