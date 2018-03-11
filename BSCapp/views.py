@@ -516,7 +516,7 @@ def BuyableData(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     datas = buyData_sql(request, buyer_id, sort_sql)
-    paged_datas = pagingData(request, datas, each_num= 4)
+    paged_datas = pagingData(request, datas, each_num= 10)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
