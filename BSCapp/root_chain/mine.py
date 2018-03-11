@@ -28,7 +28,7 @@ def mine(block_chain, diff=5): # need to consider some condition
         last_block = block_chain.last_block # get last block json
         last_nonce = last_block['nonce'] # get last_nonce
         prev_hash = hash_block(last_block) # calculate the hash for now block
-        nonce = proof_of_work(last_nonce, diff=5) # get proof of work
+        nonce = proof_of_work(last_nonce, diff=diff) # get proof of work
 
         # new_block_index = len(block_chain.chain) + 1 # get block height
 

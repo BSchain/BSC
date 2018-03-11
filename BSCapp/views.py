@@ -399,7 +399,7 @@ def BuyableData(request):
                 income_content = cursor.fetchall()
                 len_income_content = len(income_content)
 
-                # TODO: change seller_out_coin !!! add income user
+                # change seller_out_coin !!! add income user
 
                 for i in range(len_income_content):
                     legal_income_user_list.append(income_content[i][0]) # get income user name
@@ -418,7 +418,7 @@ def BuyableData(request):
             except Exception as e:
                 print(e)
 
-            # TODO: generate the transaction files
+            # generate the transaction files
 
             # insert one purchase log into table
             Purchase(user_id=buyer_id,data_id=now_data_id).save()
@@ -441,7 +441,7 @@ def BuyableData(request):
                 Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
                      is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=left_credit).save()
 
-            # TODO: update the coin for income user
+            # update the coin for income user
 
             len_income_user_coins = len(income_user_out_coins)
 
@@ -454,7 +454,7 @@ def BuyableData(request):
 
             cursor.execute(sql, [0 - now_data_price, buyer_id])
 
-            # TODO: update the wallet for income user
+            # update the wallet for income user
 
             for i in range(len_income_user_coins):
                 cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
@@ -516,7 +516,7 @@ def BuyableData(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     datas = buyData_sql(request, buyer_id, sort_sql)
-    paged_datas = pagingData(request, datas, each_num= 4)
+    paged_datas = pagingData(request, datas, each_num= 10)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
@@ -976,10 +976,10 @@ def Order(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
-    # TODO: get the data score Done!
-    # TODO: add the data score to the transaction table
-    # TODO: update the data_avg_score in data table
-    # TODO: update the comment_number in data table
+    # get the data score Done!
+    # add the data score to the transaction table
+    # update the data_avg_score in data table
+    # update the comment_number in data table
     try:
         self_data_score = (int)(request.POST['data_score'])
         rating_data_id = request.POST['rating_data_id']

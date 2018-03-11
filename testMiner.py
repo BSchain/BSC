@@ -12,6 +12,7 @@ import time
 import pymysql
 import os
 import BSCapp.root_chain.utils as UTILS
+import json
 
 db= pymysql.connect(host="localhost",user="root", password="zpflyfe",db="bsc_db",port=3306)
 cursor = db.cursor()
@@ -40,10 +41,75 @@ def insert_gensis_block():
         db.rollback()
         print('insert wrong!')
 
-def mine_block(mineChain, sleepTime, blockSizeLimit, diff=5):
+# TODO: syn total chain data to DB
+# one week = 24*60*60*7
+def chainDataSynToDB():
+    assert os.path.exists(UTILS.BLOCK_SAVE_ROOT), ('blocks file not exists!')
+    total_file = os.listdir(UTILS.BLOCK_SAVE_ROOT)
+
+    coin_dict = {} # total coin status
+    # key: coin_uuid
+    # value: (coin_number, coin_owner, is_spent)
+
+    for item in total_file:
+        with open(UTILS.BLOCK_SAVE_ROOT + item, 'r') as f:
+            block = json.load(f)
+        transactions = block['transactions']
+        len_transactions = len(transactions)
+        for i in range(len_transactions):
+            in_coins = transactions[i]['in_coins']
+            out_coins = transactions[i]['out_coins']
+            len_in_coins = len(in_coins)
+            len_out_coins = len(out_coins)
+
+            # out_coins
+            for j in range(len_out_coins):
+                coin_uuid = out_coins[j]['coin_uuid']
+                number_coin = out_coins[j]['number_coin']
+                owner = out_coins[j]['owner']
+                if coin_dict.__contains__(coin_uuid) == False:
+                    coin_dict[coin_uuid] = (number_coin, owner, False) # coin_number, owner, is_spent
+
+            # in_coins
+            for j in range(len_in_coins):
+                coin_uuid = in_coins[j]['coin_uuid']
+                number_coin = in_coins[j]['number_coin']
+                owner = in_coins[j]['owner']
+                if coin_dict.__contains__(coin_uuid) :
+                    coin_dict[coin_uuid] = (number_coin, owner, True) # coin_number, owner, is_spent
+
+    for key, value in coin_dict.items():
+        print("key:",key, "value:", value)
+    return coin_dict
+
+def mine_block(mineChain, diff=5, debug = False):
     # mineChain.get_total_chain()  # get total chain
     mineChain.get_last_block() # get the last block
+
+    if debug:
+        sleepTime = 10  # change to 10 seconds
+        blockSizeLimit = 1024  # now set 1024 B
+        synTimeSpan = 60  # one minutes
+    else:
+        sleepTime = 300  # change to 5 minutes
+        blockSizeLimit = 1024 * 10  # now set 1024 * 10 B
+        synTimeSpan = 7 * 24 * 60 * 60  # one week to syn data
+    last_syn_time = 0
+
+    synCounter = 0
     while True:
+        if last_syn_time == 0:
+            synCounter += 1
+            print('------------------ Syn Data time: ' + str(synCounter) + '----------------')
+            chainDataSynToDB()  # the first time syn
+            last_syn_time = time.time()
+
+        if time.time() - last_syn_time >= synTimeSpan:
+            synCounter += 1
+            print('------------------ Syn Data time: ' + str(synCounter) + '----------------')
+            chainDataSynToDB()  # the first time syn
+            last_syn_time = time.time()
+
         # get current transaction not contain empty transaction
         mineChain.get_current_transaction(blockSizeLimit, deleteFile=True)
         transaction_number = len(mineChain.current_transactions) # transaction numbers !!!
@@ -52,7 +118,7 @@ def mine_block(mineChain, sleepTime, blockSizeLimit, diff=5):
             time.sleep(sleepTime)
             continue
         # print(mineChain.current_transactions)
-        chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain, diff=5) # mine the block
+        chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain, diff=diff) # mine the block
         print('chain_height',chain_height)
         print('block_timestamp', block_timestamp)
         print('block_size',block_size)
@@ -72,18 +138,20 @@ def mine_block(mineChain, sleepTime, blockSizeLimit, diff=5):
             print('insert wrong!')
         time.sleep(sleepTime)
 
-def run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis = False, diff=5):
+def run_mine(mineChain, insert_gensis = False, diff=5, debug = False):
     if insert_gensis:
         insert_gensis_block()
-    mine_block(mineChain, sleepTime, blockSizeLimit, diff=5)
+    mine_block(mineChain, diff=diff, debug = debug)
 
 mineChain = CHAIN.Chain() # new a init chain
-sleepTime = 300 # change to 5 minutes
-blockSizeLimit = 10240 # now set 1024 * 10 B
+default_debug = True # the debug setting!!!
+
+default_diff = 5 # very quick
+# default_diff = 6 #  60 seconds to mine
 
 self_insert_gensis = False
 input_str = input('input insert gensis (y: yes, n: no)')
 if input_str == 'y' or input_str == 'yes':
     self_insert_gensis = True
 
-run_mine(mineChain, sleepTime, blockSizeLimit, insert_gensis=self_insert_gensis, diff=5)
+run_mine(mineChain, insert_gensis=self_insert_gensis, diff=default_diff, debug=default_debug)

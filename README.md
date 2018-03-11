@@ -21,7 +21,7 @@ chain for science data sharing
 >>
 >> 需要在data表中添加新的字段，记录评价该数据的用户个数。
 
->* 3.`下载时间隔10分钟`
+>* 3.`下载时间隔5分钟`
 >> 避免多次下载导致transaction文件过多。
 >>
 >> 需要新增加download表，用于记录用户下载的信息。每次更新用户最近一次的下载时间。
@@ -34,7 +34,7 @@ chain for science data sharing
 >> 修改后挖矿时，transaction文件删除的逻辑需要同时进行修改。
 
 >* 6.`挖矿的block产生时间间隔`
->> 修改为10分钟
+>> 修改为5分钟
 
 ### 待完成
 
@@ -43,8 +43,7 @@ chain for science data sharing
 >> 用于数据库信息修正。
 >>
 >> 同步信息目前只涉及到coin是否花费。
-<pre><code>
-遍历当前所有的block文件，
+<pre><code>遍历当前所有的block文件，
     获取所有的transaction中coin_in和coin_out的coin地址。
         1.仅出现在coin_in中的则在mysql中设置为未花费。
         2.出现在coin_in中且出现在coin_out中的coin则设置为已花费。
