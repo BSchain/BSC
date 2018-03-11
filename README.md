@@ -36,9 +36,7 @@ chain for science data sharing
 >* 6.`挖矿的block产生时间间隔`
 >> 修改为5分钟
 
-### 待完成
-
->* 4.`链数据同步至mysql`
+>* 4.`链数据同步至mysql` (还没有进行数据库的插入操作!!!)
 
 >> 用于数据库信息修正。
 >>
@@ -48,6 +46,10 @@ chain for science data sharing
         1.仅出现在coin_in中的则在mysql中设置为未花费。
         2.出现在coin_in中且出现在coin_out中的coin则设置为已花费。
 </code></pre>
+
+### 待完成
+>* `区块链详细信息弹窗设计`
+>* `修复查找结果的bug`
 
 
 ## 当前已有功能
