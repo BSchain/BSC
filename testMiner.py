@@ -68,7 +68,7 @@ def chainDataSynToDB():
                 number_coin = out_coins[j]['number_coin']
                 owner = out_coins[j]['owner']
                 if coin_dict.__contains__(coin_uuid) == False:
-                    coin_dict[coin_uuid] = (number_coin, owner, False) # coin_number, owner, is_spent
+                    coin_dict[coin_uuid] = (number_coin, owner, 0) # coin_number, owner, is_spent = 1
 
             # in_coins
             for j in range(len_in_coins):
@@ -76,10 +76,45 @@ def chainDataSynToDB():
                 number_coin = in_coins[j]['number_coin']
                 owner = in_coins[j]['owner']
                 if coin_dict.__contains__(coin_uuid) :
-                    coin_dict[coin_uuid] = (number_coin, owner, True) # coin_number, owner, is_spent
+                    coin_dict[coin_uuid] = (number_coin, owner, 1) # coin_number, owner, is_spent = 0
 
-    for key, value in coin_dict.items():
-        print("key:",key, "value:", value)
+    # insert or update the coin status
+    insert_number = 0
+    update_number = 0
+    for key_coin_id, coin_value in coin_dict.items():
+        try:
+            coin_get = "select BSCapp_coin.owner_id from BSCapp_coin where BSCapp_coin.coin_id = %s"
+            cursor.execute(coin_get,[key_coin_id])
+            content = cursor.fetchall()
+            if len(content) == 0:
+                try:
+                    coin_insert = "insert into BSCapp_coin  \
+                                  (coin_id, coin_credit, owner_id, is_spent, timestamp)  \
+                                  values ('%s', '%s', '%s', '%s', '%s')" %  \
+                                  (key_coin_id, coin_value[0], coin_value[1],coin_value[2], time.time())
+                    cursor.execute(coin_insert)
+                    db.commit()
+                    insert_number+=1
+                except Exception as e:
+                    db.rollback()
+                    print(e)
+            else:
+                try:
+                    coin_update = 'update BSCapp_coin ' \
+                      'set BSCapp_coin.coin_credit = %s, BSCapp_coin.owner_id = %s, BSCapp_coin.is_spent = %s ' \
+                      'where BSCapp_coin.coin_id = %s'
+                    cursor.execute(coin_update, [coin_value[0], coin_value[1], coin_value[2], key_coin_id])
+                    db.commit()
+                    update_number+=1
+                except Exception as e:
+                    db.rollback()
+                    print(e)
+        except Exception as e:
+            print(e)
+        print("key:",key_coin_id, "value:", coin_value)
+
+    print('insert number: ' +str(insert_number))
+    print('update number: ' +str(update_number))
     return coin_dict
 
 def mine_block(mineChain, diff=5, debug = False):
