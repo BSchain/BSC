@@ -35,10 +35,12 @@ def insert_gensis_block():
                        (gensis_chain_height, gensis_block_timestamp, gensis_block_size, gensis_transaction_number, gensis_hash)
         cursor.execute(block_insert)
         db.commit()
+        print('now ' + UTILS.time_to_str(str(time.time())))
         print('insert success!')
     except Exception as e:
         print(str(e))
         db.rollback()
+        print('now ' + UTILS.time_to_str(str(time.time())))
         print('insert wrong!')
 
 # TODO: syn total chain data to DB
@@ -112,9 +114,8 @@ def chainDataSynToDB():
         except Exception as e:
             print(e)
         print("key:",key_coin_id, "value:", coin_value)
-
-    print('insert number: ' +str(insert_number))
-    print('update number: ' +str(update_number))
+    print(UTILS.time_to_str(str(time.time()))  + ' insert number: ' +str(insert_number))
+    print(UTILS.time_to_str(str(time.time()))  + ' update number: ' +str(update_number))
     return coin_dict
 
 def mine_block(mineChain, diff=5, debug = False):
@@ -149,7 +150,7 @@ def mine_block(mineChain, diff=5, debug = False):
         mineChain.get_current_transaction(blockSizeLimit, deleteFile=True)
         transaction_number = len(mineChain.current_transactions) # transaction numbers !!!
         if transaction_number == 0 :
-            print('now is empty transaction')
+            print(UTILS.time_to_str(str(time.time())) +' now is empty transaction')
             time.sleep(sleepTime)
             continue
         # print(mineChain.current_transactions)
@@ -166,11 +167,11 @@ def mine_block(mineChain, diff=5, debug = False):
                            (chain_height, block_timestamp, block_size, transaction_number, now_block_hash)
             cursor.execute(block_insert)
             db.commit()
-            print('insert success!')
+            print(UTILS.time_to_str(str(time.time())) +' insert success!')
         except Exception as e:
             print(str(e))
             db.rollback()
-            print('insert wrong!')
+            print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
         time.sleep(sleepTime)
 
 def run_mine(mineChain, insert_gensis = False, diff=5, debug = False):
@@ -179,14 +180,21 @@ def run_mine(mineChain, insert_gensis = False, diff=5, debug = False):
     mine_block(mineChain, diff=diff, debug = debug)
 
 mineChain = CHAIN.Chain() # new a init chain
-default_debug = True # the debug setting!!!
+
 
 default_diff = 5 # very quick
 # default_diff = 6 #  60 seconds to mine
 
 self_insert_gensis = False
+default_debug = False # the debug setting!!!
+
 input_str = input('input insert gensis (y: yes, n: no)')
 if input_str == 'y' or input_str == 'yes':
     self_insert_gensis = True
+
+
+input_str = input('input debug (y: yes, n: no)')
+if input_str == 'y' or input_str == 'yes':
+    default_debug = True
 
 run_mine(mineChain, insert_gensis=self_insert_gensis, diff=default_diff, debug=default_debug)
