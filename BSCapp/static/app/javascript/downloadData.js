@@ -15,7 +15,7 @@ function orderDownloadData(obj) {
           else{
               // alert(data.message)
               var file = document.getElementById(obj.value);
-              file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
+              file.innerHTML = "<a hidden='hidden' id='download' href='" + data.address + "' download='" + data.name + "'>下载</a>";
               var download = document.getElementById("download")
               download.click()
           }
