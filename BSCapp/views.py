@@ -984,10 +984,10 @@ def Order(request):
     try:
         self_data_score = (int)(request.POST['data_score'])
         rating_data_id = request.POST['rating_data_id']
-
-        print('self_data_score',self_data_score)
-        print('rating_data_id', rating_data_id)
-        print('user_id', user_id)
+        #
+        # print('self_data_score',self_data_score)
+        # print('rating_data_id', rating_data_id)
+        # print('user_id', user_id)
         # insert self_score into transaction table
         try:
             cursor = connection.cursor()
@@ -1046,7 +1046,8 @@ def Order(request):
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
         seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
-
+        # print('now_data_id',now_data_id)
+        # print('seller_id',seller_id)
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=user_id, data_id=now_data_id)
@@ -1163,9 +1164,9 @@ def Recharge(request):
         reaccount = request.POST["reaccount"]
         amount = request.POST["amount"]
 
-        print('account',account)
-        print('reaccount', reaccount)
-        print('amount','amount')
+        # print('account',account)
+        # print('reaccount', reaccount)
+        # print('amount','amount')
 
         if account != reaccount:
             return HttpResponse(json.dumps({
