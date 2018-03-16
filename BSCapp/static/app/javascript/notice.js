@@ -4,7 +4,7 @@ function read_notice(obj) {
         type: 'POST',
         data: {
           "id": obj.id,
-          "op": '1',
+          "op": 'read',
         }
       }).done(function(data){
           window.location.replace("/Notify/");
@@ -18,7 +18,21 @@ function unread_notice(obj) {
         type: 'POST',
         data: {
           "id": obj.id,
-          "op": '2',
+          "op": 'unread',
+        }
+      }).done(function(data){
+          window.location.replace("/Notify/");
+      })
+    return;
+}
+
+function delete_notice(obj) {
+    $.ajax("/Notify/", {
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          "id": obj.id,
+          "op": 'delete',
         }
       }).done(function(data){
           window.location.replace("/Notify/");

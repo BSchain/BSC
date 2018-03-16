@@ -142,7 +142,8 @@
                                                 {% endif %}
                                                 <td>
                                                     <button class="label label-success" id="{{notice.notice_id}}" onclick="read_notice(this);">已查看</button>
-                                                    <button class="label label-danger" id="{{notice.notice_id}}" onclick="unread_notice(this);">未查看</button>
+                                                    <button class="label label-warning" id="{{notice.notice_id}}" onclick="unread_notice(this);">未查看</button>
+                                                    <button class="label label-danger" id="{{notice.notice_id}}" onclick="delete_notice(this);">删除通知</button>
                                                 </td>
 											</tr>
 										{% endfor %}
