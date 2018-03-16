@@ -178,7 +178,8 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in datas.paginator.page_range %}
+{#										{% for i in datas.paginator.page_range %}#}
+                                        {% for i in datas.paginator.page_range_ext %}
 											{% if datas.number == i %}
 											<li class="active">
 												<span>{{ i }}

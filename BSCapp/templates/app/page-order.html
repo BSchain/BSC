@@ -192,7 +192,8 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in orders.paginator.page_range %}
+{#										{% for i in orders.paginator.page_range %}#}
+                                        {% for i in orders.paginator.page_range_ext %}
 											{% if orders.number == i %}
 											<li class="active">
 												<span>{{ i }}

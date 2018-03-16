@@ -9,6 +9,7 @@ from django.db import connection
 from BSCapp.root_chain.utils import *
 from BSCapp.models import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from BSCapp.Paginator import *
 
 def generate_sort_sql(table_name, sort_name, sort_type):
     sort_sql = 'order by ' + table_name + '.' + sort_name+' '+sort_type+';'
@@ -327,7 +328,9 @@ def noticeData_sql(user_id, sort_sql):
 
 
 def pagingData(request, datas, each_num):
-    paginator = Paginator(datas, each_num)
+    # paginator = Paginator(datas, each_num)
+    # print(each_num)
+    paginator = JuncheePaginator(datas, each_num)
     page = request.GET.get('page', 1)
     try:
         paged_recharges = paginator.page(page)
