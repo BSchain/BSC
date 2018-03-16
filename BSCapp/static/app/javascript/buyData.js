@@ -36,7 +36,7 @@ function downloadData(obj) {
           }
           else{
               // download transaction in the view.py file
-              alert(data.message)
+              // alert(data.message)
               var file = document.getElementById(obj.value);
               // obj_address = data.address
               // obj_ = data.name

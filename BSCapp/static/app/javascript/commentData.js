@@ -14,7 +14,7 @@ function commentData(obj) {
               return false
           }
           else{
-              alert(data.message)
+              // alert(data.message)
               window.location.replace("/Order/");
           }
       })
