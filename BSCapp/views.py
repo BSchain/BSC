@@ -1063,8 +1063,6 @@ def Order(request):
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
         seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
-        print('now_data_id',now_data_id)
-        # print('seller_id',seller_id)
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=user_id, data_id=now_data_id)
