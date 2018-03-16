@@ -74,7 +74,7 @@ def Index(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=10)
+    paged_blocks = pagingData(request, blocks)
 
     request.session['username'] = ""
     request.session['isAdmin'] = False
@@ -245,7 +245,7 @@ def UserInfo(request):
         purchase_data_num = len(GetPurchaseData(user.user_id))
         #get the recharge record
         recharges = rechargeData_sql(user.user_id)
-        paged_recharges = pagingData(request, recharges, each_num = 10)
+        paged_recharges = pagingData(request, recharges)
 
         notices, unread_notices, unread_number = get_notices(request, user.user_id)
 
@@ -534,7 +534,7 @@ def BuyableData(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     datas = buyData_sql(request, buyer_id, sort_sql)
-    paged_datas = pagingData(request, datas, each_num= 10)
+    paged_datas = pagingData(request, datas)
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
@@ -654,7 +654,7 @@ def AdminDataInfo(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(request,sort_sql)
-    paged_datas = pagingData(request, datas, each_num=10)
+    paged_datas = pagingData(request, datas)
     adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price',
                            'data_status', 'data_purchase', 'data_download', 'data_score', 'comment_number']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
@@ -976,7 +976,7 @@ def MyData(request):
 
     datas = uploadData_sql(request, user_id, sort_sql)
 
-    paged_datas = pagingData(request, datas, each_num=10)
+    paged_datas = pagingData(request, datas)
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
@@ -1173,7 +1173,7 @@ def Order(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     orders = orderData_sql(request, user_id, sort_sql)
-    paged_orders = pagingData(request, orders, each_num=10)
+    paged_orders = pagingData(request, orders)
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
     order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price', 'data_score', 'comment_number']
@@ -1357,7 +1357,7 @@ def Notify(request):
     notify_sort_list = ['timestamp', 'notice_info', 'if_check']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, notify_sort_list)
 
-    paged_notices = pagingData(request, notices, each_num=10)
+    paged_notices = pagingData(request, notices)
 
     return render(request, "app/page-notify.html",
                   {'notices': paged_notices,
@@ -1420,7 +1420,7 @@ def ChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=10)
+    paged_blocks = pagingData(request, blocks)
 
     return render(request, "app/page-chainInfo.html",
                       {'id': username,
@@ -1479,7 +1479,7 @@ def AdminChainInfo(request):
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
     blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks, each_num=10)
+    paged_blocks = pagingData(request, blocks)
 
     return render(request, "app/page-adminChainInfo.html",
                       {'id': username,
