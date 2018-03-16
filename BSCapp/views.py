@@ -288,6 +288,7 @@ def BuyableData(request):
             print(e)
         if now_op == 'download':
             try:
+                now_data = Data.objects.get(data_id=now_data_id)
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
                 # get last download time
                 try:
@@ -331,6 +332,8 @@ def BuyableData(request):
 
                 return HttpResponse(json.dumps({
                     'statCode': 0,
+                    'name':now_data.data_name,
+                    'address':now_data.data_address,
                     'message': '已购买此数据,可以下载!'
                 }))
             except:
@@ -1051,6 +1054,7 @@ def Order(request):
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=user_id, data_id=now_data_id)
+                now_data = Data.objects.get(data_id = now_data_id)
                 try:
 
                     now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
@@ -1108,6 +1112,8 @@ def Order(request):
 
                 return HttpResponse(json.dumps({
                     'statCode': 0,
+                    'address': now_data.data_address,
+                    'name': now_data.data_name,
                     'message': '已购买此数据,可以下载!'
                 }))
             except:

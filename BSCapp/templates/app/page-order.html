@@ -164,7 +164,8 @@
                                                     {% endif %}
                                                 </td>
 												<td align="">
-                                                    <button class="fa fa-download" style="font-size: 16px" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>
+{#                                                    <button class="fa fa-download" style="font-size: 16px" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>#}
+                                                    <button class="fa fa-download" style="font-size: 16px" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>
                                                     <div id="{{order.dataid}}"> </div>
 												</td>
 
