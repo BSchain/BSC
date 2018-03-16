@@ -1046,11 +1046,26 @@ def Order(request):
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
         seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
-        # print('now_data_id',now_data_id)
+        print('now_data_id',now_data_id)
         # print('seller_id',seller_id)
         if now_op == 'download':
             try:
                 Purchase.objects.get(user_id=user_id, data_id=now_data_id)
+                try:
+
+                    now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
+                    file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
+                    if(os.path.exists(file_path) == False):
+                        return HttpResponse(json.dumps({
+                            'statCode': -1,
+                            'message': '当前数据已失效，请联系管理员!'
+                        }))
+                except Exception as e:
+                    print(e)
+                    return HttpResponse(json.dumps({
+                        'statCode': -1,
+                        'message': '当前数据已失效!'
+                    }))
                 # get last download time
                 try:
                     old_last_download_time = Transaction.objects.get(buyer_id = user_id, data_id = now_data_id).last_download_time
