@@ -137,7 +137,8 @@
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-										{% for i in blocks.paginator.page_range %}
+{#										{% for i in blocks.paginator.page_range %}#}
+                                        {% for i in blocks.paginator.page_range_ext %}
 											{% if blocks.number == i %}
 											<li class="active">
 												<span>{{ i }}
