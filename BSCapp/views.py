@@ -1311,11 +1311,34 @@ def Notify(request):
         now_notice_id = request.POST['id']
         now_op = request.POST['op']
         notice = Notice.objects.get(notice_id=now_notice_id)
-        if notice.if_check != now_op:
+        now_if_check = False
+        if now_op == 'delete':
+            try:
+                sql = 'delete from BSCapp_notice where notice_id = %s;'
+                cursor = connection.cursor()
+                cursor.execute(sql, [now_notice_id])
+                cursor.close()
+            except Exception as e:
+                print(e)
+
+        elif now_op == 'read':
+            now_if_check = True
+        elif now_op == 'unread':
+            now_if_check = False
+
+        if notice.if_check == now_if_check:
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+            }))
+
+        try:
             sql = 'update BSCapp_notice set if_check = %s where notice_id = %s;'
             cursor = connection.cursor()
-            cursor.execute(sql, [now_op,now_notice_id])
+            cursor.execute(sql, [now_if_check,now_notice_id])
             cursor.close()
+        except Exception as e:
+            print(e)
+
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
