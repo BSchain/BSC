@@ -1307,6 +1307,37 @@ def Notify(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
+
+    try:
+        now_func = request.POST['func']
+        print('now_func',now_func)
+        if now_func == 'deleteAll':
+            try:
+                sql = 'delete from BSCapp_notice where receiver_id = %s and if_check = True'
+                cursor = connection.cursor()
+                cursor.execute(sql, [user_id])
+                cursor.close()
+                return HttpResponse(json.dumps({
+                    'statCode': 0,
+                    'message': '删除成功!'
+                }))
+            except Exception as e:
+                print(e)
+        elif now_func == 'readAll':
+            try:
+                sql = 'update BSCapp_notice set if_check = True where receiver_id = %s and if_check = False;'
+                cursor = connection.cursor()
+                cursor.execute(sql, [user_id])
+                cursor.close()
+                return HttpResponse(json.dumps({
+                    'statCode': 0,
+                    'message': '标记成功!'
+                }))
+            except Exception as e:
+                print(e)
+    except Exception as e:
+        print(e)
+
     try:
         now_notice_id = request.POST['id']
         now_op = request.POST['op']
