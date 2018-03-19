@@ -29,14 +29,9 @@ Chain For Science Data Sharing
 > * `区块数据coin与数据库进行定期同步`
 > * `页面显示修改，分页代码的封装`
 
-## Doing
-> * 2.`添加通知信息删除功能`
->> 删除所有未读通知，删除所有通知，删除某一页通知，删除某条通知
-
 # 下一步开发工作：
 > * 1.`设置配置文件`
 >> 挖矿时间间隔, 挖矿transaction最大限制，Chain与mysql同步时间，上传数据的路径，上传奖励机制设置等global variable, 页面信息显示条数
->
 >
 > * 3.`尝试解决coin问题`
 >> 阅读 Mastering Bitcoin, 阅读bitcoin项目 https://github.com/bitcoin/bitcoin
@@ -84,6 +79,11 @@ Chain For Science Data Sharing
 >在浏览器网站中输入 `127.0.0.1:8000/Index` 默认端口为8000
 >
 >点击右上角的login，里面可以选择注册还是登陆
+
+
+# step3 功能点:
+> * 1.`添加通知信息删除功能`
+>> 删除所有已读通知，一键全部已读，删除某条通知，已读某条通知，未读某条通知
 
 # step2 功能点:
 > *block生成 Proof of work算法，开发已完成.*
