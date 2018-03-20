@@ -32,13 +32,14 @@ Chain For Science Data Sharing
 ## Doing
 > * 2.`添加通知信息删除功能`
 >> 删除所有未读通知，删除所有通知，删除某一页通知，删除某条通知
-
-# 下一步开发工作：
 > * 1.`设置配置文件`
 >> 挖矿时间间隔 ok , 挖矿transaction最大限制 ok，Chain与mysql同步时间 ok，
->
->> 上传数据的路ok，上传奖励机制设置等global variable, 页面信息显示条数ok
->
+>> 上传数据的路 ok，上传奖励机制设置等global variable ok, 页面信息显示条数 ok
+> * 6.`数据奖励机制的修改`
+>> 与文件大小相关
+
+# 下一步开发工作：
+
 >
 > * 3.`尝试解决coin问题`
 >> 阅读 Mastering Bitcoin, 阅读bitcoin项目 https://github.com/bitcoin/bitcoin
@@ -47,6 +48,7 @@ Chain For Science Data Sharing
 >> github开源项目查找
 >
 > * 5.`区块链详细信息弹窗设计`
+>
 
 ## 待完成
 
