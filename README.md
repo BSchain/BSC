@@ -35,7 +35,9 @@ Chain For Science Data Sharing
 
 # 下一步开发工作：
 > * 1.`设置配置文件`
->> 挖矿时间间隔, 挖矿transaction最大限制，Chain与mysql同步时间，上传数据的路径，上传奖励机制设置等global variable, 页面信息显示条数
+>> 挖矿时间间隔 ok , 挖矿transaction最大限制 ok，Chain与mysql同步时间 ok，
+>
+>> 上传数据的路ok，上传奖励机制设置等global variable, 页面信息显示条数ok
 >
 >
 > * 3.`尝试解决coin问题`
