@@ -27,14 +27,14 @@ def Index(request):
             'block': json.dumps(now_block_dict),
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     try:
         Block_sort_name_and_type = request.session['Block_sort_name_and_type']
         if Block_sort_name_and_type == "":
             request.session['Block_sort_name_and_type'] = "timestamp&DESC"
     except Exception as e:
-        print(e)
+        # print(e)
         request.session['Block_sort_name_and_type'] = "timestamp&DESC"
     try:
         Block_sort_name_and_type = request.session['Block_sort_name_and_type']
@@ -58,7 +58,7 @@ def Index(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
         pass
 
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
@@ -73,8 +73,17 @@ def Index(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
-    blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks)
+    blocks, len_content = chainData_sql(request, sort_sql)
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        if search_field == '':
+            paged_blocks = pagingData(request, blocks)
+        else:
+            paged_blocks = pagingData(request, blocks, each_num=len_content)
+    except Exception as e:
+        # print(e)
+        paged_blocks = pagingData(request, blocks)
 
     request.session['username'] = ""
     request.session['isAdmin'] = False
@@ -285,7 +294,8 @@ def BuyableData(request):
         try:
             seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         if now_op == 'download':
             try:
                 now_data = Data.objects.get(data_id=now_data_id)
@@ -299,7 +309,7 @@ def BuyableData(request):
                             'message': '当前数据已失效，请联系管理员!'
                         }))
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     return HttpResponse(json.dumps({
                         'statCode': -1,
                         'message': '当前数据已失效!'
@@ -331,7 +341,8 @@ def BuyableData(request):
                             cursor.execute(sql, [now_time, buyer_id, now_data_id])
                             cursor.close()
                 except Exception as e:
-                    print(e)
+                    # print(e)
+                    pass
                 # add action: download to file
                 tx = TX.Transaction()
                 tx.new_transaction(in_coins=[], out_coins=[],
@@ -434,7 +445,8 @@ def BuyableData(request):
                     income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
 
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
 
             # generate the transaction files
 
@@ -490,13 +502,14 @@ def BuyableData(request):
                 'message': '购买成功!'
             }))
         except Exception as e:
-            print(str(e))
+            # print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '系统错误!'
             }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     try:
         Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
@@ -522,7 +535,8 @@ def BuyableData(request):
                 'statCode': 0,
             }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     Buy_sort_name_and_type = request.session['Buy_sort_name_and_type']
     result = Buy_sort_name_and_type.split('&')
@@ -533,8 +547,17 @@ def BuyableData(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
-    datas = buyData_sql(request, buyer_id, sort_sql)
-    paged_datas = pagingData(request, datas)
+    datas, len_content = buyData_sql(request, buyer_id, sort_sql)
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        if search_field == '':
+            paged_datas = pagingData(request, datas)
+        else:
+            paged_datas = pagingData(request, datas, each_num=len_content)
+    except Exception as e:
+        paged_datas = pagingData(request, datas)
+
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
     buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
@@ -579,11 +602,15 @@ def AdminDataInfo(request):
         # insert the review into history and save a notice
         try: # can change
             review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
+            if review_history.review_status == now_data_status:
+                return HttpResponse(json.dumps({
+                    'statCode': 0,
+                }))
             review_history.review_status = now_data_status
             review_history.timestamp = now_time
             review_history.save()
         except Exception as e:
-            print(e)
+            # print(e)
             # the first time to review data
             Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=now_data_status, timestamp=now_time).save()
 
@@ -639,8 +666,8 @@ def AdminDataInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     Admin_sort_name_and_type = request.session['Admin_sort_name_and_type']
     result = Admin_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -961,8 +988,8 @@ def MyData(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
     result = MyData_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -976,9 +1003,16 @@ def MyData(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
-    datas = uploadData_sql(request, user_id, sort_sql)
-
-    paged_datas = pagingData(request, datas)
+    datas, len_content = uploadData_sql(request, user_id, sort_sql)
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        if search_field == '':
+            paged_datas = pagingData(request, datas)
+        else:
+            paged_datas = pagingData(request, datas,each_num=len_content)
+    except Exception as e:
+        paged_datas = pagingData(request, datas)
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
@@ -1053,13 +1087,14 @@ def Order(request):
                 'message': '评价成功！'
             }))
         except Exception as e:
-            print(str(e))
+            # print(str(e))
             return HttpResponse(json.dumps({
                 'statCode': -1,
                 'message': '评价失败！'
             }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     try:
         # add download action in Order page
         now_data_id = request.POST['data_id']
@@ -1079,7 +1114,7 @@ def Order(request):
                             'message': '当前数据已失效，请联系管理员!'
                         }))
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     return HttpResponse(json.dumps({
                         'statCode': -1,
                         'message': '当前数据已失效!'
@@ -1110,7 +1145,8 @@ def Order(request):
                             cursor.execute(sql, [now_time, user_id, now_data_id])
                             cursor.close()
                 except Exception as e:
-                    print(e)
+                    # print(e)
+                    pass
                 # add action: download to file
                 tx = TX.Transaction()
                 tx.new_transaction(in_coins=[], out_coins=[],
@@ -1137,7 +1173,8 @@ def Order(request):
                 }))
         # insert new purchase_log for buyer
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     try:
         Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
@@ -1162,7 +1199,8 @@ def Order(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     Order_sort_name_and_type = request.session['Order_sort_name_and_type']
     result = Order_sort_name_and_type.split('&')
     default_sort_name = result[0]
@@ -1293,7 +1331,8 @@ def Recharge(request):
             'message': '充值成功!'
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
     return render(request, "app/page-recharge.html",
@@ -1312,7 +1351,7 @@ def Notify(request):
 
     try:
         now_func = request.POST['func']
-        print('now_func',now_func)
+        # print('now_func',now_func)
         if now_func == 'deleteAll':
             try:
                 sql = 'delete from BSCapp_notice where receiver_id = %s and if_check = True'
@@ -1324,7 +1363,8 @@ def Notify(request):
                     'message': '删除成功!'
                 }))
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
         elif now_func == 'readAll':
             try:
                 sql = 'update BSCapp_notice set if_check = True where receiver_id = %s and if_check = False;'
@@ -1336,10 +1376,11 @@ def Notify(request):
                     'message': '标记成功!'
                 }))
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     try:
         now_notice_id = request.POST['id']
         now_op = request.POST['op']
@@ -1352,7 +1393,8 @@ def Notify(request):
                 cursor.execute(sql, [now_notice_id])
                 cursor.close()
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
 
         elif now_op == 'read':
             now_if_check = True
@@ -1370,13 +1412,15 @@ def Notify(request):
             cursor.execute(sql, [now_if_check,now_notice_id])
             cursor.close()
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
 
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     try:
         Notice_sort_name_and_type = request.session['Notice_sort_name_and_type']
@@ -1400,7 +1444,8 @@ def Notify(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
@@ -1459,7 +1504,8 @@ def ChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
@@ -1473,8 +1519,17 @@ def ChainInfo(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
-    blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks)
+    blocks, len_content = chainData_sql(request, sort_sql)
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        if search_field == '':
+            paged_blocks = pagingData(request, blocks)
+        else:
+            paged_blocks = pagingData(request, blocks, each_num=len_content)
+    except Exception as e:
+        # print(e)
+        paged_blocks = pagingData(request, blocks)
 
     return render(request, "app/page-chainInfo.html",
                       {'id': username,
@@ -1518,7 +1573,8 @@ def AdminChainInfo(request):
             'statCode': 0,
         }))
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
     result = Block_sort_name_and_type.split('&')
@@ -1532,8 +1588,17 @@ def AdminChainInfo(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
-    blocks = chainData_sql(request, sort_sql)
-    paged_blocks = pagingData(request, blocks)
+    blocks,len_content = chainData_sql(request, sort_sql)
+    try:
+        search_base = request.POST["searchBase"]
+        search_field = request.POST["searchField"]
+        if search_field == '':
+            paged_blocks = pagingData(request, blocks)
+        else:
+            paged_blocks = pagingData(request, blocks, each_num=len_content)
+    except Exception as e:
+        # print(e)
+        paged_blocks = pagingData(request, blocks)
 
     return render(request, "app/page-adminChainInfo.html",
                       {'id': username,

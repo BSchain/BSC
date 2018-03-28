@@ -58,8 +58,8 @@ def buyData_sql(request, buyer_id, sort_sql):
         search_field = request.POST["searchField"]
         search_sql = 'and {} like %s '.format(search_base)
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     sql = sql + search_sql + sort_sql
     try:
         if search_sql:
@@ -69,7 +69,7 @@ def buyData_sql(request, buyer_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return context
     datas = []
@@ -97,7 +97,7 @@ def buyData_sql(request, buyer_id, sort_sql):
             data['score'] = score
             data['comment'] = comment_number
         datas.append(data)
-    return datas
+    return datas, len_content
 
 def orderData_sql(request, user_id, sort_sql):
 
@@ -124,7 +124,7 @@ def orderData_sql(request, user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return context
     
@@ -181,7 +181,7 @@ def uploadData_sql(request, user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return context
 
@@ -231,7 +231,7 @@ def uploadData_sql(request, user_id, sort_sql):
         item_cursor.close()
 
         datas.append(data)
-    return datas
+    return datas, len_content
 
 def adminData_sql(request, sort_sql):
     cursor = connection.cursor()
@@ -241,8 +241,8 @@ def adminData_sql(request, sort_sql):
         search_field = request.POST["searchField"]
         search_sql = 'where {} like %s '.format(search_base)
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
            data_source, data_type, data_status, data_price, ' \
           'data_download, data_purchase, data_score, comment_number from BSCapp_data '
@@ -321,7 +321,7 @@ def noticeData_sql(user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return content
     notices = []
@@ -444,7 +444,8 @@ def chainData_sql(request, sort_sql):
         search_field = request.POST["searchField"]
         search_sql = 'where {} like %s '.format(search_base)
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     sql = sql + search_sql + sort_sql
     try:
@@ -455,7 +456,7 @@ def chainData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return context
 
@@ -469,4 +470,4 @@ def chainData_sql(request, sort_sql):
         block['tx_number'] = content[i][3]
         block['block_hash'] = content[i][4]
         blocks.append(block)
-    return blocks
+    return blocks, len_content
