@@ -868,6 +868,8 @@ def Upload(request):
         #  1. generate new coin_id for the user_id Done!!!
         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
         new_coin_id = generate_uuid(data_id)
+        # TODO: add coin number to config
+        # TODO: related to the file size
         default_coin_number = 1.0 # add notify to table Done!!!
 
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
