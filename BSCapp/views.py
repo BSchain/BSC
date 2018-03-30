@@ -287,6 +287,7 @@ def ModifyPwd(request):
         old_pwd = request.POST['old_password']
         new_pwd = request.POST['new_password']
         new_repwd = request.POST['new_repassword']
+
         if old_pwd != user.user_pwd:
             return HttpResponse(json.dumps({
                 'statCode': -1,
@@ -296,6 +297,11 @@ def ModifyPwd(request):
             return HttpResponse(json.dumps({
                 'statCode': -2,
                 'message': '密码不一致，请重新输入!',
+            }))
+        if old_pwd == new_pwd:
+            return HttpResponse(json.dumps({
+                'statCode': -3,
+                'message': '密码修改前后一致，请重新输入!',
             }))
         # update the password
         user.user_pwd = new_pwd
@@ -312,7 +318,7 @@ def ModifyPwd(request):
         }))
 
     except Exception as e:
-        return render(request, "app/page-modifyPwd.html",{username: username})
+        return render(request, "app/page-modifyPwd.html",{"username": username})
 
 
 @csrf_exempt
