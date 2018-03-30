@@ -196,7 +196,7 @@ def FindPwd(request):
         # 用户修改密码生成transaction文件
 
         # send email to now_user
-        secretKey = generate_uuid(now_user_name + now_user_email + str(time()))
+        secretKey = generate_uuid(now_user_name + now_user_email )
         sendResult = sendResetPwdEmail(receiver= now_user_email, secretKey = secretKey)
 
         if sendResult == True: # send success!!!
@@ -214,7 +214,7 @@ def FindPwd(request):
             # send notices to user
             now_user = User.objects.get(user_name=now_user_name)
             notice_info = '{} 在 {} 修改密码成功'.format(now_user_name, time_to_str(time()))
-            Notice(notice_id=generate_uuid(now_user.user_id + str(time())), sender_id='系统',
+            Notice(notice_id=generate_uuid(now_user.user_id), sender_id='系统',
                    receiver_id=now_user.user_id,
                    notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
 
@@ -272,8 +272,8 @@ def ResetPwd(request):
             'message': '密码修改成功，请重新登录!',
         }))
     except Exception as e:
-        print(e)
-
+        # print(e)
+        pass
     return render(request, "app/page-resetPwd.html", {'username':user_name})
 
 @csrf_exempt
@@ -309,7 +309,7 @@ def ModifyPwd(request):
         user.save()
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
         # send notify to user
-        Notice(notice_id= generate_uuid(user.user_id+str(time())), sender_id='系统', receiver_id=user.user_id,
+        Notice(notice_id= generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
            notice_type=4, notice_info=notice_info, if_check=False,
            timestamp=time(), if_delete=False).save()
 
@@ -734,7 +734,12 @@ def AdminDataInfo(request):
     try:
         now_admin_id = now_admin.admin_id
         now_data_id = request.POST['id']
-        now_data_status = int(request.POST['op'])
+        now_op = request.POST['op']
+        now_data_status = 0
+        if now_op == 'reject':
+            now_data_status = 2
+        elif now_op == 'pass':
+            now_data_status = 1
         sql = 'update BSCapp_data set data_status = %s where data_id = %s;'
         cursor = connection.cursor()
         cursor.execute(sql, [now_data_status, now_data_id])
@@ -771,9 +776,9 @@ def AdminDataInfo(request):
         # generate notice for a successful recharge
         cursor = connection.cursor()
         notice_insert = 'insert into BSCapp_notice \
-                                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
+                                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp, if_delete) \
                                 values \
-                                (%s, %s, %s, %s, %s, 0, %s);'
+                                (%s, %s, %s, %s, %s, 0, %s, False);'
         sender_id = now_admin_id
         notice_id = generate_uuid(sender_id)
         receiver_id = now_data.user_id
@@ -794,7 +799,8 @@ def AdminDataInfo(request):
             'statCode': 0,
         }))
 
-    except Exception:
+    except Exception as e:
+        # print(e)
         pass
 
     try:
@@ -832,6 +838,76 @@ def AdminDataInfo(request):
     else:
         table_name = 'BSCapp_data'
 
+
+    try:
+        func = request.POST['func']
+        if func == 'reviewAllPass':
+            data_all_pass_status = 1
+            data_all_reject_status = 2
+            data_all_waiting_status = 0
+            # get all reject data
+            cursor = connection.cursor()
+            sql = 'select data_id from BSCapp_data where data_status = %s or data_status = %s;'
+            cursor.execute(sql, [data_all_reject_status, data_all_waiting_status])
+            cursor.close()
+            content = cursor.fetchall()
+            # calculate the data number
+            len_all_pass_data = len(content)
+
+            for i in range(len_all_pass_data):
+                # print('data id', content[i][0])
+                now_data_id = content[i][0]
+                now_data = Data.objects.get(data_id=now_data_id)
+                now_data.data_status = data_all_pass_status
+                now_data.save()
+                seller_id = now_data.user_id
+                now_action = 'review_pass'
+                now_time = str(datetime.datetime.utcnow().timestamp())
+
+                # generate transaction files
+                tx = TX.Transaction()
+                tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
+                                   seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
+                tx.save_transaction()
+
+                # insert the review into history and save a notice
+                try:  # can change
+                    review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
+                    review_history.review_status = data_all_pass_status
+                    review_history.timestamp = now_time
+                    review_history.save()
+                except Exception as e:
+                    # print(e)
+                    # the first time to review data
+                    Review(reviewer_id=now_admin_id, data_id=now_data_id, review_status=data_all_pass_status,
+                           timestamp=now_time).save()
+
+                # generate notice for a successful recharge
+                cursor = connection.cursor()
+                notice_insert = 'insert into BSCapp_notice \
+                                                (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp, if_delete) \
+                                                values \
+                                                (%s, %s, %s, %s, %s, 0, %s, 0);'
+                sender_id = now_admin_id
+                notice_id = generate_uuid(sender_id)
+                receiver_id = now_data.user_id
+                timestamp = datetime.datetime.utcnow().timestamp()
+
+                notice_type = 1
+                notice_info = '{} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp),
+                                                            now_data.data_name)
+                cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
+                                               notice_info, timestamp])
+                cursor.close()
+
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '审核完成!'
+            }))
+
+    except Exception as e:
+        # print(e)
+        pass
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     datas = adminData_sql(request,sort_sql)
