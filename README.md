@@ -30,8 +30,6 @@ Chain For Science Data Sharing
 
 ## Doing
 
->* 2.`删除通知需要修改通知表，添加新的字段标注为已删除；`
->
 > * 1.`设置配置文件`
 >> 挖矿时间间隔 ok , 挖矿transaction最大限制 ok，Chain与mysql同步时间 ok，
 >> 上传数据的路 ok，上传奖励机制设置等global variable ok, 页面信息显示条数 ok
@@ -46,6 +44,9 @@ Chain For Science Data Sharing
 >
 > * 2.`添加通知信息删除功能`
 >> 删除所有未读通知，删除所有通知，删除某一页通知，删除某条通知
+>* 2.`删除通知需要修改通知表，添加新的字段标注为已删除；`
+>>
+
 ## TODO
 
 
