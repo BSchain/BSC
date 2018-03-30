@@ -248,6 +248,12 @@ def ResetPwd(request):
         user_reset = Reset.objects.get(secretKey=now_secretKey)
         user_name = user_reset.user_name
         print(user_name)
+        now_time = (float)(time())
+        last_modify_time = (float)(user_reset.last_reset_time)
+        empireTime = 30 * 60
+        if now_time - last_modify_time > empireTime: # find password
+            return render(request, "app/page-findPwd.html")
+
     except Exception as e:
         print(e) # page out of date
 
