@@ -262,30 +262,7 @@
 	<script src="../static/app/assets/vendor/chartist/js/chartist.min.js"></script>
 	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
 	<script src="../static/app/javascript/editInfo.js"></script>
-	<script>
-	$(function() {
-		//console.log(a)
 
-		var data = {
-			labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-			series: [
-				[200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
-			]
-		};
-
-		// line chart
-		options = {
-			height: "300px",
-			showPoint: true,
-			axisX: {
-				showGrid: false
-			},
-			lineSmooth: false,
-		};
-
-		new Chartist.Line('#demo-line-chart', data, options);
-	});
-	</script>
 </body>
 
 </html>
