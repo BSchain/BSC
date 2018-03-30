@@ -806,7 +806,7 @@ def AdminDataInfo(request):
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
                 new_sort_name != 'data_status' and new_sort_name!= 'data_purchase' and new_sort_name != 'data_download' and
-                new_sort_name != 'data_score' and new_sort_name!= 'comment_number'):
+                new_sort_name != 'data_score' and new_sort_name!= 'comment_number' and new_sort_name!= 'data_size'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -837,7 +837,7 @@ def AdminDataInfo(request):
     datas = adminData_sql(request,sort_sql)
     paged_datas = pagingData(request, datas)
     adminData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'data_price',
-                           'data_status', 'data_purchase', 'data_download', 'data_score', 'comment_number']
+                           'data_status', 'data_purchase', 'data_download', 'data_score', 'comment_number', 'data_size']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, adminData_sort_list)
 
     return render(request, "app/page-adminDataInfo.html", {'id':username, 'datas': paged_datas, 'sort_class': sort_class})
@@ -1052,8 +1052,11 @@ def Upload(request):
         new_coin_id = generate_uuid(data_id)
         # TODO: add coin number to config
         # TODO: related to the file size
-        default_coin_number = 1.0 # add notify to table Done!!!
+        # 1MB, 10MB, 50MB, 100MB, 200MB, 500MB, 1G
 
+        income_ratio_force = 1.25
+        default_coin_number = 1.0 + float(data_size / income_ratio_force)
+        print('reward:', default_coin_number)
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
 
@@ -1130,7 +1133,7 @@ def MyData(request):
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
                 new_sort_name != 'data_tag' and new_sort_name != 'data_status' and new_sort_name != 'data_purchase' and
                 new_sort_name!='data_download' and new_sort_name != 'data_price' and new_sort_name!= 'data_score' and
-                new_sort_name!='comment_number'):
+                new_sort_name!='comment_number' and new_sort_name!='data_size'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -1151,7 +1154,7 @@ def MyData(request):
     default_sort_type = result[1]
 
     myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status',
-                        'data_purchase', 'data_download', 'data_price', 'data_score', 'comment_number']
+                        'data_purchase', 'data_download', 'data_price', 'data_score', 'comment_number', 'data_size']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
     table_name = 'BSCapp_data'

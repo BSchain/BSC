@@ -89,6 +89,12 @@ def buyData_sql(request, buyer_id, sort_sql):
         data['tag'] = content[i][5]
         data['md5'] = content[i][7]
         data['size'] = content[i][8]
+        data_size = data['size']
+
+        if data_size < 1:
+            data['size'] = str(round(data_size * 1024.0, 3)) + ' KB'
+        else:
+            data['size'] = str(round(data_size, 3)) + ' MB'
         data['price'] = content[i][9]
         data['address'] = content[i][10]
         score = content[i][11]
@@ -166,7 +172,7 @@ def uploadData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select data_name, data_info, timestamp, data_tag, data_download, ' \
-          'data_status, data_purchase, data_price,data_score, comment_number,data_id ' \
+          'data_status, data_purchase, data_price,data_score, comment_number,data_id, data_size ' \
           'from BSCapp_data where BSCapp_data.user_id = %s '
     search_sql = ''
     try:
@@ -219,6 +225,13 @@ def uploadData_sql(request, user_id, sort_sql):
             data['comment'] = comment_number
         item_data_id = content[i][10]
 
+        data['data_size'] = content[i][11]
+        data_size = data['data_size']
+
+        if data_size < 1 :
+            data['data_size'] = str(round(data_size * 1024.0,3)) + ' KB'
+        else:
+            data['data_size'] = str(round(data_size, 3)) + ' MB'
         item_cursor = connection.cursor()
         sql = 'select BSCapp_income.user_name, BSCapp_income.ratio from BSCapp_income where BSCapp_income.data_id = %s '
         item_cursor.execute(sql, [item_data_id])
@@ -248,7 +261,7 @@ def adminData_sql(request, sort_sql):
         pass
     sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
            data_source, data_type, data_status, data_price, ' \
-          'data_download, data_purchase, data_score, comment_number from BSCapp_data '
+          'data_download, data_purchase, data_score, comment_number, data_size from BSCapp_data '
     sql = sql + search_sql + sort_sql
     try:
         if search_sql:
@@ -283,6 +296,12 @@ def adminData_sql(request, sort_sql):
         data['purchase'] = content[i][10]
         score = content[i][11]
         comment_number = content[i][12]
+        data['data_size'] = round((float)(content[i][13]),5)
+        data_size = data['data_size']
+        if data_size < 1 :
+            data['data_size'] = str(round(data_size * 1024.0,3)) + ' KB'
+        else:
+            data['data_size'] = str(round(data_size , 3)) + ' MB'
         if comment_number == 0 or score == 0.0:
             data['score'] = '0 (暂无评级)'
             data['comment'] = '0 '

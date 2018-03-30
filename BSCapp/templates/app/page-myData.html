@@ -128,6 +128,7 @@
 												<th align="center" onclick=myDataSortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
                                                 <th align="center" onclick=>收益占比</th>
+                                                <th align="center" onclick=myDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
                                                 <th align="center" onclick=myDataSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
@@ -155,6 +156,7 @@
                                                     {{ item_info }} <br/>
                                                 {% endfor %}
                                                 </td>
+                                                <td align="">  {{data.data_size}}</td>
 												<td align="">  {{data.purchase}}</td>
 												<td align="">  {{data.download}}</td>
                                                 <td align="">  {{data.score}}</td>
