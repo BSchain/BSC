@@ -108,6 +108,7 @@ class Notice(models.Model):
     notice_info = models.CharField(max_length=200) # 通知信息内容 (sender_name + '在'+time() + switch notice_type: (different_notices)  需要提前进行构造)
     if_check = models.BooleanField(default=False) # 用户是否查看信息
     timestamp = models.CharField(max_length=32) # 此通知信息生成的时间
+    if_delete = models.BooleanField(default=False) # 用户是否删除此信息
 
 class Block(models.Model):
     height = models.IntegerField() # 保存区块高度 唯一
