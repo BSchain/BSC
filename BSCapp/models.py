@@ -115,3 +115,8 @@ class Block(models.Model):
     block_size = models.FloatField() # 当前区块的大小
     tx_number = models.IntegerField() # 当前区块中保存的transaction数量
     block_hash = models.CharField(max_length=64) # 当前区块自身hash
+
+class Reset(models.Model):
+    user_name = models.CharField(max_length=20, unique=True, primary_key=True)  # 用户登录名
+    secretKey = models.CharField(max_length=64, unique=True) # 重置密码token
+    last_reset_time = models.CharField(max_length=32) # default = ""

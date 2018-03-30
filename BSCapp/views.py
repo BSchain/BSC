@@ -12,7 +12,8 @@ import BSCapp.root_chain.transaction as TX
 from time import time, localtime
 import BSCapp.root_chain.coin as COIN
 from BSCapp.function import *
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
 # Create your views here.
 
 @csrf_exempt
@@ -169,6 +170,106 @@ def Login(request):
             }))
 
 @csrf_exempt
+
+def FindPwd(request):
+    try:
+        now_user_name = request.POST['username']
+        now_user_email = request.POST['email']
+        try:
+            user = User.objects.get(user_name=now_user_name)
+        except Exception as e:
+
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '用户名或邮箱有误，请重新输入!',
+            }))
+        if user.user_email != now_user_email:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '用户名或邮箱有误，请重新输入!',
+            }))
+
+        print(now_user_name, now_user_email)
+        # 生成随机数链接 保存至数据库，记录当前时间
+        # 发送邮件通知，将生成的url发送给用户
+        # 用户修改密码发送通知
+        # 用户修改密码生成transaction文件
+
+        # send email to now_user
+        secretKey = generate_uuid(now_user_name + now_user_email + str(time()))
+        sendResult = sendResetPwdEmail(receiver= now_user_email, secretKey = secretKey)
+
+        if sendResult == True: # send success!!!
+
+            # update or insert the Reset table
+            try:
+                user_reset = Reset.objects.get(user_name = now_user_name)
+                user_reset.secretKey = secretKey
+                user_reset.last_reset_time = time()
+                user_reset.save()
+            except Exception as e:
+                print(e) # the first time to reset password
+                Reset(user_name= now_user_name, secretKey= secretKey, last_reset_time= time()).save()
+
+            # send notices to user
+            now_user = User.objects.get(user_name=now_user_name)
+            notice_info = '{} 在 {} 修改密码成功'.format(now_user_name, time_to_str(time()))
+            Notice(notice_id=generate_uuid(now_user.user_id + str(time())), sender_id='系统',
+                   receiver_id=now_user.user_id,
+                   notice_type=4, notice_info=notice_info, if_check=False, timestamp=time()).save()
+
+            # generate now transaction file
+            tx = TX.Transaction()
+            tx.new_transaction(in_coins=[], out_coins=[],
+                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='resetPwd',
+                               seller=now_user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
+            tx.save_transaction()
+
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '重置密码邮件发送成功!!!',
+            }))
+
+        else:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '邮件发送失败，请稍后重试!!!',
+            }))
+    except Exception as e:
+        print(e)
+        return render(request, "app/page-findPwd.html")
+
+@csrf_exempt
+def ResetPwd(request):
+    now_secretKey = request.get_full_path()[1:-1]
+    print(now_secretKey)
+    user_name = ''
+    try:
+        user_reset = Reset.objects.get(secretKey=now_secretKey)
+        user_name = user_reset.user_name
+        print(user_name)
+    except Exception as e:
+        print(e) # page out of date
+
+    try:
+        user_password = request.POST['password']
+        user_repassword= request.POST['repassword']
+        if (user_password != user_repassword):
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '两次输入密码不一致,请重新输入!',
+            }))
+        User.objects.filter(user_name=user_name).update(user_pwd = user_password)
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            'message': '密码修改成功，请重新登录!',
+        }))
+    except Exception as e:
+        print(e)
+
+    return render(request, "app/page-resetPwd.html", {'username':user_name})
+
+@csrf_exempt
 def Signup(request):
     # get the info of user sign up
     try:
@@ -184,7 +285,7 @@ def Signup(request):
         u = Admin.objects.get(admin_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': '用户名已注册',
+            'errormessage': '用户名已注册,请重新输入!',
             }))
     except Exception:
         pass
@@ -193,7 +294,7 @@ def Signup(request):
         u = User.objects.get(user_name=user_name)
         return HttpResponse(json.dumps({
             'statCode': -1,
-            'errormessage': '用户名已注册',
+            'errormessage': '用户名已注册,请重新输入!',
             }))
     except Exception as e:
         #email cannot be signed up before
@@ -209,14 +310,14 @@ def Signup(request):
         if len(content)>0:
             return HttpResponse(json.dumps({
                 'statCode': -2,
-                'errormessage': '邮箱已注册',
+                'errormessage': '邮箱已注册,请重新输入!',
                 }))
         else:
             #the password and password input again have to be the same
             if (user_pwd!=user_repwd):
                 return HttpResponse(json.dumps({
                     'statCode': -3,
-                    'errormessage': '两次输入密码不一致',
+                    'errormessage': '两次输入密码不一致,请重新输入!',
                     }))
             User(user_id=user_id, user_name=user_name,
                 user_pwd=user_pwd, user_email=user_email).save()
@@ -834,7 +935,7 @@ def Upload(request):
 
             conflict_data_name = confilct_data.data_name # get the data name
             owner_id = confilct_data.user_id # get the data owner_id
-            sender_id = 'system'
+            sender_id = '系统'
             owner_notice_id = generate_uuid(sender_id)
             timestamp = time()
             owner_notice_type = 4

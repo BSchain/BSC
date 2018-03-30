@@ -43,4 +43,11 @@ urlpatterns = [
 
     url(r'^AdminChainInfo/$',views.AdminChainInfo),
     url(r'^adminChainInfo/$',views.AdminChainInfo),
+
+    url(r'^findPwd/$',views.FindPwd),
+    url(r'^FindPwd/$',views.FindPwd),
+
+    url(r'^ResetPwd/$',views.ResetPwd),
+
+    url(r'^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/$',views.ResetPwd),
 ]
