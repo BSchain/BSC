@@ -316,7 +316,7 @@ def rechargeData_sql(user_id):
 def noticeData_sql(user_id, sort_sql):
     content = {}
     cursor = connection.cursor()
-    sql = 'select notice_id, sender_id, notice_type, notice_info, timestamp, if_check from BSCapp_notice where receiver_id = %s '
+    sql = 'select notice_id, sender_id, notice_type, notice_info, timestamp, if_check from BSCapp_notice where receiver_id = %s and if_delete = False '
 
     sql = sql + sort_sql
     try:

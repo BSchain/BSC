@@ -216,7 +216,7 @@ def FindPwd(request):
             notice_info = '{} 在 {} 修改密码成功'.format(now_user_name, time_to_str(time()))
             Notice(notice_id=generate_uuid(now_user.user_id + str(time())), sender_id='系统',
                    receiver_id=now_user.user_id,
-                   notice_type=4, notice_info=notice_info, if_check=False, timestamp=time()).save()
+                   notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
 
             # generate now transaction file
             tx = TX.Transaction()
@@ -311,7 +311,7 @@ def ModifyPwd(request):
         # send notify to user
         Notice(notice_id= generate_uuid(user.user_id+str(time())), sender_id='系统', receiver_id=user.user_id,
            notice_type=4, notice_info=notice_info, if_check=False,
-           timestamp=time()).save()
+           timestamp=time(), if_delete=False).save()
 
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -997,7 +997,7 @@ def Upload(request):
             # send notice to data owner
             Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=owner_id,
                    notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-                   timestamp=timestamp).save()
+                   timestamp=timestamp, if_delete=False).save()
 
             conflict_notice_type = 4
             conflict_notice_info = '{} 在 {} 上传冲突数据 {}, 该数据md5为 {}.'.format(username, time_to_str(timestamp), conflict_data_name, confilct_data.data_md5)
@@ -1005,7 +1005,8 @@ def Upload(request):
             conflict_notice_id = generate_uuid(sender_id)
             # send notict to data uploader
             Notice(notice_id = conflict_notice_id, sender_id = sender_id, receiver_id= user.user_id,
-                   notice_type= conflict_notice_type, notice_info= conflict_notice_info, if_check=False, timestamp=timestamp).save()
+                   notice_type= conflict_notice_type, notice_info= conflict_notice_info,
+                   if_check=False, timestamp=timestamp, if_delete=False).save()
 
             return HttpResponse(json.dumps({
                 'statCode': -1,
@@ -1042,7 +1043,7 @@ def Upload(request):
             # send notice to user
             Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id= notice_receiver_id,
                    notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-                   timestamp=timestamp).save()
+                   timestamp=timestamp, if_delete=False).save()
 
 
         now_time = str(datetime.datetime.utcnow().timestamp())
@@ -1065,7 +1066,7 @@ def Upload(request):
         # send notice to data owner
         Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=user_id,
                notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-               timestamp=timestamp).save()
+               timestamp=timestamp, if_delete=False).save()
 
 
         # 2. save transaction info to file Done!!!
@@ -1508,7 +1509,7 @@ def Notify(request):
         # print('now_func',now_func)
         if now_func == 'deleteAll':
             try:
-                sql = 'delete from BSCapp_notice where receiver_id = %s and if_check = True'
+                sql = 'update BSCapp_notice set if_delete = True where receiver_id = %s and if_check = True and if_delete = False'
                 cursor = connection.cursor()
                 cursor.execute(sql, [user_id])
                 cursor.close()
@@ -1521,7 +1522,7 @@ def Notify(request):
                 pass
         elif now_func == 'readAll':
             try:
-                sql = 'update BSCapp_notice set if_check = True where receiver_id = %s and if_check = False;'
+                sql = 'update BSCapp_notice set if_check = True where receiver_id = %s and if_check = False and if_delete = False;'
                 cursor = connection.cursor()
                 cursor.execute(sql, [user_id])
                 cursor.close()
@@ -1542,7 +1543,7 @@ def Notify(request):
         now_if_check = False
         if now_op == 'delete':
             try:
-                sql = 'delete from BSCapp_notice where notice_id = %s;'
+                sql = 'update BSCapp_notice set if_delete = True where notice_id = %s;'
                 cursor = connection.cursor()
                 cursor.execute(sql, [now_notice_id])
                 cursor.close()
@@ -1561,7 +1562,7 @@ def Notify(request):
             }))
 
         try:
-            sql = 'update BSCapp_notice set if_check = %s where notice_id = %s;'
+            sql = 'update BSCapp_notice set if_check = %s where notice_id = %s and if_delete = False;'
             cursor = connection.cursor()
             cursor.execute(sql, [now_if_check,now_notice_id])
             cursor.close()
