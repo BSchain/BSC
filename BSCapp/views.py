@@ -189,7 +189,7 @@ def FindPwd(request):
                 'message': '用户名或邮箱有误，请重新输入!',
             }))
 
-        print(now_user_name, now_user_email)
+        # print(now_user_name, now_user_email)
         # 生成随机数链接 保存至数据库，记录当前时间
         # 发送邮件通知，将生成的url发送给用户
         # 用户修改密码发送通知
@@ -204,11 +204,11 @@ def FindPwd(request):
             # update or insert the Reset table
             try:
                 user_reset = Reset.objects.get(user_name = now_user_name)
-                user_reset.secretKey = secretKey
-                user_reset.last_reset_time = time()
+                user_reset.secretKey = secretKey # update the secret key
+                user_reset.last_reset_time = time() # update the last forgot password time
                 user_reset.save()
             except Exception as e:
-                print(e) # the first time to reset password
+                # print(e) # the first time to reset password
                 Reset(user_name= now_user_name, secretKey= secretKey, last_reset_time= time()).save()
 
             # send notices to user
@@ -236,18 +236,18 @@ def FindPwd(request):
                 'message': '邮件发送失败，请稍后重试!!!',
             }))
     except Exception as e:
-        print(e)
+        # print(e)
         return render(request, "app/page-findPwd.html")
 
 @csrf_exempt
 def ResetPwd(request):
     now_secretKey = request.get_full_path()[1:-1]
-    print(now_secretKey)
+    # print(now_secretKey)
     user_name = ''
     try:
         user_reset = Reset.objects.get(secretKey=now_secretKey)
         user_name = user_reset.user_name
-        print(user_name)
+        # print(user_name)
         now_time = (float)(time())
         last_modify_time = (float)(user_reset.last_reset_time)
         empireTime = 30 * 60
@@ -255,7 +255,8 @@ def ResetPwd(request):
             return render(request, "app/page-findPwd.html")
 
     except Exception as e:
-        print(e) # page out of date
+        # print(e) # something wrong with this secret key
+        return render(request, "app/page-findPwd.html")
 
     try:
         user_password = request.POST['password']
