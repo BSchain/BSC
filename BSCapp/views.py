@@ -276,6 +276,46 @@ def ResetPwd(request):
     return render(request, "app/page-resetPwd.html", {'username':user_name})
 
 @csrf_exempt
+def ModifyPwd(request):
+    username = request.session['username']
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception as e:
+        return render(request, "app/page-login.html")
+
+    try:
+        old_pwd = request.POST['old_password']
+        new_pwd = request.POST['new_password']
+        new_repwd = request.POST['new_repassword']
+        if old_pwd != user.user_pwd:
+            return HttpResponse(json.dumps({
+                'statCode': -1,
+                'message': '密码输入错误,请重新输入!',
+            }))
+        if new_pwd != new_repwd:
+            return HttpResponse(json.dumps({
+                'statCode': -2,
+                'message': '密码不一致，请重新输入!',
+            }))
+        # update the password
+        user.user_pwd = new_pwd
+        user.save()
+        notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
+        # send notify to user
+        Notice(notice_id= generate_uuid(user.user_id+str(time())), sender_id='系统', receiver_id=user.user_id,
+           notice_type=4, notice_info=notice_info, if_check=False,
+           timestamp=time()).save()
+
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+            'message': '密码修改成功,请重新登录!',
+        }))
+
+    except Exception as e:
+        return render(request, "app/page-modifyPwd.html",{username: username})
+
+
+@csrf_exempt
 def Signup(request):
     # get the info of user sign up
     try:
