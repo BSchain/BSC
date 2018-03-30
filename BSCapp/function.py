@@ -9,6 +9,9 @@ from django.db import connection
 from BSCapp.root_chain.utils import *
 from BSCapp.models import *
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 
 class JuncheePaginator(Paginator):
     def __init__(self, object_list, per_page, range_num=5, orphans=0, allow_empty_first_page=True):
@@ -471,3 +474,33 @@ def chainData_sql(request, sort_sql):
         block['block_hash'] = content[i][4]
         blocks.append(block)
     return blocks, len_content
+
+def sendResetPwdEmail(receiver, secretKey):
+
+    BSC_ip = 'http://' + '127.0.0.1'
+    BSC_port = '8000'
+
+    mail_host = "smtp.126.com"  # 设置服务器
+    mail_user = "bsc_admin@126.com"  # 用户名
+    mail_pass = "bscadmin2018"  # 口令
+    receivers = []
+    receivers.append(receiver)
+
+    reset_path = BSC_ip + ':' + BSC_port + '/' + str(secretKey)
+
+    message = MIMEText('本邮件发送时间: '+time_to_str(time())+' 重设密码链接: '+reset_path + '  请勿回复本邮件，30分钟后此链接将会失效.', 'plain', 'utf-8')
+    message['From'] = mail_user
+    message['To'] = receiver
+    subject = '重置密码( BSC系统 )'
+    message['Subject'] = Header(subject, 'utf-8')
+    try:
+        smtpObj = smtplib.SMTP()
+        smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
+        smtpObj.login(mail_user, mail_pass)
+        smtpObj.sendmail(mail_user, receivers, message.as_string())
+        print("邮件发送成功!!!")
+        return True
+    except smtplib.SMTPException as e:
+        print(str(e))
+        print("Error: 无法发送邮件")
+        return False
