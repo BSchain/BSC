@@ -10,6 +10,8 @@
 	<link rel="stylesheet" href="../static/app/assets/vendor/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="../static/app/assets/vendor/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="../static/app/assets/vendor/linearicons/style.css">
+    <link rel="stylesheet" type="text/css" href="../static/app/assets/pop_window/css/jquery.my-modal.1.1.winStyle.css" />
+    <link rel="stylesheet" type="text/css" href="../static/app/assets/pop_window/css/css.css" />
 	<!-- MAIN CSS -->
 	<link rel="stylesheet" href="../static/app/assets/css/main.css">
 	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
@@ -134,6 +136,117 @@
                                                 <td align="">  {{block.block_hash}}</td>
                                                 <td>
 													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="adminShowBlockDetail(this);">详情</button>
+                                                    <div class="m-modal">
+                                                        <div class="m-modal-dialog">
+                                                            <div class="m-top">
+                                                                <h4 class="m-modal-title">
+                                                                    区块详情
+                                                                </h4>
+                                                                <span class="m-modal-close">&times;</span>
+                                                            </div>
+                                                            <div class="m-middle">
+                                                                <!--content-->
+                                                                <table>
+                                                                    <tr>
+                                                                        <td>index</td>
+                                                                        <td class="content">dasda</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>timestamp</td>
+                                                                        <td class="content">dasdsa</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>prev_hash</td>
+                                                                        <td class="content">ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>nonce值</td>
+                                                                        <td class="content">fdasfsdfsd</td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                            <br>
+                                                            <div style="border:1px solid black">
+                                                                <p style="margin:0 auto;width:200px">
+                                                                选择交易编号:
+                                                                <select>
+                                                                    <option>1</option>
+                                                                    <option>2</option>
+                                                                    <option>3</option>
+                                                                    <option>4</option>
+                                                                </select>
+                                                                </p>
+                                                                <br>
+                                                                <table>
+                                                                    <tr>
+                                                                        <td>
+
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            uuid
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            num_coins
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            owner
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            in_coins
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            123
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            123
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            www
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            owner_coins
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            123
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            123
+                                                                        </td>
+                                                                        <td class="a">
+                                                                            www
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            <br>
+                                                                <table>
+                                                                    <tr>
+                                                                        <td>action</td>
+                                                                        <td>seller</td>
+                                                                        <td>buyer</td>
+                                                                        <td>data_uuid</td>
+                                                                        <td>credit</td>
+                                                                        <td>reviewer</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>31</td>
+                                                                        <td>3123</td>
+                                                                        <td>3124</td>
+                                                                        <td>432</td>
+                                                                        <td>12</td>
+                                                                        <td>32</td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+                                                            <br>
+                                                            <div class="m-bottom">
+                                                                <button class="m-btn-cancel">关闭</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 													<div id="{{block.height}}"> </div>
 												</td>
 											</tr>
@@ -208,8 +321,11 @@
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+    <script type="text/javascript" src="../static/app/assets/pop_window/js/jquery1.9.min.js"></script>
+    <script type="text/javascript" src="../static/app/assets/pop_window/js/jquery.my-modal.1.1.js"></script>
     <script src="../static/app/javascript/blockInfo.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
+
 </body>
 
 </html>

@@ -1,3 +1,7 @@
+var m1 = new MyModal.modal(function() {
+				alert("你点击了确定");
+			});
+
 function showBlockDetail(obj) {
     block_height = obj.value;
     $.ajax("/ChainInfo/", {
@@ -36,6 +40,7 @@ function adminShowBlockDetail(obj) {
             return false
         }
         else {
+            m1.show()
             alert(data.block)
         }
     })
