@@ -288,21 +288,21 @@ class Transaction:
             return True
         elif self.action == 'reset_pwd':
             assert len(self.in_coins) == 0 , ('Reset_pwd, in_coins should be None, in_coins:', self.in_coins)
-            assert len(self.out_coins) > 0, ('Reset_pwd, out_coins should not be None, out_coins:', self.out_coins)
+            assert len(self.out_coins) == 0, ('Reset_pwd, out_coins should be None, out_coins:', self.out_coins)
             assert self.buyer is '', ('Reset_pwd, buyer should be None, buyer:', self.buyer)
             assert self.seller is not '', ('Reset_pwd, seller should not be None, seller:', self.seller)
             assert self.data_uuid is not '', ('Reset_pwd, data_uuid should not be None, data_uuid:', self.data_uuid)
             assert self.credit >= 0, ('Reset_pwd, credit should not be None, credit:', self.credit)
             assert self.reviewer is '', ('Reset_pwd, reviewer should be None, reviewer:', self.reviewer)
             return True
-        elif self.action == 'reset':
-            assert len(self.in_coins) == 0 , ('Reset, in_coins should be None, in_coins:', self.in_coins)
-            assert len(self.out_coins) == 0 , ('Reset, out_coins should be None, out_coins:', self.out_coins)
-            assert self.buyer is '', ('Reset, buyer should be None, buyer:', self.buyer)
-            assert self.seller is not '', ('Reset, seller should not be None, seller:', self.seller)
-            assert self.data_uuid is '', ('Reset, data_uuid should be None, data_uuid:', self.data_uuid)
-            assert self.credit == 0.0, ('Reset, credit should be None, credit:', self.credit)
-            assert self.reviewer is '', ('Reset, reviewer should be None, reviewer:', self.reviewer)
+        elif self.action == 'modify_pwd':
+            assert len(self.in_coins) == 0 , ('Modify_pwd, in_coins should be None, in_coins:', self.in_coins)
+            assert len(self.out_coins) == 0 , ('Modify_pwd, out_coins should be None, out_coins:', self.out_coins)
+            assert self.buyer is '', ('Modify_pwd, buyer should be None, buyer:', self.buyer)
+            assert self.seller is not '', ('Modify_pwd, seller should not be None, seller:', self.seller)
+            assert self.data_uuid is '', ('Modify_pwd, data_uuid should be None, data_uuid:', self.data_uuid)
+            assert self.credit == 0.0, ('Modify_pwd, credit should be None, credit:', self.credit)
+            assert self.reviewer is '', ('Modify_pwd, reviewer should be None, reviewer:', self.reviewer)
             return True
         else:
             pass
