@@ -213,7 +213,7 @@ def FindPwd(request):
 
             # send notices to user
             now_user = User.objects.get(user_name=now_user_name)
-            notice_info = '{} 在 {} 修改密码成功'.format(now_user_name, time_to_str(time()))
+            notice_info = '{} 在 {} 发起重置密码请求'.format(now_user_name, time_to_str(time()))
             Notice(notice_id=generate_uuid(now_user.user_id), sender_id='系统',
                    receiver_id=now_user.user_id,
                    notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
@@ -221,7 +221,7 @@ def FindPwd(request):
             # generate now transaction file
             tx = TX.Transaction()
             tx.new_transaction(in_coins=[], out_coins=[],
-                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='resetPwd',
+                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='reset_pwd',
                                seller=now_user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
             tx.save_transaction()
 
@@ -307,6 +307,12 @@ def ModifyPwd(request):
         # update the password
         user.user_pwd = new_pwd
         user.save()
+        tx = TX.Transaction()
+        tx.new_transaction(in_coins=[], out_coins=[],
+                           timestamp=str(datetime.datetime.utcnow().timestamp()), action='modify_pwd',
+                           seller=user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
+        tx.save_transaction()
+
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
         # send notify to user
         Notice(notice_id= generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
