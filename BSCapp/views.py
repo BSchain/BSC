@@ -1138,7 +1138,7 @@ def Upload(request):
 
         income_ratio_force = 1.25
         default_coin_number = 1.0 + float(data_size / income_ratio_force)
-        print('reward:', default_coin_number)
+        # print('reward:', default_coin_number)
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
 
