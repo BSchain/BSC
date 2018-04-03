@@ -250,6 +250,7 @@ def ResetPwd(request):
         # print(user_name)
         now_time = (float)(time())
         last_modify_time = (float)(user_reset.last_reset_time)
+        #TODO: add empireTime to config
         empireTime = 30 * 60
         if now_time - last_modify_time > empireTime: # find password
             return render(request, "app/page-findPwd.html")
@@ -266,6 +267,10 @@ def ResetPwd(request):
                 'statCode': -1,
                 'message': '两次输入密码不一致,请重新输入!',
             }))
+        # set to empire
+        user_reset.last_reset_time = 0
+        user_reset.save()
+
         User.objects.filter(user_name=user_name).update(user_pwd = user_password)
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -318,6 +323,31 @@ def ModifyPwd(request):
         Notice(notice_id= generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
            notice_type=4, notice_info=notice_info, if_check=False,
            timestamp=time(), if_delete=False).save()
+
+        try:
+            user_modify = Modify.objects.get(user_name=username)
+            user_name = user_modify.user_name
+            # print(user_name)
+            now_time = (float)(time())
+            last_modify_time = (float)(user_modify.last_modify_time)
+            # TODO: add empireTime to config
+            empireTime = 30 * 60
+            if now_time - last_modify_time > empireTime:  # find password
+                return HttpResponse(json.dumps({
+                    'statCode': -1,
+                    'message': '30分钟内仅允许一次密码修改操作,请稍后重试!',
+                }))
+
+        except Exception as e:
+            print(e)
+            Modify(user_name=user.user_name, last_modify_time=time()).save()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'message': '密码修改成功,请重新登录!',
+            }))
+
+        user_modify.last_modify_time = 0
+        user_modify.save()
 
         return HttpResponse(json.dumps({
             'statCode': 0,
@@ -1138,7 +1168,7 @@ def Upload(request):
 
         income_ratio_force = 1.25
         default_coin_number = 1.0 + float(data_size / income_ratio_force)
-        print('reward:', default_coin_number)
+        # print('reward:', default_coin_number)
         Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
              timestamp=now_time,coin_credit=default_coin_number).save()
 

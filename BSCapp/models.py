@@ -121,3 +121,7 @@ class Reset(models.Model):
     user_name = models.CharField(max_length=20, unique=True, primary_key=True)  # 用户登录名
     secretKey = models.CharField(max_length=64, unique=True) # 重置密码token
     last_reset_time = models.CharField(max_length=32) # default = ""
+
+class Modify(models.Model):
+    user_name = models.CharField(max_length=20, unique=True, primary_key=True)  # 用户登录名
+    last_modify_time = models.CharField(max_length=32)  # default = ""
