@@ -34,12 +34,12 @@
 				<div class="navbar-btn">
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
-{#				<form class="navbar-form navbar-left">#}
-{#					<div class="input-group">#}
-{#						<input type="text" value="" class="form-control" placeholder="Search dashboard...">#}
-{#						<span class="input-group-btn"><button type="button" class="btn btn-primary">Go</button></span>#}
-{#					</div>#}
-{#				</form>#}
+				<form class="navbar-form navbar-left">
+					<div class="input-group">
+						<input type="text" value="" class="form-control" placeholder="Search dashboard...">
+						<span class="input-group-btn"><button type="button" class="btn btn-primary">Go</button></span>
+					</div>
+				</form>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown">
@@ -167,20 +167,24 @@
 										<table class="table table-striped">
 											<thead>
 												<tr>
-	                                                <th align="center">交易时间</th>
+                                                    <th align="center">交易数据</th>
+	                                                <th align="center">时间</th>
 													<th align="center">交易金额</th>
-	                                                <th align="center">交易前账户余额</th>
-													<th align="center">交易后账户余额</th>
+	                                                <th align="center">交易前余额</th>
+													<th align="center">交易后余额</th>
+                                                    <th align="center">交易行为</th>
 												</tr>
 											</thead>
 
 											<tbody>
-											{% for recharge in recharges %}
+											{% for tx_log in tx_logs %}
 												<tr>
-	                                                <td align="">  {{recharge.timestamp}}</td>
-													<td align="">  {{recharge.credits}}</td>
-	                                                <td align="">  {{recharge.before_account}}</td>
-													<td align="">  {{recharge.after_account}}</td>
+                                                    <td align="">  {{tx_log.data_name}}</td>
+	                                                <td align="">  {{tx_log.timestamp}}</td>
+													<td align="">  {{tx_log.credits}}</td>
+	                                                <td align="">  {{tx_log.before_account}}</td>
+													<td align="">  {{tx_log.after_account}}</td>
+                                                    <td align="">  {{tx_log.action}}</td>
 												</tr>
 											{% endfor %}
 											</tbody>
@@ -221,22 +225,22 @@
 								</div>
 								<!-- END RECORD -->
 								<!-- TABBED CONTENT -->
-								<div class="custom-tabs-line tabs-line-bottom left-aligned">
-									<ul class="nav" role="tablist">
-										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>
-                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>
-									</ul>
-								</div>
-								<div class="tab-content">
-									<div class="tab-pane fade in active" id="tab-bottom-left1">
-										<ul class="list-unstyled activity-timeline">
-											<li>
-												<i class="fa fa-comment activity-icon"></i>
-												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>
-											</li>
-										</ul>
-									</div>
-								</div>
+{#								<div class="custom-tabs-line tabs-line-bottom left-aligned">#}
+{#									<ul class="nav" role="tablist">#}
+{#										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>#}
+{#                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>#}
+{#									</ul>#}
+{#								</div>#}
+{#								<div class="tab-content">#}
+{#									<div class="tab-pane fade in active" id="tab-bottom-left1">#}
+{#										<ul class="list-unstyled activity-timeline">#}
+{#											<li>#}
+{#												<i class="fa fa-comment activity-icon"></i>#}
+{#												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>#}
+{#											</li>#}
+{#										</ul>#}
+{#									</div>#}
+{#								</div>#}
 								<!-- END TABBED CONTENT -->
 							</div>
 							<!-- END RIGHT COLUMN -->

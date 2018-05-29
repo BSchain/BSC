@@ -311,7 +311,32 @@ def adminData_sql(request, sort_sql):
         datas.append(data)
     return datas
 
-
+def txLog_sql(user_id):
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select timestamp,credits,before_account,after_account,action,data_id from BSCapp_txLog where BSCapp_txLog.user_id = %s order by timestamp DESC;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    tx_logs = []
+    for i in range(len(content)):
+        tx_log = dict()
+        tx_log['timestamp'] = time_to_str(content[i][0])
+        tx_log['credits'] = content[i][1]
+        tx_log['before_account'] = content[i][2]
+        tx_log['after_account'] = content[i][3]
+        if content[i][4] == 0:
+            tx_log['action'] = '上传奖励'
+        elif content[i][4] == 1:
+            tx_log['action'] = '购买支出'
+        elif content[i][4] == 2:
+            tx_log['action'] = '数据收益'
+        tx_log['data_name'] = Data.objects.get(data_id=content[i][5]).data_name
+        tx_logs.append(tx_log)
+    return tx_logs
 #
 # def rechargeData_sql(user_id):
 #     content = {}
