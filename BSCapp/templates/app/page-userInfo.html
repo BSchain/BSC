@@ -190,17 +190,17 @@
 											</tbody>
 										</table>
 
-										{% if recharges.has_other_pages %}
+										{% if tx_logs.has_other_pages %}
 											<ul class="pagination">
-											{% if recharges.has_previous %}
+											{% if tx_logs.has_previous %}
 											<li>
-												<a href="?page={{ recharges.previous_page_number }}">&laquo;</a>
+												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>
 											</li>
 											{% else %}
 											<li class="disabled">
 												<span>&laquo;</span>
 											</li>
-											{% endif %} {% for i in recharges.paginator.page_range %} {% if recharges.number == i %}
+											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -210,9 +210,9 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} {% endfor %} {% if recharges.has_next %}
+											{% endif %} {% endfor %} {% if tx_logs.has_next %}
 											<li>
-												<a href="?page={{ recharges.next_page_number }}">&raquo;</a>
+												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>
 											</li>
 											{% else %}
 											<li class="disabled">
