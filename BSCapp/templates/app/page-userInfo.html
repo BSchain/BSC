@@ -98,7 +98,7 @@
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>购买数据</span></a></li>
 						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
-                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>
+{#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
 				</nav>
 			</div>
@@ -161,42 +161,46 @@
 								<!-- RECHARGE RECORD -->
 								<div class="panel">
 									<div class="panel-heading">
-										<h3 class="panel-title">充值记录</h3>
+										<h3 class="panel-title">交易记录</h3>
 									</div>
 									<div class="panel-body">
 										<table class="table table-striped">
 											<thead>
 												<tr>
-	                                                <th align="center">充值时间</th>
-													<th align="center">充值金额</th>
-	                                                <th align="center">充值前账户余额</th>
-													<th align="center">充值后账户余额</th>
+                                                    <th align="center">交易数据</th>
+	                                                <th align="center">时间</th>
+													<th align="center">交易金额</th>
+	                                                <th align="center">交易前余额</th>
+													<th align="center">交易后余额</th>
+                                                    <th align="center">交易行为</th>
 												</tr>
 											</thead>
 
 											<tbody>
-											{% for recharge in recharges %}
+											{% for tx_log in tx_logs %}
 												<tr>
-	                                                <td align="">  {{recharge.timestamp}}</td>
-													<td align="">  {{recharge.credits}}</td>
-	                                                <td align="">  {{recharge.before_account}}</td>
-													<td align="">  {{recharge.after_account}}</td>
+                                                    <td align="">  {{tx_log.data_name}}</td>
+	                                                <td align="">  {{tx_log.timestamp}}</td>
+													<td align="">  {{tx_log.credits}}</td>
+	                                                <td align="">  {{tx_log.before_account}}</td>
+													<td align="">  {{tx_log.after_account}}</td>
+                                                    <td align="">  {{tx_log.action}}</td>
 												</tr>
 											{% endfor %}
 											</tbody>
 										</table>
 
-										{% if recharges.has_other_pages %}
+										{% if tx_logs.has_other_pages %}
 											<ul class="pagination">
-											{% if recharges.has_previous %}
+											{% if tx_logs.has_previous %}
 											<li>
-												<a href="?page={{ recharges.previous_page_number }}">&laquo;</a>
+												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>
 											</li>
 											{% else %}
 											<li class="disabled">
 												<span>&laquo;</span>
 											</li>
-											{% endif %} {% for i in recharges.paginator.page_range %} {% if recharges.number == i %}
+											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -206,9 +210,9 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} {% endfor %} {% if recharges.has_next %}
+											{% endif %} {% endfor %} {% if tx_logs.has_next %}
 											<li>
-												<a href="?page={{ recharges.next_page_number }}">&raquo;</a>
+												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>
 											</li>
 											{% else %}
 											<li class="disabled">
@@ -221,22 +225,22 @@
 								</div>
 								<!-- END RECORD -->
 								<!-- TABBED CONTENT -->
-								<div class="custom-tabs-line tabs-line-bottom left-aligned">
-									<ul class="nav" role="tablist">
-										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>
-                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>
-									</ul>
-								</div>
-								<div class="tab-content">
-									<div class="tab-pane fade in active" id="tab-bottom-left1">
-										<ul class="list-unstyled activity-timeline">
-											<li>
-												<i class="fa fa-comment activity-icon"></i>
-												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>
-											</li>
-										</ul>
-									</div>
-								</div>
+{#								<div class="custom-tabs-line tabs-line-bottom left-aligned">#}
+{#									<ul class="nav" role="tablist">#}
+{#										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>#}
+{#                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>#}
+{#									</ul>#}
+{#								</div>#}
+{#								<div class="tab-content">#}
+{#									<div class="tab-pane fade in active" id="tab-bottom-left1">#}
+{#										<ul class="list-unstyled activity-timeline">#}
+{#											<li>#}
+{#												<i class="fa fa-comment activity-icon"></i>#}
+{#												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>#}
+{#											</li>#}
+{#										</ul>#}
+{#									</div>#}
+{#								</div>#}
 								<!-- END TABBED CONTENT -->
 							</div>
 							<!-- END RIGHT COLUMN -->

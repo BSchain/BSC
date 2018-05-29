@@ -32,8 +32,8 @@ urlpatterns = [
     url(r'^Order/$',views.Order),
     url(r'^order/$',views.Order),
 
-    url(r'^Recharge/$',views.Recharge),
-    url(r'^recharge/$',views.Recharge),
+    # url(r'^Recharge/$',views.Recharge),
+    # url(r'^recharge/$',views.Recharge),
 
     url(r'^Notify/$',views.Notify),
     url(r'^notify/$',views.Notify),

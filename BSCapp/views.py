@@ -437,14 +437,17 @@ def UserInfo(request):
     except Exception as e:
         #get the account of user and accurate to the second decimal place
         account = Wallet.objects.get(user_id=user.user_id).account
-        account = round(account,2)
+        account = round(account,3)
         #get the number of upload data
         upload_data_num = len(GetUploadData(user.user_id))
         #get the number of purchase data
         purchase_data_num = len(GetPurchaseData(user.user_id))
-        #get the recharge record
-        recharges = rechargeData_sql(user.user_id)
-        paged_recharges = pagingData(request, recharges)
+
+        # #get the recharge record
+        # recharges = rechargeData_sql(user.user_id)
+        # paged_recharges = pagingData(request, recharges)
+        tx_logs = txLog_sql(user.user_id)
+        paged_tx_logs = pagingData(request, tx_logs)
 
         notices, unread_notices, unread_number = get_notices(request, user.user_id)
 
@@ -460,7 +463,8 @@ def UserInfo(request):
             'account':account,
             'upload_data_num':upload_data_num,
             'purchase_data_num':purchase_data_num,
-            'recharges':paged_recharges,
+            # 'recharges':paged_recharges,
+            'tx_logs': paged_tx_logs,
             'unread_number': unread_number,
             'unread_notices': unread_notices
             })
@@ -673,11 +677,27 @@ def BuyableData(request):
             sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
 
             cursor.execute(sql, [0 - now_data_price, buyer_id])
+            wallet_user_id = buyer_id
+            after_account = round(Wallet.objects.get(user_id= wallet_user_id).account,10)
+            before_account = round(after_account + now_data_price,10)
+            credits = round(now_data_price,10)
+            TxLog(TxLog_id=generate_uuid(wallet_user_id), user_id=wallet_user_id,
+                  timestamp=str(datetime.datetime.utcnow().timestamp()), credits= round(credits,3),
+                  before_account=round(before_account,3), after_account=round(after_account,3), action = 1, data_id=now_data_id).save()
 
             # update the wallet for income user
 
             for i in range(len_income_user_coins):
                 cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
+
+                # update the income table for user who have the right to earn coin
+                wallet_user_id = income_user_out_coins[i]['owner']
+                after_account = round(Wallet.objects.get(user_id=wallet_user_id).account, 10)
+                before_account = round(after_account - income_user_out_coins[i]['number_coin'], 10)
+                credits = round(income_user_out_coins[i]['number_coin'],10)
+                TxLog(TxLog_id=generate_uuid(wallet_user_id), user_id=wallet_user_id,
+                      timestamp=str(datetime.datetime.utcnow().timestamp()), credits=round(credits,3),
+                      before_account=round(before_account,3), after_account=round(after_account,3), action=2, data_id=now_data_id).save()
 
             sql = 'update BSCapp_data set BSCapp_data.data_purchase = BSCapp_data.data_purchase + 1 where data_id = %s'
             cursor.execute(sql, [now_data_id])
@@ -1217,6 +1237,16 @@ def Upload(request):
         except Exception:
             pass # something wrong in cursor, just pass, and use the wallet.account
         wallet.save()
+
+        # add Tx_Log
+        after_account = round(Wallet.objects.get(user_id=user_id).account,10)
+        before_account = round(after_account - default_coin_number,10)
+        credits = round(default_coin_number,10)
+        TxLog(TxLog_id=generate_uuid(user_id), user_id=user_id,
+              timestamp=str(datetime.datetime.utcnow().timestamp()), credits=round(credits,3),
+              before_account=round(before_account,3), after_account=round(after_account,3), action=0,
+              data_id=data_id).save()
+
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
@@ -1493,122 +1523,122 @@ def Order(request):
                                                    'unread_number':unread_number,
                                                    'unread_notices':unread_notices})
 
-@csrf_exempt
-def Recharge(request):
-    username = request.session['username']
-    try:
-        user = User.objects.get(user_name=username)
-    except Exception:
-        return render(request, "app/page-login.html")
-    user_id = user.user_id
-
-    try:
-        account = request.POST["account"]
-        reaccount = request.POST["reaccount"]
-        amount = request.POST["amount"]
-
-        # print('account',account)
-        # print('reaccount', reaccount)
-        # print('amount','amount')
-
-        if account != reaccount:
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '账户不同,请重新输入！'
-            }))
-        try:
-            check_user = User.objects.get(user_name=account)
-            account_user_id =  check_user.user_id
-        except Exception as e:
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '账户:'+account+' 不存在，请重新输入!'
-            }))
-        try:
-            amount = (float)(amount)
-            if amount <=0 :
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '充值金额应大于0，请重新输入!'
-                }))
-        except Exception as e:
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '充值金额有误，请重新输入!'
-            }))
-        now_time = str(datetime.datetime.utcnow().timestamp())
-        #1. generate new coin_id for the user_id
-        # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid amount means the recharge money
-
-        new_coin_id = generate_uuid(account_user_id)
-
-        Coin(coin_id=new_coin_id, owner_id=account_user_id, is_spent=False,
-             timestamp=now_time,coin_credit=amount).save()
-
-        buyer_coin = COIN.Coin()
-        buyer_coin.new_coin(coin_uuid=new_coin_id, number_coin=amount, owner=account_user_id)
-        out_coins = []
-        out_coins.append(buyer_coin.to_dict())
-
-        tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=out_coins, timestamp=datetime.datetime.utcnow().timestamp(), action='recharge',
-                           seller=user_id, buyer='', data_uuid='', credit=amount, reviewer='')
-        tx.save_transaction()
-
-        #get the wallet account before recharge
-        before_account = Wallet.objects.get(user_id=account_user_id).account
-        # before_account = GetAccount(user_id)
-
-        #2. modify wallet of the user_id
-        cursor = connection.cursor()
-        sql = 'update BSCapp_wallet set BSCapp_wallet.account = %s + %s where BSCapp_wallet.user_id = %s;'
-        try:
-            cursor.execute(sql, [before_account, amount, account_user_id])
-            cursor.close()
-        except Exception as e:
-            cursor.close()
-        #get the wallet account after recharge
-        after_account = Wallet.objects.get(user_id=account_user_id).account
-        # after_account = GetAccount(user_id)
-
-        #3. add the recharge record into the recharge tables
-        recharge_id = generate_uuid(account_user_id)
-        cursor = connection.cursor()
-        sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
-        try:
-            timestamp = datetime.datetime.utcnow().timestamp()
-            cursor.execute(sql, [recharge_id, account_user_id, timestamp, amount, before_account, after_account, new_coin_id])
-            cursor.close()
-        except Exception as e:
-            cursor.close()
-        # 4. generate notice for a successful recharge
-        cursor = connection.cursor()
-        notice_insert = 'insert into BSCapp_notice \
-            (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
-            values \
-            (%s, %s, %s, %s, %s, 0, %s)'
-        sender_id = user_id
-        notice_id = generate_uuid(sender_id)
-        receiver_id = account_user_id
-        notice_type = 3
-        timestamp = datetime.datetime.utcnow().timestamp()
-        notice_info = '{} 在 {} 为账户 {} 充值成功, 充值金额为 {}'.format(username, time_to_str(timestamp), account, amount)
-        cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
-                                       notice_info, timestamp])
-        cursor.close()
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-            'message': '充值成功!'
-        }))
-    except Exception as e:
-        # print(e)
-        pass
-    notices, unread_notices, unread_number = get_notices(request, user_id)
-
-    return render(request, "app/page-recharge.html",
-                  {'id':username,
-                   'unread_number':unread_number,
-                   'unread_notices':unread_notices})
+# @csrf_exempt
+# def Recharge(request):
+#     username = request.session['username']
+#     try:
+#         user = User.objects.get(user_name=username)
+#     except Exception:
+#         return render(request, "app/page-login.html")
+#     user_id = user.user_id
+#
+#     try:
+#         account = request.POST["account"]
+#         reaccount = request.POST["reaccount"]
+#         amount = request.POST["amount"]
+#
+#         # print('account',account)
+#         # print('reaccount', reaccount)
+#         # print('amount','amount')
+#
+#         if account != reaccount:
+#             return HttpResponse(json.dumps({
+#                 'statCode': -1,
+#                 'message': '账户不同,请重新输入！'
+#             }))
+#         try:
+#             check_user = User.objects.get(user_name=account)
+#             account_user_id =  check_user.user_id
+#         except Exception as e:
+#             return HttpResponse(json.dumps({
+#                 'statCode': -1,
+#                 'message': '账户:'+account+' 不存在，请重新输入!'
+#             }))
+#         try:
+#             amount = (float)(amount)
+#             if amount <=0 :
+#                 return HttpResponse(json.dumps({
+#                     'statCode': -1,
+#                     'message': '充值金额应大于0，请重新输入!'
+#                 }))
+#         except Exception as e:
+#             return HttpResponse(json.dumps({
+#                 'statCode': -1,
+#                 'message': '充值金额有误，请重新输入!'
+#             }))
+#         now_time = str(datetime.datetime.utcnow().timestamp())
+#         #1. generate new coin_id for the user_id
+#         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid amount means the recharge money
+#
+#         new_coin_id = generate_uuid(account_user_id)
+#
+#         Coin(coin_id=new_coin_id, owner_id=account_user_id, is_spent=False,
+#              timestamp=now_time,coin_credit=amount).save()
+#
+#         buyer_coin = COIN.Coin()
+#         buyer_coin.new_coin(coin_uuid=new_coin_id, number_coin=amount, owner=account_user_id)
+#         out_coins = []
+#         out_coins.append(buyer_coin.to_dict())
+#
+#         tx = TX.Transaction()
+#         tx.new_transaction(in_coins=[], out_coins=out_coins, timestamp=datetime.datetime.utcnow().timestamp(), action='recharge',
+#                            seller=user_id, buyer='', data_uuid='', credit=amount, reviewer='')
+#         tx.save_transaction()
+#
+#         #get the wallet account before recharge
+#         before_account = Wallet.objects.get(user_id=account_user_id).account
+#         # before_account = GetAccount(user_id)
+#
+#         #2. modify wallet of the user_id
+#         cursor = connection.cursor()
+#         sql = 'update BSCapp_wallet set BSCapp_wallet.account = %s + %s where BSCapp_wallet.user_id = %s;'
+#         try:
+#             cursor.execute(sql, [before_account, amount, account_user_id])
+#             cursor.close()
+#         except Exception as e:
+#             cursor.close()
+#         #get the wallet account after recharge
+#         after_account = Wallet.objects.get(user_id=account_user_id).account
+#         # after_account = GetAccount(user_id)
+#
+#         #3. add the recharge record into the recharge tables
+#         recharge_id = generate_uuid(account_user_id)
+#         cursor = connection.cursor()
+#         sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
+#         try:
+#             timestamp = datetime.datetime.utcnow().timestamp()
+#             cursor.execute(sql, [recharge_id, account_user_id, timestamp, amount, before_account, after_account, new_coin_id])
+#             cursor.close()
+#         except Exception as e:
+#             cursor.close()
+#         # 4. generate notice for a successful recharge
+#         cursor = connection.cursor()
+#         notice_insert = 'insert into BSCapp_notice \
+#             (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
+#             values \
+#             (%s, %s, %s, %s, %s, 0, %s)'
+#         sender_id = user_id
+#         notice_id = generate_uuid(sender_id)
+#         receiver_id = account_user_id
+#         notice_type = 3
+#         timestamp = datetime.datetime.utcnow().timestamp()
+#         notice_info = '{} 在 {} 为账户 {} 充值成功, 充值金额为 {}'.format(username, time_to_str(timestamp), account, amount)
+#         cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
+#                                        notice_info, timestamp])
+#         cursor.close()
+#         return HttpResponse(json.dumps({
+#             'statCode': 0,
+#             'message': '充值成功!'
+#         }))
+#     except Exception as e:
+#         # print(e)
+#         pass
+#     notices, unread_notices, unread_number = get_notices(request, user_id)
+#
+#     return render(request, "app/page-recharge.html",
+#                   {'id':username,
+#                    'unread_number':unread_number,
+#                    'unread_notices':unread_notices})
 
 @csrf_exempt
 def Notify(request):

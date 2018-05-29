@@ -73,6 +73,16 @@ class Recharge(models.Model):
     after_account = models.FloatField() # 充值后信用度余额
     coin_id = models.CharField(max_length=64) # 此次充值生成的coin id
 
+class TxLog(models.Model):
+    TxLog_id = models.CharField(max_length=64, primary_key=True) # 充值id
+    user_id = models.CharField(max_length=64)  # 用户id
+    timestamp = models.CharField(max_length=32)  # 时间戳
+    credits = models.FloatField()  # 交易信用度 （大于0， 小于0）
+    before_account = models.FloatField()  # 交易前账户信用度余额
+    after_account = models.FloatField()  # 交易后信用度余额
+    action = models.IntegerField(default=0)  # 此次交易的动作 0 = 上传奖励upload、1 = 购买支出buy、2 = 收益分红ratio，
+    data_id = models.CharField(max_length=64)  # 本次交易的数据id
+
 
 class Wallet(models.Model):
     user_id = models.CharField(max_length=64, primary_key=True) # 用户id
