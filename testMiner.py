@@ -43,7 +43,7 @@ def insert_gensis_block():
         print('now ' + UTILS.time_to_str(str(time.time())))
         print('insert wrong!')
 
-# TODO: syn total chain data to DB
+# Done: syn total chain data to DB
 # one week = 24*60*60*7
 def chainDataSynToDB():
     assert os.path.exists(UTILS.BLOCK_SAVE_ROOT), ('blocks file not exists!')
