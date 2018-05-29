@@ -405,7 +405,7 @@ def noticeData_sql(user_id, sort_sql):
     return notices, unread_notices, unread_number
 
 # TODO: add config number = 10
-def pagingData(request, datas, each_num=10):
+def pagingData(request, datas, each_num=7):
     # paginator = Paginator(datas, each_num)
     # print(each_num)
     paginator = JuncheePaginator(datas, each_num)
