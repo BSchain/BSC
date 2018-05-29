@@ -14,7 +14,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 class JuncheePaginator(Paginator):
-    def __init__(self, object_list, per_page, range_num=5, orphans=0, allow_empty_first_page=True):
+    def __init__(self, object_list, per_page, range_num=4, orphans=0, allow_empty_first_page=True):
         Paginator.__init__(self, object_list, per_page, orphans, allow_empty_first_page)
         self.range_num = range_num
 
@@ -241,7 +241,7 @@ def uploadData_sql(request, user_id, sort_sql):
         for i in range(len_result):
             user_name = income_user_result[i][0]
             user_ratio = income_user_result[i][1]
-            income_info_list.append('用户:'+user_name +' 收益比:'+str(round(user_ratio,8)))
+            income_info_list.append('用户:'+user_name +' 收益比:'+str(round(user_ratio,3)))
 
         data['income_info'] = income_info_list
         item_cursor.close()
