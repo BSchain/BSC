@@ -1170,7 +1170,7 @@ def Upload(request):
             owner_notice_info = '{} 在 {} 上传 {} 成功，' \
                                 '并设置账户 {} 收益占比为 {}/{} = {}'.format(
                             username,time_to_str(timestamp), data_name,
-                            income_user_name,income_user_ratio,total_ratio, income_ratio )
+                            income_user_name,income_user_ratio,total_ratio, round(income_ratio,3) )
 
             # send notice to user
             Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id= notice_receiver_id,
@@ -1196,7 +1196,7 @@ def Upload(request):
         owner_notice_id = generate_uuid(sender_id)
         timestamp = time()
         owner_notice_type = 4
-        owner_notice_info = '{} 在 {} 上传 {} 成功，奖励积分 {}'.format(username, time_to_str(timestamp), data_name, default_coin_number)
+        owner_notice_info = '{} 在 {} 上传 {} 成功，奖励积分 {}'.format(username, time_to_str(timestamp), data_name, round(default_coin_number,3))
 
         # send notice to data owner
         Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=user_id,
