@@ -311,25 +311,27 @@ def adminData_sql(request, sort_sql):
         datas.append(data)
     return datas
 
-def rechargeData_sql(user_id):
-    content = {}
-    cursor = connection.cursor()
-    sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
-    try:
-        cursor.execute(sql, [user_id])
-        content = cursor.fetchall()
-        cursor.close()
-    except Exception as e:
-        cursor.close()
-    recharges = []
-    for i in range(len(content)):
-        recharge = dict()
-        recharge['timestamp'] = time_to_str(content[i][0])
-        recharge['credits'] = content[i][1]
-        recharge['before_account'] = content[i][2]
-        recharge['after_account'] = content[i][3]
-        recharges.append(recharge)
-    return recharges
+
+#
+# def rechargeData_sql(user_id):
+#     content = {}
+#     cursor = connection.cursor()
+#     sql = 'select timestamp,credits,before_account,after_account from BSCapp_recharge where BSCapp_recharge.user_id = %s order by timestamp DESC;'
+#     try:
+#         cursor.execute(sql, [user_id])
+#         content = cursor.fetchall()
+#         cursor.close()
+#     except Exception as e:
+#         cursor.close()
+#     recharges = []
+#     for i in range(len(content)):
+#         recharge = dict()
+#         recharge['timestamp'] = time_to_str(content[i][0])
+#         recharge['credits'] = content[i][1]
+#         recharge['before_account'] = content[i][2]
+#         recharge['after_account'] = content[i][3]
+#         recharges.append(recharge)
+#     return recharges
 
 
 def noticeData_sql(user_id, sort_sql):

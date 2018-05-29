@@ -442,9 +442,10 @@ def UserInfo(request):
         upload_data_num = len(GetUploadData(user.user_id))
         #get the number of purchase data
         purchase_data_num = len(GetPurchaseData(user.user_id))
-        #get the recharge record
-        recharges = rechargeData_sql(user.user_id)
-        paged_recharges = pagingData(request, recharges)
+
+        # #get the recharge record
+        # recharges = rechargeData_sql(user.user_id)
+        # paged_recharges = pagingData(request, recharges)
 
         notices, unread_notices, unread_number = get_notices(request, user.user_id)
 
@@ -460,7 +461,7 @@ def UserInfo(request):
             'account':account,
             'upload_data_num':upload_data_num,
             'purchase_data_num':purchase_data_num,
-            'recharges':paged_recharges,
+            # 'recharges':paged_recharges,
             'unread_number': unread_number,
             'unread_notices': unread_notices
             })
