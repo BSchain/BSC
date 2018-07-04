@@ -1977,10 +1977,25 @@ def ChainInfo(request):
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
+        content = {}
+        cursor = connection.cursor()
+        sql = 'select tx_number,timestamp from BSCapp_block where BSCapp_block.height = %s;'
+        try:
+            cursor.execute(sql, [now_block_height])
+            content = cursor.fetchall()
+            cursor.close()
+        except Exception as e:
+            cursor.close()
+        one_block_txNumber = content[0][0]
+        one_block_timestamp = time_to_str(content[0][1])
+
+
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is '+str(now_block_height),
             'block': json.dumps(now_block_dict),
+            'txNumber': one_block_txNumber,
+            'timestamp': one_block_timestamp,
         }))
     except Exception as e:
         pass
