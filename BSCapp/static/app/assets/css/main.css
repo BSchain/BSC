@@ -166,7 +166,8 @@ html.fullscreen-bg #wrapper {
     background-color: #f8f8f8; }
   .navbar-default .brand {
     float: left;
-    padding: 30px 39px;
+    padding: 20px 1px;
+    /*padding: 30px 39px;*/
     background-color: #fff; }
   @media screen and (max-width: 1024px) {
     .navbar-default .brand {
@@ -1043,7 +1044,7 @@ ul.activity-list > li {
       display: block;
       width: 100%;
       height: 100%;
-      background: rgba(99, 156, 185, 0.92); }
+      background: rgba(99, 156, 185, 0.36); }
   .auth-box .header {
     margin-bottom: 30px; }
   .auth-box .lead {
@@ -1169,8 +1170,9 @@ ul.activity-list > li {
     background-color: rgba(0, 0, 0, 0.2); }
   .profile-header .profile-main {
     position: relative;
-    padding: 20px;
-    background-image: url("../../assets/img/profile-bg.png");
+    padding: 15px;
+    background-color: #3b5998;
+    /*background-image: url("../../assets/img/profile-bg.png");*/
     background-repeat: no-repeat;
     background-size: cover; }
   .profile-header .name {
@@ -1199,7 +1201,7 @@ ul.activity-list > li {
     position: relative;
     background-color: #00AAFF; }
     .profile-header .profile-stat .stat-item {
-      padding: 20px;
+      padding: 10px;
       position: relative; }
       .profile-header .profile-stat .stat-item:after {
         content: "";

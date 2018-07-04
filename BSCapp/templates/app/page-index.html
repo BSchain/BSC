@@ -28,7 +28,7 @@
 		<!-- NAVBAR -->
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="brand">
-				<a href="/Index/"><img src="../static/app/assets/img/logo.jpg" alt="Klorofil Logo" class="img-responsive logo"></a>
+				<a href="/Index/"><img src="../static/app/assets/img/logo.jpg" alt="Beijing Science&Technology BigData Platform" class="img-responsive logo"></a>
 			</div>
 			<div class="container-fluid">
 				<div class="navbar-btn">
@@ -42,15 +42,15 @@
 				</form>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Basic Use</a></li>
-								<li><a href="#">Working With Data</a></li>
-								<li><a href="#">Security</a></li>
-								<li><a href="#">Troubleshooting</a></li>
-							</ul>
-						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span>Login</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
@@ -95,7 +95,7 @@
 											<tr>
                                                 <th align="center" onclick=indexBlockSortBase('height')>区块高度 <i class="{{ sort_class.height }}"> </i></th>
                                                 <th align="center" onclick=indexBlockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=indexBlockSortBase('block_size')>区块大小(B) <i class="{{ sort_class.block_size }}"> </i></th>
+                                                <th align="center" onclick=indexBlockSortBase('block_size')>区块大小(Bits) <i class="{{ sort_class.block_size }}"> </i></th>
                                                 <th align="center" onclick=indexBlockSortBase('tx_number')>Transaction数量 <i class="{{ sort_class.tx_number }}"> </i></th>
                                                 <th align="center" onclick=indexBlockSortBase('block_hash')>区块hash <i class="{{ sort_class.block_hash }}"> </i></th>
                                                 <th align="center" >区块详情 </th>
