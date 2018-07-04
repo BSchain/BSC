@@ -55,15 +55,15 @@
 								<li><a href="/Notify/" class="more">See all notifications</a></li>
 							</ul>
 						</li>
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Basic Use</a></li>
-								<li><a href="#">Working With Data</a></li>
-								<li><a href="#">Security</a></li>
-								<li><a href="#">Troubleshooting</a></li>
-							</ul>
-						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
@@ -113,46 +113,58 @@
 						<div class="clearfix">
 							<!-- LEFT COLUMN -->
 							<div class="profile-left">
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">个人信息</h3>
+                                    </div>
 								<!-- PROFILE HEADER -->
-								<div class="profile-header">
-									<div class="overlay"></div>
-									<div class="profile-main">
-										<h3 class="name" style="color: #0f0f0f">{{id}}</h3>
-									</div>
-									<div class="profile-stat">
-										<div class="row">
-											<div class="col-md-4 stat-item">
-												{{upload_data_num}} <span>已上传数据</span>
-											</div>
-											<div class="col-md-4 stat-item">
-												{{purchase_data_num}} <span>已购买数据</span>
-											</div>
-											<div class="col-md-4 stat-item">
-												{{account}} <span>账户余额</span>
-											</div>
-										</div>
-									</div>
-								</div>
+                                    <div class="profile-header">
+                                        <div class="overlay"></div>
+                                        <div class="profile-main">
+                                            <h3 class="name">当前用户: {{id}}</h3>
+                                        </div>
+                                        <div class="profile-stat">
+                                            <div class="row">
+                                                <div class="col-md-4 stat-item">
+                                                    {{upload_data_num}} <span>已上传数据</span>
+                                                </div>
+                                                <div class="col-md-4 stat-item">
+                                                    {{purchase_data_num}} <span>已购买数据</span>
+                                                </div>
+                                                <div class="col-md-4 stat-item">
+                                                    {{account}} <span>账户余额</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 								<!-- END PROFILE HEADER -->
 								<!-- PROFILE DETAIL -->
-								<div class="profile-detail">
-									<div class="profile-info" id="profile">
-										<h4 class="heading">用户信息</h4>
-										<ul class="list-unstyled list-justify">
-											<li>姓名 <span id="nametext">{{name}}</span></li>
-											<li>邮箱 <span id="emailtext">{{email}}</span></li>
-											<li>电话 <span id="phonetext">{{phone}}</span></li>
-											<li>身份证号 <span id="idcardtext">{{idcard}}</span></li>
-											<li>公司 <span id="companytext">{{company}}</span></li>
-											<li>头衔 <span id="titletext">{{title}}</span></li>
-											<li>地址 <span id="addrtext">{{addr}}</span></li>
-										</ul>
-										<button id="edit" class="btn btn-primary btn-lg btn-block" onclick="EditInfo()">编辑</button>
-									</div>
+                                    <div class="sidebar-scroll">
 
-								</div>
+                                        <div class="profile-detail">
+
+                                            <div class="profile-info" id="profile">
+                                                <a href="#subPages1" data-toggle="collapse" style="alignment: center "> <button class="btn btn-primary"  class="heading">查看详细信息</button> </a>
+                                                <div id="subPages1" class="collapse">
+                                                        <ul class="list-unstyled list-justify">
+                                                            <li>姓名 <span id="nametext">{{name}}</span></li>
+                                                            <li>邮箱 <span id="emailtext">{{email}}</span></li>
+                                                            <li>电话 <span id="phonetext">{{phone}}</span></li>
+                                                            <li>身份证号 <span id="idcardtext">{{idcard}}</span></li>
+                                                            <li>公司 <span id="companytext">{{company}}</span></li>
+                                                            <li>头衔 <span id="titletext">{{title}}</span></li>
+                                                            <li>地址 <span id="addrtext">{{addr}}</span></li>
+                                                        </ul>
+                                                        <button id="edit" class="btn btn-primary btn-lg btn-block" onclick="EditInfo()">编辑</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
 								<!-- END PROFILE DETAIL -->
 							</div>
+
+                            </div>
 							<!-- END LEFT COLUMN -->
 							<!-- RIGHT COLUMN -->
 							<div class="profile-right">

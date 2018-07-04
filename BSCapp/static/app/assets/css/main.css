@@ -1170,8 +1170,8 @@ ul.activity-list > li {
     background-color: rgba(0, 0, 0, 0.2); }
   .profile-header .profile-main {
     position: relative;
-    padding: 20px;
-    background-color: #b9def0;
+    padding: 15px;
+    background-color: #3b5998;
     /*background-image: url("../../assets/img/profile-bg.png");*/
     background-repeat: no-repeat;
     background-size: cover; }
@@ -1201,7 +1201,7 @@ ul.activity-list > li {
     position: relative;
     background-color: #00AAFF; }
     .profile-header .profile-stat .stat-item {
-      padding: 20px;
+      padding: 10px;
       position: relative; }
       .profile-header .profile-stat .stat-item:after {
         content: "";
