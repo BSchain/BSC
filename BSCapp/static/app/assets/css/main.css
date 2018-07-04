@@ -166,7 +166,8 @@ html.fullscreen-bg #wrapper {
     background-color: #f8f8f8; }
   .navbar-default .brand {
     float: left;
-    padding: 30px 39px;
+    padding: 20px 1px;
+    /*padding: 30px 39px;*/
     background-color: #fff; }
   @media screen and (max-width: 1024px) {
     .navbar-default .brand {
