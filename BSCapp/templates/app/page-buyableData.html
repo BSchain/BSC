@@ -90,7 +90,7 @@
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">个人信息</a></li>
+									<li><a href="/UserInfo/" class="">交易记录</a></li>
                                     <li><a href="/Notify/" class="">通知中心</a></li>
                                     <li><a href="/MyData/" >我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
@@ -100,6 +100,7 @@
                         <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
 						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
 						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
 				</nav>
@@ -219,15 +220,20 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
+{#    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>#}
+{#    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>#}
+    <link rel="stylesheet" type="text/css" href="../static/app/assets/scripts/datatables.min.css"/>
+    <script type="text/javascript" src="../static/app/assets/scripts/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
-	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+{#	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>#}
+{#	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>#}
+{#	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>#}
+    <script src="../static/app/assets/scripts/jquery.min.js"></script>
+	<script src="../static/app/assets/scripts/jquery.cookie.js"></script>
+	<script src="../static/app/assets/scripts/md5.js"></script>
     <script src="../static/app/javascript/buyData.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
 

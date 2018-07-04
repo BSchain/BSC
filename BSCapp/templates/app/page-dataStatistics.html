@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>BSC System</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link rel="stylesheet" href="../static/app/assets/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../static/app/assets/vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../static/app/assets/vendor/linearicons/style.css">
+    <script src="../static/app/assets/scripts/echarts.js"></script>
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="../static/app/assets/css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="../static/app/assets/css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="../static/app/assets/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="../static/app/assets/img/favicon.png">
+</head>
+
+<body>
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="/ChainInfo/"><img src="../static/app/assets/img/logo.jpg" alt="Beijing Science&Technology BigData Platform" class="img-responsive logo"></a>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<form class="navbar-form navbar-left">
+					<div class="input-group">
+						<input type="text" value="" class="form-control" placeholder="Search dashboard...">
+						<span class="input-group-btn"><button type="button" class="btn btn-primary">Go</button></span>
+					</div>
+				</form>
+				<div id="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i class="lnr lnr-alarm"></i>
+                                <span class="badge bg-danger">{{ unread_number }}</span>
+							</a>
+							<ul class="dropdown-menu notifications">
+                                {% for notice in unread_notices %}
+                                    <li><a href="#" class="notification-item"><span class="dot bg-warning"></span>{{ notice.info }}</a></li>
+                                {% endfor %}
+
+								<li><a href="/Notify/" class="more">See all notifications</a></li>
+							</ul>
+						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<ul class="dropdown-menu">
+								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
+								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
+                                <li><a href="/ModifyPwd/"><i class="lnr lnr-envelope"></i> <span>Modify Password</span></a></li>
+								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+							</ul>
+						</li>
+						<!-- <li>
+							<a class="update-pro" href="#downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
+						</li> -->
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- END NAVBAR -->
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+						<li><a href="/ChainInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li>
+							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse">
+								<ul class="nav">
+									<li><a href="/UserInfo/" class="">交易记录</a></li>
+                                    <li><a href="/Notify/" class="">通知中心</a></li>
+                                    <li><a href="/MyData/" class="">我的数据</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
+								</ul>
+							</div>
+						</li>
+						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
+						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/DataStatistics/" class="active"><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
+{#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
+					</ul>
+				</nav>
+			</div>
+		</div>
+		<!-- END LEFT SIDEBAR -->
+		<!-- MAIN -->
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-12">
+							<!-- TABLE STRIPED -->
+							<div class="panel">
+								<div class="panel-heading">
+									<h3 class="panel-title">数据统计</h3>
+								</div>
+								<div class="panel-body">
+									<table class="table table-striped">
+										<div class="table-responsive">
+                                                <div id="ScienceMap" class="collapse">
+                                                        <a href="#ScienceMap" data-toggle="collapse"><button>隐藏科技资源地图详情</button></a>
+                                                    <div id="ScienceMapPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('ScienceMapPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '科技资源地图专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:335, name:'国家高新技术企业'},
+                                                                    {value:310, name:'高校院所'},
+                                                                    {value:234, name:'科研机构'},
+                                                                    {value:135, name:'入选QS世界大学500强'},
+                                                                    {value:335, name:'北京地区上市公司'},
+                                                                    {value:310, name:'北京地区科技型上市企业'},
+                                                                    {value:234, name:'新三板挂牌企业'},
+                                                                    {value:135, name:'新三板创新层'},
+                                                                    {value:335, name:'独角兽企业'},
+                                                                    {value:310, name:'国家重点实现验室'},
+                                                                    {value:234, name:'国家工程技术研究中心'},
+                                                                    {value:135, name:'北京重点实验室'},
+                                                                    {value:335, name:'北京工程技术研究中心'},
+                                                                    {value:310, name:'北京企业研发机构'},
+                                                                    {value:234, name:'高等学校高精尖创新中心'},
+                                                                    {value:135, name:'国家级科技企业孵化器'},
+                                                                    {value:335, name:'国家级大学科技园'},
+                                                                    {value:310, name:'国家级众创空间'},
+                                                                    {value:234, name:'北京创业投资及股权投资机构'},
+                                                                    {value:135, name:'企业融资'},
+                                                                    {value:335, name:'企业并购'},
+                                                                    {value:310, name:'两院院士'},
+                                                                    {value:234, name:'北京科技新星'},
+                                                                    {value:135, name:'首都科技领军人才'},
+                                                                    {value:158, name:'全球高被引科学家'},
+                                                                    {value:135, name:'开放实验室'},
+                                                                    {value:335, name:'科研仪器设备'},
+                                                                    {value:310, name:'北京科技计划课题'},
+                                                                    {value:234, name:'北京自然基金项目'},
+                                                                    {value:135, name:'PCT国际专利申请量'},
+                                                                    {value:135, name:'全球500强企业总部'},
+                                                                    {value:335, name:'国际科技合作基地（国家）'},
+                                                                    {value:310, name:'国际科技合作基地（北京）'},
+                                                                    {value:234, name:'全市科普基地'},
+                                                                    {value:135, name:'社区科普体验厅'},
+                                                                    {value:135, name:'中小学科学探究实验室'}
+
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                        <ul class="nav">
+                                                            <li><a href="" class="">国家高新技术企业 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">高校院所 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 3.75%</span></a> </li>
+                                                            <li><a href="" class="">科研机构 <span style="color: #2e9fff"> 交易数量: 4 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">入选QS世界大学500强<span style="color: #2e9fff"> 交易数量: 4 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">北京地区上市公司 <span style="color: #2e9fff"> 交易数量: 4 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">北京地区科技型上市企业 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">新三板挂牌企业 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 6.25%</span></a> </li>
+                                                            <li><a href="" class="">新三板创新层<span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">独角兽企业 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">国家重点实现验室 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">国家工程技术研究中心 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">北京重点实验室<span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">北京工程技术研究中心 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 6.25%</span></a> </li>
+                                                            <li><a href="" class="">北京企业研发机构 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">高等学校高精尖创新中心 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">国家级科技企业孵化器<span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">国家级大学科技园 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">国家级众创空间 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">北京创业投资及股权投资机构 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">企业融资<span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">企业并购 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">两院院士 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 3.75%</span></a> </li>
+                                                            <li><a href="" class="">北京科技新星 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">首都科技领军人才<span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">全球高被引科学家 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">开放实验室 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 3.75%</span></a> </li>
+                                                            <li><a href="" class="">科研仪器设备 <span style="color: #2e9fff"> 交易数量: 4 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">北京科技计划课题<span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">北京自然基金项目 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">PCT国际专利申请量 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">全球500强企业总部 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">国际科技合作基地（国家）<span style="color: #2e9fff"> 交易数量: 4 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">国际科技合作基地（北京） <span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                            <li><a href="" class="">全市科普基地 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 1.25%</span></a> </li>
+                                                            <li><a href="" class="">社区科普体验厅 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 3.75%</span></a> </li>
+                                                            <li><a href="" class="">中小学科学探究实验室<span style="color: #2e9fff"> 交易数量: 2 交易占比: 2.5%</span></a> </li>
+                                                        </ul>
+                                                        <a href="#ScienceMap" data-toggle="collapse"><button>隐藏科技资源地图详情</button></a>
+                                                </div>
+
+                                                <div id="LeadingPrediction" class="collapse">
+                                                            <a href="#LeadingPrediction" data-toggle="collapse"><button>隐藏前沿预判详情</button></a>
+                                                    <div id="LeadingPredictionPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('LeadingPredictionPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '前沿预判专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:335, name:'电子信息'},
+                                                                    {value:310, name:'生物医药'},
+                                                                    {value:234, name:'新能源'},
+                                                                    {value:135, name:'新能源汽车'},
+                                                                    {value:335, name:'节能环保'},
+                                                                    {value:310, name:'新材料'},
+                                                                    {value:234, name:'智能制造'}
+
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                            <ul class="nav">
+                                                                <li><a href="" class="">电子信息 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 27.78%</span></a> </li>
+                                                                <li><a href="" class="">生物医药 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 11.11%</span></a> </li>
+                                                                <li><a href="" class="">新能源 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 16.67%</span></a> </li>
+                                                                <li><a href="" class="">新能源汽车<span style="color: #2e9fff"> 交易数量: 7 交易占比: 38.89%</span></a> </li>
+                                                                <li><a href="" class="">节能环保 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 16.67%</span></a> </li>
+                                                                <li><a href="" class="">新材料 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 11.11%</span></a> </li>
+                                                                <li><a href="" class="">智能制造 <span style="color: #2e9fff"> 交易数量: 6 交易占比: 33.33%</span></a> </li>
+                                                            </ul>
+                                                            <a href="#LeadingPrediction" data-toggle="collapse"><button>隐藏前沿预判详情</button></a>
+                                                    </div>
+
+                                                <div id="KeyAreaAnalysis" class="collapse">
+                                                        <a href="#KeyAreaAnalysis" data-toggle="collapse"><button>隐藏重点领域综合分析详情</button></a>
+                                                        <ul class="nav">
+                                                            <div id="KeyAreaAnalysisPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('KeyAreaAnalysisPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '重点领域综合分析专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:335, name:'无人机'},
+                                                                    {value:310, name:'物联网'},
+                                                                    {value:234, name:'虚拟现实'},
+                                                                    {value:135, name:'增强现实'},
+                                                                    {value:335, name:'智能驾驶'},
+                                                                    {value:310, name:'智能机器人'},
+                                                                    {value:234, name:'区块链'},
+                                                                    {value:335, name:'5G'},
+                                                                    {value:310, name:'人工智能'},
+                                                                    {value:234, name:'智能农业'},
+                                                                    {value:135, name:'第三代半导体'},
+                                                                    {value:335, name:'大数据分析'},
+                                                                    {value:310, name:'量子通信'},
+                                                                    {value:234, name:'固态锂电池'},
+                                                                    {value:335, name:'石墨烯'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                            <li><a href="" class="">无人机 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">物联网 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">虚拟现实 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">增强现实<span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">智能驾驶 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">智能机器人 <span style="color: #2e9fff"> 交易数量: 0 交易占比: 0%</span></a> </li>
+                                                            <li><a href="" class="">区块链 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">5G<span style="color: #2e9fff"> 交易数量: 0 交易占比: 0%</span></a> </li>
+                                                            <li><a href="" class="">人工智能 <span style="color: #2e9fff"> 交易数量: 0 交易占比: 0%</span></a> </li>
+                                                            <li><a href="" class="">智能农业 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 13.33%</span></a> </li>
+                                                            <li><a href="" class="">第三代半导体 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">大数据分析<span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">量子通信 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">固态锂电池 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 6.67%</span></a> </li>
+                                                            <li><a href="" class="">石墨烯 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 20%</span></a> </li>
+                                                        </ul>
+                                                        <a href="#KeyAreaAnalysis" data-toggle="collapse"><button>隐藏重点领域综合分析详情</button></a>
+                                                </div>
+
+                                                <div id="InnovationActivities" class="collapse">
+                                                        <a href="#InnovationActivities" data-toggle="collapse"><button>隐藏企业创新活动详情</button></a>
+                                                        <ul class="nav">
+                                                            <div id="InnovationActivitiesPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('InnovationActivitiesPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '企业创新活动专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:335, name:'上市企业'},
+                                                                    {value:310, name:'新三板挂牌企业'},
+                                                                    {value:234, name:'独角兽企业'},
+                                                                    {value:135, name:'初创企业'},
+                                                                    {value:335, name:'潜力企业'},
+                                                                    {value:310, name:'企业全景信息'},
+                                                                    {value:234, name:'企业创新能力评价'},
+                                                                    {value:335, name:'企业创新活动跟踪'},
+                                                                    {value:310, name:'高技术企业产业分析'},
+                                                                    {value:234, name:'众创空间生态发展情况'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                            <li><a href="" class="">上市企业 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 10%</span></a> </li>
+                                                            <li><a href="" class="">新三板挂牌企业 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 15%</span></a> </li>
+                                                            <li><a href="" class="">独角兽企业 <span style="color: #2e9fff"> 交易数量: 4 交易占比: 20%</span></a> </li>
+                                                            <li><a href="" class="">初创企业<span style="color: #2e9fff"> 交易数量: 1 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">潜力企业 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 10%</span></a> </li>
+                                                            <li><a href="" class="">企业全景信息 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">企业创新能力评价 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 10%</span></a> </li>
+                                                            <li><a href="" class="">企业创新活动跟踪<span style="color: #2e9fff"> 交易数量: 3 交易占比: 15%</span></a> </li>
+                                                            <li><a href="" class="">高技术企业产业分析 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 5%</span></a> </li>
+                                                            <li><a href="" class="">众创空间生态发展情况 <span style="color: #2e9fff"> 交易数量: 1 交易占比: 5%</span></a> </li>
+                                                        </ul>
+                                                        <a href="#InnovationActivities" data-toggle="collapse"><button>隐藏企业创新活动详情</button></a>
+                                                </div>
+
+                                                <div id="AchievementTransformation" class="collapse">
+                                                            <a href="#AchievementTransformation" data-toggle="collapse"><button>隐藏科技成果转化详情</button></a>
+                                                            <ul class="nav">
+                                                                <div id="AchievementTransformationPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('AchievementTransformationPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '科技成果转化专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:335, name:'科技计划项目'},
+                                                                    {value:310, name:'技术交易'},
+                                                                    {value:234, name:'专利运营'},
+                                                                    {value:135, name:'高价值运营'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                                <li><a href="" class="">科技计划项目 <span style="color: #2e9fff"> 交易数量: 8 交易占比: 38.1%</span></a> </li>
+                                                                <li><a href="" class="">技术交易 <span style="color: #2e9fff"> 交易数量: 6 交易占比: 28.57%</span></a> </li>
+                                                                <li><a href="" class="">专利运营 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 23.81%</span></a> </li>
+                                                                <li><a href="" class="">高价值运营<span style="color: #2e9fff"> 交易数量: 2 交易占比: 9.52%</span></a> </li>
+                                                            </ul>
+                                                            <a href="#AchievementTransformation" data-toggle="collapse"><button>隐藏科技成果转化详情</button></a>
+                                                </div>
+
+                                                <div id="RegionalSynergy" class="collapse">
+                                                            <a href="#RegionalSynergy" data-toggle="collapse"><button>隐藏区域协同详情</button></a>
+                                                            <ul class="nav">
+                                                                 <div id="RegionalSynergyPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('RegionalSynergyPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '区域协同专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:33, name:'园区共建'},
+                                                                    {value:30, name:'产来辐射'},
+                                                                    {value:34, name:'创新合同'},
+                                                                    {value:15, name:'津京冀宏观数据'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                                <li><a href="" class="">园区共建 <span style="color: #2e9fff"> 交易数量: 10 交易占比: 50%</span></a> </li>
+                                                                <li><a href="" class="">产来辐射 <span style="color: #2e9fff"> 交易数量: 2 交易占比: 10%</span></a> </li>
+                                                                <li><a href="" class="">创新合同 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 25%</span></a> </li>
+                                                                <li><a href="" class="">津京冀宏观数据<span style="color: #2e9fff"> 交易数量: 3 交易占比: 15%</span></a> </li>
+                                                            </ul>
+                                                            <a href="#RegionalSynergy" data-toggle="collapse"><button>隐藏区域协同详情</button></a>
+                                                </div>
+
+                                                <div id="TechnologyPolicy" class="collapse">
+                                                            <a href="#TechnologyPolicy" data-toggle="collapse"><button>隐藏科技政策详情</button></a>
+                                                            <ul class="nav">
+                                                                <div id="TechnologyPolicyPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('TechnologyPolicyPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '科技政策专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:323, name:'北京政策'},
+                                                                    {value:301, name:'国外政策'},
+                                                                    {value:134, name:'政策解读'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                                <li><a href="" class="">北京政策 <span style="color: #2e9fff"> 交易数量: 3 交易占比: 21.43%</span></a> </li>
+                                                                <li><a href="" class="">国外政策 <span style="color: #2e9fff"> 交易数量: 6 交易占比: 42.86%</span></a> </li>
+                                                                <li><a href="" class="">政策解读 <span style="color: #2e9fff"> 交易数量: 5 交易占比: 35.71%</span></a> </li>
+                                                            </ul>
+                                                            <a href="#TechnologyPolicy" data-toggle="collapse"><button>隐藏科技政策详情</button></a>
+                                                </div>
+
+                                                <div id="UrbanManagement" class="collapse">
+                                                            <a href="#UrbanManagement" data-toggle="collapse"><button>隐藏城市化精细管理详情</button></a>
+                                                            <ul class="nav">
+                                                                <div id="UrbanManagementPie" style="width: 800px;height:600px;"></div>
+                                                        <script type="text/javascript">
+                                                            // 基于准备好的dom，初始化echarts实例
+                                                            var myChart = echarts.init(document.getElementById('UrbanManagementPie'));
+
+                                                            // 指定图表的配置项和数据
+                                                            var option = {
+                                                        title : {
+                                                            text: '城市化精细管理专题',
+                                                            subtext: '数据使用详情',
+                                                            x:'center'
+                                                        },
+                                                        tooltip : {
+                                                            trigger: 'item',
+                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                        },
+                                                        legend: {
+                                                            orient: 'vertical',
+                                                            left: 'left',
+                                                            {#data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']#}
+                                                        },
+                                                        series : [
+                                                            {
+                                                                name: '数据来源',
+                                                                type: 'pie',
+                                                                radius : '55%',
+                                                                center: ['50%', '60%'],
+                                                                data:[
+                                                                    {value:32, name:'三城一区'},
+                                                                    {value:30, name:'遥感影像'},
+                                                                    {value:14, name:'资源现状'},
+                                                                    {value:12, name:'动态监测'}
+                                                                ],
+                                                                itemStyle: {
+                                                                    emphasis: {
+                                                                        shadowBlur: 10,
+                                                                        shadowOffsetX: 0,
+                                                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    };
+                                                            // 使用刚指定的配置项和数据显示图表。
+                                                            myChart.setOption(option);
+                                                        </script>
+                                                                <li><a href="" class="">三城一区 <span style="color: #2e9fff"> 交易数量: 31 交易占比: 36.36%</span></a> </li>
+                                                                <li><a href="" class="">遥感影像 <span style="color: #2e9fff"> 交易数量: 30 交易占比: 34.09%</span></a> </li>
+                                                                <li><a href="" class="">资源现状 <span style="color: #2e9fff"> 交易数量: 14 交易占比: 15.91%</span></a> </li>
+                                                                <li><a href="" class="">动态监测 <span style="color: #2e9fff"> 交易数量: 12 交易占比: 13.64%</span></a> </li>
+                                                            </ul>
+                                                            <a href="#UrbanManagement" data-toggle="collapse"><button>隐藏城市化精细管理详情</button></a>
+                                                </div>
+											<table class="table project-table">
+												<thead>
+													<tr>
+														<th>专题名称</th>
+                                                        <th>交易数量</th>
+														<th>交易占比</th>
+														<th>查看详情</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+{#														<td><a href="#">科技资源地图</a></td>#}
+                                                        <td><a href="#ScienceMap" data-toggle="collapse" class=""><span>科技资源地图</span></a></td>
+                                                        <td><span style="color: #00a0f0">80</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
+																	<span>40%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#ScienceMap" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+													<tr>
+                                                        <td><a href="#LeadingPrediction" data-toggle="collapse" class=""><span>前沿预判跟踪</span></a></td>
+                                                        <td><span style="color: #00a0f0">18</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="9" aria-valuemin="0" aria-valuemax="100" style="width: 9%;">
+																	<span>9%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#LeadingPrediction" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+													<tr>
+                                                        <td><a href="#KeyAreaAnalysis" data-toggle="collapse" class=""><span>重点领域综合分析</span></a></td>
+                                                        <td><span style="color: #00a0f0">15</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="7.5" aria-valuemin="0" aria-valuemax="100" style="width: 7.5%;">
+																	<span>7.5%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#KeyAreaAnalysis" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+													<tr>
+                                                        <td><a href="#InnovationActivities" data-toggle="collapse" class=""><span>企业创新活动</span></a></td>
+                                                        <td><span style="color: #00a0f0">20</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%;">
+																	<span>10%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#InnovationActivities" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+													<tr>
+                                                        <td><a href="#AchievementTransformation" data-toggle="collapse" class=""><span>科技成果转化</span></a></td>
+                                                        <td><span style="color: #00a0f0">21</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10.5" aria-valuemin="0" aria-valuemax="100" style="width: 10.5%;">
+																	<span>10.5%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#AchievementTransformation" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+													<tr>
+                                                        <td><a href="#RegionalSynergy" data-toggle="collapse" class=""><span>区域协同</span></a></td>
+                                                        <td><span style="color: #00a0f0">20</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 10%;">
+																	<span>10%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#RegionalSynergy" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+                                                    <tr>
+                                                        <td><a href="#TechnologyPolicy" data-toggle="collapse" class=""><span>科技政策</span></a></td>
+                                                        <td><span style="color: #00a0f0">14</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="7" aria-valuemin="0" aria-valuemax="100" style="width: 7%;">
+																	<span>7%</span>
+																</div>
+															</div>
+														</td>
+
+                                                        <td><a href="#TechnologyPolicy" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+                                                    <tr>
+                                                        <td><a href="#UrbanManagement" data-toggle="collapse" class=""><span>城市化精细管理</span></a></td>
+                                                        <td><span style="color: #00a0f0">87</span></td>
+														<td>
+															<div class="progress">
+																<div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100" style="width: 6%;">
+																	<span>6%</span>
+																</div>
+															</div>
+														</td>
+                                                        <td><a href="#UrbanManagement" data-toggle="collapse"><button class="label label-success">展开详情</button></a></td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+                                    </table>
+                                </div>
+								</div>
+							</div>
+							<!-- END TABLE STRIPED -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END MAIN CONTENT -->
+		</div>
+		<!-- END MAIN -->
+		<div class="clearfix"></div>
+		<footer>
+			<div class="container-fluid">
+				<p align="center" class="copyright" >&copy; 2018 <a href="#" target="_blank">BUAA</a>. All Rights Reserved.</p>
+			</div>
+		</footer>
+	</div>
+	<!-- END WRAPPER -->
+	<!-- Javascript -->
+	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
+	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
+{#	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>#}
+{#	<script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>#}
+{#	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>#}
+    <script src="../static/app/assets/scripts/jquery.min.js"></script>
+	<script src="../static/app/assets/scripts/jquery.cookie.js"></script>
+	<script src="../static/app/assets/scripts/md5.js"></script>
+    <script src="../static/app/javascript/sort.js"></script>
+    <script src="../static/app/javascript/downloadData.js"></script>
+    <script src="../static/app/javascript/commentData.js"></script>
+</body>
+
+</html>
