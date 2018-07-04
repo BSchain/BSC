@@ -19,6 +19,8 @@
 	<!-- ICONS -->
 	<link rel="apple-touch-icon" sizes="76x76" href="../static/app/assets/img/apple-icon.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="../static/app/assets/img/favicon.png">
+    <link rel="stylesheet" type="text/css" href="../static/app/assets/scripts/jquery.my-modal.1.1.winStyle.css" />
+    <link rel="stylesheet" type="text/css" href="../static/app/assets/scripts/css.css" />
 </head>
 
 <body>
@@ -133,9 +135,43 @@
 												<td align="">  {{block.tx_number}}</td>
                                                 <td align="">  {{block.block_hash}}</td>
                                                 <td>
-													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="adminShowBlockDetail(this);">详情</button>
+                                                    <div class="m-modal">
+                                                        <div class="m-modal-dialog">
+                                                            <div class="m-top">
+                                                                <h4 class="m-modal-title">
+                                                                    区块详情
+                                                                </h4>
+                                                                <span class="m-modal-close"å>&times;</span>
+                                                            </div>
+                                                            <div class="m-middle">
+                                                                <!--content-->
+                                                            </div>
+                                                            <div class="m-bottom">
+                                                                <button class="m-btn-cancel">关闭</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <script type="text/javascript" src="../static/app/assets/scripts/jquery1.9.min.js"></script>
+                                                    <script type="text/javascript" src="../static/app/assets/scripts/jquery.my-modal.1.1.js"></script>
+                                                    <script>
+                                                        var m1 = new MyModal.modal(function() {
+                                                            alert("你点击了确定");
+                                                        });
+                                                        $('.btn1').on("click", function() {
+                                                            m1.show();
+                                                        });
+                                                    </script>
+
+                                                    <a href="#blockDetail" data-toggle="collapse" class="">
+                                                        <button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="block_height_detail" value="{{block.height}}" onclick="new MyModal.modal(function() {alert('你点击了确定'); }).show()">区块详情</button></a>
+{#                                                        <button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="block_height_detail" value="{{block.height}}" onclick="interpreterBlock(this);">区块详情</button></a>#}
+													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="adminShowBlockDetail(this);">区块源文件</button>
 													<div id="{{block.height}}"> </div>
 												</td>
+{#                                                <td>#}
+{#													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="adminShowBlockDetail(this);">详情</button>#}
+{#													<div id="{{block.height}}"> </div>#}
+{#												</td>#}
 											</tr>
 										{% endfor %}
 										</tbody>
