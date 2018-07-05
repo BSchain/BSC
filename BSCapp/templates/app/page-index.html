@@ -20,7 +20,7 @@
 	<!-- ICONS -->
 	<link rel="apple-touch-icon" sizes="76x76" href="../static/app/assets/img/apple-icon.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="../static/app/assets/img/favicon.png">
-    <script src="../static/app/javascript/popWindow.js"></script>
+
     <link rel="stylesheet" href="../static/app/assets/css/popWindow.css">
 </head>
 
@@ -115,7 +115,7 @@
                                                 <td>
                                                     <a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block.height}})">区块详情</button></a>
 													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="indexShowBlockDetail(this);">区块源文件</button>
-													<div id="{{block.height}}"> </div>
+													<div id="myModelPos{{block.height}}"> </div>
                                                     <div id="myModal{{ block.height }}" class="modal">
                                                       <!-- 弹窗内容 -->
                                                         <div class="modal-content">
@@ -258,6 +258,7 @@
 	<script src="../static/app/assets/vendor/chartist/js/chartist.min.js"></script>
 	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
     <script src="../static/app/javascript/blockInfo.js"></script>
+    <script src="../static/app/javascript/popWindow.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
 </body>
 
