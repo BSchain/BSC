@@ -518,7 +518,46 @@ def chainData_sql(request, sort_sql):
         block['block_size'] = content[i][2]
         block['tx_number'] = content[i][3]
         block['block_hash'] = content[i][4]
+        block['wholeInfo'] = get_block_by_index_json(content[i][0])
+
+        for i in range(block['tx_number']):
+            timestamp = block['wholeInfo']['transactions'][i]['timestamp']
+            block['wholeInfo']['transactions'][i]['timestamp'] = time_to_str(timestamp)
+
+            seller = block['wholeInfo']['transactions'][i]['seller']
+            try:
+                block['wholeInfo']['transactions'][i]['seller'] = User.objects.get(user_id=seller).user_name
+            except:
+                pass
+
+            buyer = block['wholeInfo']['transactions'][i]['buyer']
+            try:
+                block['wholeInfo']['transactions'][i]['buyer'] = User.objects.get(user_id=buyer).user_name
+            except:
+                pass
+
+            data_uuid = block['wholeInfo']['transactions'][i]['data_uuid']
+            try:
+                block['wholeInfo']['transactions'][i]['data_uuid'] = Data.objects.get(data_id=data_uuid).data_name
+            except:
+                pass
+            try:
+                block['wholeInfo']['transactions'][i]['credit'] = Data.objects.get(data_id=data_uuid).data_price
+            except:
+                pass
         blocks.append(block)
+        # action = login
+        # action = buy
+        # action = download
+        # action =
+
+
+    # print(blocks[0]['wholeInfo']['transactions'][0]['timestamp'])
+    # print(blocks[0]['wholeInfo']['transactions'][0]['seller'])
+    # print(blocks[0]['wholeInfo']['transactions'][0]['data_uuid'])
+    # print(blocks[0]['wholeInfo']['transactions'][0]['credit'])
+    # print(blocks[0]['wholeInfo']['transactions'][0]['action'])
+
     return blocks, len_content
 
 def sendResetPwdEmail(receiver, secretKey):
