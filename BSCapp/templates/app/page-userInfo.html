@@ -96,8 +96,8 @@
 							</div>
 						</li>
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
-						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
@@ -126,15 +126,15 @@
                                         </div>
                                         <div class="profile-stat">
                                             <div class="row">
-                                                <div class="col-md-4 stat-item">
+                                                <div class="col-md-6 stat-item">
                                                     {{upload_data_num}} <span>已上传数据</span>
                                                 </div>
-                                                <div class="col-md-4 stat-item">
-                                                    {{purchase_data_num}} <span>已购买数据</span>
+                                                <div class="col-md-6 stat-item ">
+                                                    {{purchase_data_num}} <span>已使用数据</span>
                                                 </div>
-                                                <div class="col-md-4 stat-item">
-                                                    {{account}} <span>账户余额</span>
-                                                </div>
+{#                                                <div class="col-md-4 stat-item">#}
+{#                                                    {{account}} <span>账户余额</span>#}
+{#                                                </div>#}
                                             </div>
                                         </div>
                                     </div>
@@ -172,18 +172,18 @@
 								<!-- RECHARGE RECORD -->
 								<div class="panel">
 									<div class="panel-heading">
-										<h3 class="panel-title">交易记录</h3>
+										<h3 class="panel-title">操作记录</h3>
 									</div>
 									<div class="panel-body">
 										<table class="table table-striped">
 											<thead>
 												<tr>
-                                                    <th align="center">交易数据</th>
+                                                    <th align="center">数据</th>
 	                                                <th align="center">时间</th>
-													<th align="center">交易金额</th>
-	                                                <th align="center">交易前余额</th>
-													<th align="center">交易后余额</th>
-                                                    <th align="center">交易行为</th>
+													<th align="center">所属专题</th>
+	                                                <th align="center">所属科技资源</th>
+													<th align="center">交易行为(查看/下载)</th>
+
 												</tr>
 											</thead>
 
@@ -195,7 +195,7 @@
 													<td align="">  {{tx_log.credits}}</td>
 	                                                <td align="">  {{tx_log.before_account}}</td>
 													<td align="">  {{tx_log.after_account}}</td>
-                                                    <td align="">  {{tx_log.action}}</td>
+{#                                                    <td align="">  {{tx_log.action}}</td>#}
 												</tr>
 											{% endfor %}
 											</tbody>

@@ -98,8 +98,8 @@
 							</div>
 						</li>
                         <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
-						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
@@ -117,22 +117,22 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">数据市场</h3>
+									<h3 class="panel-title">科技资源</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >出售者</th>
+                                                <th align="center" >数据所有者</th>
                                                 <th align="center" onclick=buySortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_md5')>数据md5 <i class="{{ sort_class.data_md5 }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_tag')>所属专题 <i class="{{ sort_class.data_tag }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_md5')>所属科技资源 <i class="{{ sort_class.data_md5 }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_size')>数据类型 <i class="{{ sort_class.data_size }}"> </i></th>
+{#                                                <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>#}
+{#                                                <th align="center" onclick=buySortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>#}
+{#                                                <th align="center" onclick=buySortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>#}
                                                 <th align="center">数据操作</th>
 											</tr>
 										</thead>
@@ -146,13 +146,13 @@
 												<td align="">  {{data.timestamp}}</td>
 												<td align="">  {{data.tag}}</td>
 												<td align="">  {{data.md5}}</td>
-                                                <td align="">  {{data.size}}</td>
-												<td align=""> {{data.price}}</td>
-                                                <td align="">  {{data.score}}</td>
+{#                                                <td align="">  {{data.size}}</td>#}
+{#												<td align=""> {{data.price}}</td>#}
+{#                                                <td align="">  {{data.score}}</td>#}
 												<td align=""> {{data.comment}}</td>
                                                 <td>
-                                                    <button class="fa fa-shopping-cart" style="font-size: 16px" value="{{data.data_id}}" onclick="buyData(this);">购买</button> <br/>
-                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
+                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="buyData(this);">下载</button> <br/>
+{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
 {#													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button> <br/>#}
 {#                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
 													<div id="{{data.data_id}}"> </div>

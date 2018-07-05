@@ -98,8 +98,8 @@
 							</div>
 						</li>
 						<li><a href="/Upload/" class="active"><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-                        <li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
-						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+                        <li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
@@ -163,72 +163,76 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-                                                    <input name ="data_info" class="form-control" id="data_type" value="" placeholder="(doc, ppt, xls, csv, mp3, zip等)">
-{#													<select class="form-control" id="data_type">#}
-{#														<option value="excel">xls</option>#}
-{#														<option value="csv">csv</option>#}
-{#														<option value="mp3">mp3</option>#}
-{#														<option value="mp4">mp4</option>#}
-{#                                                        <option value="其他">其他</option>#}
-{#													</select>#}
+													<select class="form-control" id="data_type">
+														<option value="专利">专利</option>
+														<option value="期刊">期刊</option>
+                                                        <option value="其他">其他</option>
+													</select>
 												</div>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-md-2">
-												<span> 数据标签 </span>
+												<span> 所属专题 </span>
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-                                                    <input name ="data_info" class="form-control" id="data_tag" value="" placeholder="(交通,医疗,教育,音乐,图片,影片,代码等)">
-{#													<select class="form-control" id="data_tag">#}
-{#														<option value="交通">交通</option>#}
-{#														<option value="医疗">医疗</option>#}
-{#														<option value="教育">教育</option>#}
-{#														<option value="其它">其它</option>#}
-{#													</select>#}
+													<select class="form-control" id="data_tag">
+														<option value="交通">交通</option>
+														<option value="医疗">医疗</option>
+														<option value="教育">教育</option>
+														<option value="其它">其它</option>
+													</select>
 												</div>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-md-2">
-												<span> 数据标价 </span>
+												<span> 所属科技资源 </span>
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<input name ="data_price" class="form-control" id="data_price" value="" placeholder="数据标价">
+{#													<input name ="data_price" class="form-control" id="data_price" value="" placeholder="数据标价">#}
+                                                    <div class="form-group">
+													<select class="form-control" id="data_tag">
+														<option value="交通">交通</option>
+														<option value="医疗">医疗</option>
+														<option value="教育">教育</option>
+														<option value="其它">其它</option>
+													</select>
+												</div>
 												</div>
 											</div>
 										</div>
 
-                                        <div class="row">
-											<div class="col-md-2">
-												<span> 自身收益 </span>
-											</div>
-											<div class="col-md-10">
-												<div class="form-group">
-													<input name ="data_ration0" class="form-control" id="data_ration0" value="" placeholder="自身收益占比 范围(0~100)">
-												</div>
-											</div>
-										</div>
+{#                                        <div class="row">#}
+{#											<div class="col-md-2">#}
+{#												<span> 自身收益 </span>#}
+{#											</div>#}
+{#											<div class="col-md-10">#}
+{#												<div class="form-group">#}
+{#													<input name ="data_ration0" class="form-control" id="data_ration0" value="" placeholder="自身收益占比 范围(0~100)">#}
+{#												</div>#}
+{#											</div>#}
+{#										</div>#}
 
                                     </div>
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">添加其他收益人</h3>
-                                    </div>
-                                    <button type="button" class="btn btn-primary" onclick="deleteNewIncomeUser()" style="alignment: center"> 删除收益人 </button>
-                                    <button type="button" class="btn btn-primary" onclick="addNewIncomeUser()" style="align-self: auto"> 新增收益人 </button>
+{#                                    <div class="panel-heading">#}
+{#                                        <h3 class="panel-title">添加其他收益人</h3>#}
+{#                                    </div>#}
+{#                                    <button type="button" class="btn btn-primary" onclick="deleteNewIncomeUser()" style="alignment: center"> 删除收益人 </button>#}
+{#                                    <button type="button" class="btn btn-primary" onclick="addNewIncomeUser()" style="align-self: auto"> 新增收益人 </button>#}
 
                                     <div class="panel-body">
                                         <div class="row">
-                                            <div class="col-md-10" >
-                                                <div id="income_div">
-                                                    <div class="form-group" id="income_user1">
-                                                        <input name ="data_income_user1" style="background: cornsilk" class="form-control" id="data_income_user1" value="" placeholder="数据收益人1用户名">
-                                                        <input name ="data_ratio1" style="background: cornsilk" class="form-control" id="data_ratio1" value="" placeholder="收益比重1(0~100)">
-                                                    </div>
-                                                </div>
-                                            </div>
+{#                                            <div class="col-md-10" >#}
+{#                                                <div id="income_div">#}
+{#                                                    <div class="form-group" id="income_user1">#}
+{#                                                        <input name ="data_income_user1" style="background: cornsilk" class="form-control" id="data_income_user1" value="" placeholder="数据收益人1用户名">#}
+{#                                                        <input name ="data_ratio1" style="background: cornsilk" class="form-control" id="data_ratio1" value="" placeholder="收益比重1(0~100)">#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
                                         <div class="form-group">
 										　　　	<input type="file" id="file" name="file" /> <br />
 										</div>
