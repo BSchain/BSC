@@ -126,15 +126,9 @@
 												<th align="center" onclick=myDataSortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
-                                                <th align="center" onclick=>收益占比</th>
-                                                <th align="center" onclick=myDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
-                                                <th align="center" onclick=myDataSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
-                                                <th align="center" onclick=myDataSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
+												<th align="center" onclick=myDataSortBase('data_tag')>所属专题 <i class="{{ sort_class.data_tag }}"> </i></th>
+												<th align="center" onclick=myDataSortBase('data_status')>所属科技资源 <i class="{{ sort_class.data_status }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('data_size')>数据类型 <i class="{{ sort_class.data_size }}"> </i></th>
 											</tr>
 										</thead>
 
@@ -157,12 +151,6 @@
                                                     {{ item_info }} <br/>
                                                 {% endfor %}
                                                 </td>
-                                                <td align="">  {{data.data_size}}</td>
-												<td align="">  {{data.purchase}}</td>
-												<td align="">  {{data.download}}</td>
-                                                <td align="">  {{data.score}}</td>
-                                                <td align="">  {{data.comment}}</td>
-												<td align="">  {{data.price}}</td>
 											</tr>
 										{% endfor %}
 										</tbody>

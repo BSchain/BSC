@@ -161,3 +161,10 @@ class Patent(models.Model): # 专利
     patent_keywords = models.CharField(max_length=400)
     patent_province = models.CharField(max_length=20)
 
+class SpecialData(models.Model): #数据统计
+    first_title = models.CharField(max_length=64)
+    second_title = models.CharField(max_length=64)
+    first_number = models.IntegerField(default=0)
+    seconde_number = models.IntegerField(default=0)
+
+# class ScienceData(models.Model):
