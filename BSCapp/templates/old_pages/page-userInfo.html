@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<title>BSC System</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- VENDOR CSS -->
+	<link rel="stylesheet" href="../static/app/assets/vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../static/app/assets/vendor/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../static/app/assets/vendor/linearicons/style.css">
+	<link rel="stylesheet" href="../static/app/assets/vendor/chartist/css/chartist-custom.css">
+	<!-- MAIN CSS -->
+	<link rel="stylesheet" href="../static/app/assets/css/main.css">
+	<!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+	<link rel="stylesheet" href="../static/app/assets/css/demo.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="../static/app/assets/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="../static/app/assets/img/favicon.png">
+</head>
+
+<body>
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand">
+				<a href="/ChainInfo/"><img src="../static/app/assets/img/logo.jpg" alt="Beijing Science&Technology BigData Platform" class="img-responsive logo"></a>
+			</div>
+			<div class="container-fluid">
+				<div class="navbar-btn">
+					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
+				</div>
+				<form class="navbar-form navbar-left">
+					<div class="input-group">
+						<input type="text" value="" class="form-control" placeholder="Search dashboard...">
+						<span class="input-group-btn"><button type="button" class="btn btn-primary">Go</button></span>
+					</div>
+				</form>
+				<div id="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i class="lnr lnr-alarm"></i>
+                                <span class="badge bg-danger">{{ unread_number }}</span>
+							</a>
+							<ul class="dropdown-menu notifications">
+                                {% for notice in unread_notices %}
+                                    <li><a href="#" class="notification-item"><span class="dot bg-warning"></span>{{ notice.info }}</a></li>
+                                {% endfor %}
+
+								<li><a href="/Notify/" class="more">See all notifications</a></li>
+							</ul>
+						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<ul class="dropdown-menu">
+								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
+								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
+                                <li><a href="/ModifyPwd/"><i class="lnr lnr-envelope"></i> <span>Modify Password</span></a></li>
+								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- END NAVBAR -->
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+						<li><a href="/ChainInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li>
+							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+							<div id="subPages" class="collapse in">
+								<ul class="nav">
+									<li><a href="/UserInfo/" class="active">交易记录</a></li>
+                                    <li><a href="/Notify/" class="">通知中心</a></li>
+                                    <li><a href="/MyData/" class="">我的数据</a></li>
+									<li><a href="/Index/" class="">登出</a></li>
+								</ul>
+							</div>
+						</li>
+						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
+                        <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
+{#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
+					</ul>
+				</nav>
+			</div>
+		</div>
+		<!-- END LEFT SIDEBAR -->
+		<!-- MAIN -->
+		<div class="main">
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+					<div class="panel panel-profile">
+						<div class="clearfix">
+							<!-- LEFT COLUMN -->
+							<div class="profile-left">
+                                <div class="panel">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">个人信息</h3>
+                                    </div>
+								<!-- PROFILE HEADER -->
+                                    <div class="profile-header">
+                                        <div class="overlay"></div>
+                                        <div class="profile-main">
+                                            <h3 class="name">当前用户: {{id}}</h3>
+                                        </div>
+                                        <div class="profile-stat">
+                                            <div class="row">
+                                                <div class="col-md-6 stat-item">
+                                                    {{upload_data_num}} <span>已上传数据</span>
+                                                </div>
+                                                <div class="col-md-6 stat-item ">
+                                                    {{purchase_data_num}} <span>已使用数据</span>
+                                                </div>
+{#                                                <div class="col-md-4 stat-item">#}
+{#                                                    {{account}} <span>账户余额</span>#}
+{#                                                </div>#}
+                                            </div>
+                                        </div>
+                                    </div>
+								<!-- END PROFILE HEADER -->
+								<!-- PROFILE DETAIL -->
+                                    <div class="sidebar-scroll">
+
+                                        <div class="profile-detail">
+
+                                            <div class="profile-info" id="profile">
+                                                <a href="#subPages1" data-toggle="collapse" style="alignment: center "> <button class="btn btn-primary"  class="heading">查看详细信息</button> </a>
+                                                <div id="subPages1" class="collapse">
+                                                        <ul class="list-unstyled list-justify">
+                                                            <li>姓名 <span id="nametext">{{name}}</span></li>
+                                                            <li>邮箱 <span id="emailtext">{{email}}</span></li>
+                                                            <li>电话 <span id="phonetext">{{phone}}</span></li>
+                                                            <li>身份证号 <span id="idcardtext">{{idcard}}</span></li>
+                                                            <li>公司 <span id="companytext">{{company}}</span></li>
+                                                            <li>头衔 <span id="titletext">{{title}}</span></li>
+                                                            <li>地址 <span id="addrtext">{{addr}}</span></li>
+                                                        </ul>
+                                                        <button id="edit" class="btn btn-primary btn-lg btn-block" onclick="EditInfo()">编辑</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+								<!-- END PROFILE DETAIL -->
+							</div>
+
+                            </div>
+							<!-- END LEFT COLUMN -->
+							<!-- RIGHT COLUMN -->
+							<div class="profile-right">
+								<!-- RECHARGE RECORD -->
+								<div class="panel">
+									<div class="panel-heading">
+										<h3 class="panel-title">操作记录</h3>
+									</div>
+									<div class="panel-body">
+										<table class="table table-striped">
+											<thead>
+												<tr>
+                                                    <th align="center">数据</th>
+	                                                <th align="center">时间</th>
+													<th align="center">所属专题</th>
+	                                                <th align="center">所属科技资源</th>
+													<th align="center">交易行为(查看/下载)</th>
+
+												</tr>
+											</thead>
+
+											<tbody>
+											{% for tx_log in tx_logs %}
+												<tr>
+                                                    <td align="">  {{tx_log.data_name}}</td>
+	                                                <td align="">  {{tx_log.timestamp}}</td>
+													<td align="">  {{tx_log.credits}}</td>
+	                                                <td align="">  {{tx_log.before_account}}</td>
+													<td align="">  {{tx_log.after_account}}</td>
+{#                                                    <td align="">  {{tx_log.action}}</td>#}
+												</tr>
+											{% endfor %}
+											</tbody>
+										</table>
+
+										{% if tx_logs.has_other_pages %}
+											<ul class="pagination">
+											{% if tx_logs.has_previous %}
+											<li>
+												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>
+											</li>
+											{% else %}
+											<li class="disabled">
+												<span>&laquo;</span>
+											</li>
+											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}
+											<li class="active">
+												<span>{{ i }}
+													<span class="sr-only">(current)</span>
+												</span>
+											</li>
+											{% else %}
+											<li>
+												<a href="?page={{ i }}">{{ i }}</a>
+											</li>
+											{% endif %} {% endfor %} {% if tx_logs.has_next %}
+											<li>
+												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>
+											</li>
+											{% else %}
+											<li class="disabled">
+												<span>&raquo;</span>
+											</li>
+											{% endif %}
+									</ul>
+									{% endif %}
+									</div>
+								</div>
+								<!-- END RECORD -->
+								<!-- TABBED CONTENT -->
+{#								<div class="custom-tabs-line tabs-line-bottom left-aligned">#}
+{#									<ul class="nav" role="tablist">#}
+{#										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>#}
+{#                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>#}
+{#									</ul>#}
+{#								</div>#}
+{#								<div class="tab-content">#}
+{#									<div class="tab-pane fade in active" id="tab-bottom-left1">#}
+{#										<ul class="list-unstyled activity-timeline">#}
+{#											<li>#}
+{#												<i class="fa fa-comment activity-icon"></i>#}
+{#												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>#}
+{#											</li>#}
+{#										</ul>#}
+{#									</div>#}
+{#								</div>#}
+								<!-- END TABBED CONTENT -->
+							</div>
+							<!-- END RIGHT COLUMN -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END MAIN CONTENT -->
+		</div>
+		<!-- END MAIN -->
+		<div class="clearfix"></div>
+        <footer>
+			<div class="container-fluid">
+				<p align="center" class="copyright" >&copy; 2018 <a href="#" target="_blank">BUAA</a>. All Rights Reserved.</p>
+			</div>
+		</footer>
+	</div>
+	<!-- END WRAPPER -->
+	<!-- Javascript -->
+	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
+	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+	<script src="../static/app/assets/vendor/chartist/js/chartist.min.js"></script>
+	<script src="../static/app/assets/scripts/klorofil-common.js"></script>
+	<script src="../static/app/javascript/editInfo.js"></script>
+
+</body>
+
+</html>

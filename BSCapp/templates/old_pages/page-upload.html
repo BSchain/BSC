@@ -54,6 +54,15 @@
 								<li><a href="/Notify/" class="more">See all notifications</a></li>
 							</ul>
 						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{username}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
@@ -63,6 +72,9 @@
 								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
+						<!-- <li>
+							<a class="update-pro" href="#downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
+						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -134,7 +146,14 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-                                                    <input name ="data_info" class="form-control" id="data_source" value="" placeholder="(清华,北大,北航,万方,知网等)">
+                                                    <input name ="data_info" class="form-control" id="data_source" value="" placeholder="(清华,北大,北航,人大等)">
+{#													<select class="form-control" id="data_source">#}
+{##}
+{#														<option value="北京航空航天大学">北京航空航天大学</option>#}
+{#														<option value="北京大学">北京大学</option>#}
+{#														<option value="清华大学">清华大学</option>#}
+{#														<option value="其他大学">其他大学</option>#}
+{#													</select>#}
 												</div>
 											</div>
 										</div>
@@ -159,8 +178,8 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control" id="first_title" >
-														<option value="科技资源地图" >科技资源地图</option>
+													<select class="form-control" id="data_tag">
+														<option value="科技资源地图">科技资源地图</option>
 														<option value="前沿预判跟踪">前沿预判跟踪</option>
 														<option value="重点领域综合分析">重点领域综合分析</option>
 														<option value="企业创新活动">企业创新活动</option>
@@ -178,18 +197,47 @@
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
+{#													<input name ="data_price" class="form-control" id="data_price" value="" placeholder="数据标价">#}
                                                     <div class="form-group">
-													<select class="form-control" id="second_title" onclick="changeSecondTitle()">
-                                                        <option value="科技资源">科技资源</option>
+													<select class="form-control" id="data_tag">
+														<option value="交通">交通</option>
+														<option value="医疗">医疗</option>
+														<option value="教育">教育</option>
+														<option value="其它">其它</option>
 													</select>
 												</div>
 												</div>
 											</div>
 										</div>
 
+{#                                        <div class="row">#}
+{#											<div class="col-md-2">#}
+{#												<span> 自身收益 </span>#}
+{#											</div>#}
+{#											<div class="col-md-10">#}
+{#												<div class="form-group">#}
+{#													<input name ="data_ration0" class="form-control" id="data_ration0" value="" placeholder="自身收益占比 范围(0~100)">#}
+{#												</div>#}
+{#											</div>#}
+{#										</div>#}
+
                                     </div>
+{#                                    <div class="panel-heading">#}
+{#                                        <h3 class="panel-title">添加其他收益人</h3>#}
+{#                                    </div>#}
+{#                                    <button type="button" class="btn btn-primary" onclick="deleteNewIncomeUser()" style="alignment: center"> 删除收益人 </button>#}
+{#                                    <button type="button" class="btn btn-primary" onclick="addNewIncomeUser()" style="align-self: auto"> 新增收益人 </button>#}
+
                                     <div class="panel-body">
                                         <div class="row">
+{#                                            <div class="col-md-10" >#}
+{#                                                <div id="income_div">#}
+{#                                                    <div class="form-group" id="income_user1">#}
+{#                                                        <input name ="data_income_user1" style="background: cornsilk" class="form-control" id="data_income_user1" value="" placeholder="数据收益人1用户名">#}
+{#                                                        <input name ="data_ratio1" style="background: cornsilk" class="form-control" id="data_ratio1" value="" placeholder="收益比重1(0~100)">#}
+{#                                                    </div>#}
+{#                                                </div>#}
+{#                                            </div>#}
                                         <div class="form-group">
 										　　　	<input type="file" id="file" name="file" /> <br />
 										</div>
