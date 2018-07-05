@@ -1000,86 +1000,11 @@ def Upload(request):
         data_id = generate_uuid(data_name)
         user_id = user.user_id
         data_info = request.POST['data_info']
-        data_source = request.POST.getlist('data_source')[0]
-        data_md5 = get_file_md5(data_path)
+        data_type = request.POST['data_type']
+        data_source = request.POST['data_source']
+        first_title = request.POST['first_title']
+        second_title = request.POST['second_title']
         data_size = uploadFile.size / (1024 * 1024)
-        data_price = request.POST['data_price']
-
-        data_type = request.POST.getlist('data_type')[0]
-        data_tag = request.POST.getlist('data_tag')[0]
-
-        data_upload_user_ratio = request.POST['data_ration0']
-        try:
-            data_upload_user_ratio = (float)(data_upload_user_ratio)
-            if data_upload_user_ratio < 0:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '收益占比不能小于0，请重新输入！！'
-                }))
-            elif data_upload_user_ratio > 100:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '收益占比不能大于100，请重新输入！！'
-                }))
-        except:
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '收益占比有误，请重新输入 范围(0~100)！！'
-            }))
-        data_user_number = request.POST['data_user_number']
-        try:
-            data_user_number = (int)(data_user_number)
-        except:
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '人数有误！！'
-            }))
-
-        data_income_user_list = []
-        data_income_user_id_list = []
-        data_ratio_list = []
-        total_ratio = 0.0
-        total_ratio += data_upload_user_ratio
-        for i in range(1, data_user_number+1):
-            data_income_user = request.POST['data_income_user'+str(i)]
-            data_ratio = request.POST['data_ratio'+str(i)]
-
-            if data_income_user == '' or data_ratio == '': # 空值跳过
-                continue
-            try:
-                other_user = User.objects.get(user_name=data_income_user)
-                if other_user.user_id == user.user_id:
-                    return HttpResponse(json.dumps({
-                        'statCode': -1,
-                        'message': '其他收益者不能是当前用户 '+user.user_name+',请重新输入!'
-                    }))
-                data_income_user_id_list.append(other_user.user_id) # add other user id to list
-            except Exception as e:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '用户名: '+data_income_user+' 不存在，请重新输入!'
-                }))
-
-            try:
-                data_ratio = (float)(data_ratio)
-                if data_ratio < 0 :
-                    return HttpResponse(json.dumps({
-                        'statCode': -1,
-                        'message': '收益占比不能小于0，请重新输入！'
-                    }))
-                elif data_ratio > 100 :
-                    return HttpResponse(json.dumps({
-                        'statCode': -1,
-                        'message': '收益占比不能大于100，请重新输入！'
-                    }))
-                total_ratio += data_ratio # add total ratio
-            except:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '收益占比有误，请重新输入 范围(0~100)！'
-                }))
-            data_income_user_list.append(data_income_user)
-            data_ratio_list.append(data_ratio)
 
         if data_name == '' :
             return HttpResponse(json.dumps({
@@ -1091,165 +1016,21 @@ def Upload(request):
                 'statCode': -1,
                 'message': '数据简介未填写，请填写数据简介！'
             }))
-        try:
-            data_price = (float)(data_price)
-        except:
+        if data_source == '':
             return HttpResponse(json.dumps({
                 'statCode': -1,
-                'message': '价格有误,请重新输入价格！'
+                'message': '数据来源未填写，请填写数据来源！'
             }))
-        if data_price < 0 :
+        if second_title == '' or second_title == '科研资源':
             return HttpResponse(json.dumps({
                 'statCode': -1,
-                'message': '价格有误，价格应当大于0！'
+                'message': '所属科技资源未填写，请填写科技资源！'
             }))
-        #find out whether there is same data uploaded before
-        content = {}
-        cursor = connection.cursor()
-        sql = 'select data_id from BSCapp_data where BSCapp_data.data_md5 = %s'
-        try:
-            # get the data where md5 is the same as upload data
-            cursor.execute(sql, [data_md5])
-            content = cursor.fetchall()
-        except Exception:
-            pass # something wrong in cursor, just pass, and use the wallet.account
-        #if there are some data with the same md5, then return error statCode
-        if (len(content)>0):
-            conflict_data_id = content[0][0] # get the data_id
-            confilct_data = Data.objects.get(data_id = conflict_data_id)
 
-            conflict_data_name = confilct_data.data_name # get the data name
-            owner_id = confilct_data.user_id # get the data owner_id
-            sender_id = '系统'
-            owner_notice_id = generate_uuid(sender_id)
-            timestamp = time()
-            owner_notice_type = 4
-            owner_notice_info = '{} 在 {} 上传冲突数据 {}.'.format(username, time_to_str(timestamp), conflict_data_name)
-
-            # send notice to data owner
-            Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=owner_id,
-                   notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-                   timestamp=timestamp, if_delete=False).save()
-
-            conflict_notice_type = 4
-            conflict_notice_info = '{} 在 {} 上传冲突数据 {}, 该数据md5为 {}.'.format(username, time_to_str(timestamp), conflict_data_name, confilct_data.data_md5)
-
-            conflict_notice_id = generate_uuid(sender_id)
-            # send notict to data uploader
-            Notice(notice_id = conflict_notice_id, sender_id = sender_id, receiver_id= user.user_id,
-                   notice_type= conflict_notice_type, notice_info= conflict_notice_info,
-                   if_check=False, timestamp=timestamp, if_delete=False).save()
-
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message':'数据冲突，该数据已在数据库中！'
-            }))
-        Data(data_id=data_id, user_id=user_id, data_name=data_name,  data_info=data_info, timestamp= str(datetime.datetime.utcnow().timestamp()),
-             data_source=data_source, data_type=data_type, data_tag=data_tag, data_status= 0, data_md5= data_md5,
-             data_size=data_size, data_download=0, data_purchase=0, data_price=data_price, data_address = data_address,).save()
-
-        # 0. save each income user info to table DONE!
-                #  send notice to each user DONE!
-        legal_income_user_number = len(data_income_user_list)
-        for index in range(legal_income_user_number+1):
-            if index == legal_income_user_number: # add upload data self to the income table DONE!
-                income_user_name = username
-                income_user_ratio = data_upload_user_ratio
-                notice_receiver_id = user_id # upload data user id
-            else:
-                income_user_name = data_income_user_list[index]
-                income_user_ratio = data_ratio_list[index]
-                notice_receiver_id = data_income_user_id_list[index]
-
-            income_ratio = income_user_ratio/total_ratio
-            Income(data_id = data_id, user_name = income_user_name, ratio = income_ratio).save()
-            sender_id = '系统'
-            owner_notice_id = generate_uuid(sender_id)
-            timestamp = time()
-            owner_notice_type = 4
-            owner_notice_info = '{} 在 {} 上传 {} 成功，' \
-                                '并设置账户 {} 收益占比为 {}/{} = {}'.format(
-                            username,time_to_str(timestamp), data_name,
-                            income_user_name,income_user_ratio,total_ratio, round(income_ratio,3) )
-
-            # send notice to user
-            Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id= notice_receiver_id,
-                   notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-                   timestamp=timestamp, if_delete=False).save()
-
-
-        now_time = str(datetime.datetime.utcnow().timestamp())
-        #  1. generate new coin_id for the user_id Done!!!
-        # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid
-        new_coin_id = generate_uuid(data_id)
-        # TODO: add coin number to config
-        # TODO: related to the file size
-        # 1MB, 10MB, 50MB, 100MB, 200MB, 500MB, 1G
-
-        income_ratio_force = 1.25
-        default_coin_number = 1.0 + float(data_size / income_ratio_force)
-        # print('reward:', default_coin_number)
-        Coin(coin_id= new_coin_id, owner_id= user_id, is_spent=False,
-             timestamp=now_time,coin_credit=default_coin_number).save()
-
-        sender_id = '系统'
-        owner_notice_id = generate_uuid(sender_id)
-        timestamp = time()
-        owner_notice_type = 4
-        owner_notice_info = '{} 在 {} 上传 {} 成功，奖励积分 {}'.format(username, time_to_str(timestamp), data_name, round(default_coin_number,3))
-
-        # send notice to data owner
-        Notice(notice_id=owner_notice_id, sender_id=sender_id, receiver_id=user_id,
-               notice_type=owner_notice_type, notice_info=owner_notice_info, if_check=False,
-               timestamp=timestamp, if_delete=False).save()
-
-
-        # 2. save transaction info to file Done!!!
-        out_coins = []
-        coin = COIN.Coin()
-        coin.new_coin(new_coin_id, default_coin_number, user_id)
-        out_coins.append(coin.to_dict())
-        tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=out_coins, timestamp=now_time, action='upload',
-                           seller=user_id, buyer='', data_uuid=data_id, credit=default_coin_number, reviewer='')
-        tx.save_transaction()
-
-        # 3. update the wallet of this user
-        # because when user signup there must have a wallet for this user
-        # that's why we just need to get the result out and sum those.
-        wallet = Wallet.objects.get(user_id=user_id)
-        # review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
-        wallet.account = wallet.account + default_coin_number
-
-        cursor = connection.cursor()
-        sql = 'select coin_id , coin_credit from BSCapp_coin where BSCapp_coin.is_spent = FALSE and BSCapp.owner_id = %s'
-        try:
-            # check the user has those coin and those unspent coin total = wallet.account
-            cursor.execute(sql, [user_id])
-            content = cursor.fetchall()
-            cursor.close()
-            check_wallet_account = 0.0
-            len_content = len(content)
-            for i in len_content:
-                check_wallet_account += content[i][1] # add all unspent coin together.
-            if check_wallet_account != wallet.account:
-                wallet.account = check_wallet_account
-        except Exception:
-            pass # something wrong in cursor, just pass, and use the wallet.account
-        wallet.save()
-
-        # add Tx_Log
-        after_account = round(Wallet.objects.get(user_id=user_id).account,10)
-        before_account = round(after_account - default_coin_number,10)
-        credits = round(default_coin_number,10)
-        TxLog(TxLog_id=generate_uuid(user_id), user_id=user_id,
-              timestamp=str(datetime.datetime.utcnow().timestamp()), credits=round(credits,3),
-              before_account=round(before_account,3), after_account=round(after_account,3), action=0,
-              data_id=data_id).save()
-
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-        }))
+        ScienceData(data_id=data_id, user_id=user_id, username = username, timestamp= str(datetime.datetime.utcnow().timestamp()),
+             data_name=data_name, data_source=data_source, data_info=data_info, data_type=data_type,
+             first_title = first_title,second_title = second_title,
+             data_address = data_address, data_status= 0, data_size=data_size).save()
 
     notices, unread_notices, unread_number = get_notices(request, user.user_id)
     return render(request, "app/page-upload.html", {"username": username,

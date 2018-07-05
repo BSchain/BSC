@@ -166,15 +166,23 @@ class DataStat(models.Model): #数据统计
     second_title = models.CharField(max_length=64)
     first_number = models.IntegerField(default=0)
     second_number = models.IntegerField(default=0)
+    class Meta:
+        unique_together=("first_title","second_title") # 联合主键
 
 class ScienceData(models.Model):
-    data_id = models.CharField(max_length=64)
+    data_id = models.CharField(max_length=64,primary_key=True)
+    user_id = models.CharField(max_length=64)
+    user_name = models.CharField(max_length=20)
     timestamp = models.CharField(max_length=64)
+
     data_name = models.CharField(max_length=64)
+    data_source = models.CharField(max_length=64)
     data_info = models.CharField(max_length=90)
     data_type = models.CharField(max_length=64)
+
     first_title = models.CharField(max_length=64)
     second_title = models.CharField(max_length=64)
+    # 后台计算
     data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
     data_status = models.IntegerField(default=0)  # status = 0 审核中. =1 审核通过 =2 审核不通过
     data_size = models.FloatField()  # 数据大小
