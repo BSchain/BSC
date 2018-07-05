@@ -135,3 +135,29 @@ class Reset(models.Model):
 class Modify(models.Model):
     user_name = models.CharField(max_length=20, unique=True, primary_key=True)  # 用户登录名
     last_modify_time = models.CharField(max_length=32)  # default = ""
+
+class Conference(models.Model):# 会议
+    article_id = models.CharField(max_length=20, primary_key=True)
+    article_name = models.CharField(max_length=400, default="")
+    article_authors = models.CharField(max_length=400, default="")
+    conference_name = models.CharField(max_length=400, default="")
+    keywords = models.CharField(max_length=400, default="")
+    abstract = models.CharField(max_length=1000, default="")
+
+class Journal(models.Model): # 期刊
+    article_id = models.CharField(max_length=64, primary_key=True)
+    article_name = models.CharField(max_length=400, default="")
+    article_authors = models.CharField(max_length=400, default="")
+    journal_name = models.CharField(max_length=200, default="")
+    keywords = models.CharField(max_length=400, default="")
+    abstract = models.CharField(max_length=1000, default="")
+
+class Patent(models.Model): # 专利
+    patent_id = models.CharField(max_length=20, primary_key=True)
+    patent_openId = models.CharField(max_length=64)
+    patent_name = models.CharField(max_length=100)
+    patent_applicant = models.CharField(max_length=100)
+    patent_authors = models.CharField(max_length=200)
+    patent_keywords = models.CharField(max_length=400)
+    patent_province = models.CharField(max_length=20)
+
