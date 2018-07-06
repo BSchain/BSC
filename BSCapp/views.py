@@ -1050,6 +1050,8 @@ def MyData(request):
 
     user_id = user.user_id
 
+    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'first_title', 'second_title',
+                        'data_type', 'data_status', 'data_size']
     try:
         MyData_sort_name_and_type = request.session['MyData_sort_name_and_type']
         result = MyData_sort_name_and_type.split('&')
@@ -1057,9 +1059,8 @@ def MyData(request):
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
-                new_sort_name != 'data_tag' and new_sort_name != 'data_status' and new_sort_name != 'data_purchase' and
-                new_sort_name!='data_download' and new_sort_name != 'data_price' and new_sort_name!= 'data_score' and
-                new_sort_name!='comment_number' and new_sort_name!='data_size'):
+                new_sort_name != 'first_title' and new_sort_name != 'second_title' and
+                new_sort_name != 'data_type' and new_sort_name!='data_status' and new_sort_name!='data_size'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -1079,17 +1080,17 @@ def MyData(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    myData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_status',
-                        'data_purchase', 'data_download', 'data_price', 'data_score', 'comment_number', 'data_size']
+
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
-    table_name = 'BSCapp_data'
+    table_name = 'BSCapp_sciencedata'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    # print(sort_sql)
 
     datas, len_content = uploadData_sql(request, user_id, sort_sql)
     try:
-        search_base = request.POST["searchBase"]
+        search_field = request.POST["searcBase"]
         search_field = request.POST["searchField"]
         if search_field == '':
             paged_datas = pagingData(request, datas)
