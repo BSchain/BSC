@@ -172,7 +172,7 @@ class DataStat(models.Model): #数据统计
 class ScienceData(models.Model):
     data_id = models.CharField(max_length=64,primary_key=True)
     user_id = models.CharField(max_length=64)
-    user_name = models.CharField(max_length=20)
+    user_name = models.CharField(max_length=20, unique=True)
     timestamp = models.CharField(max_length=64)
 
     data_name = models.CharField(max_length=64)
