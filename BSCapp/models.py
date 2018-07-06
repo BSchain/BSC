@@ -187,9 +187,17 @@ class ScienceData(models.Model):
     data_size = models.FloatField()  # 数据大小
 
 class DownloadLog(models.Model):
-    user_id = models.CharField(max_length=64)
-    data_id = models.CharField(max_length=64)
+    log_id = models.CharField(max_length=64,primary_key=True)
     timestamp = models.CharField(max_length=64)
-    action = models.CharField(max_length=64, default="")
-    class Meta:
-        unique_together=("user_id","timestamp","data_id") # 联合主键
+    user_id = models.CharField(max_length=64)
+    science_data_id = models.CharField(max_length=64)
+    action = models.CharField(max_length=64, default="") # 下载
+
+class CheckLog(models.Model):
+    log_id = models.CharField(max_length=64, primary_key=True)
+    timestamp = models.CharField(max_length=64)
+    user_id = models.CharField(max_length=64)
+    conference_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    journal_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    patent_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    action = models.CharField(max_length=64, default="") # 查看 或 下载

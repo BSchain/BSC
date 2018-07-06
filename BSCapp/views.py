@@ -505,6 +505,12 @@ def BuyableData(request):
                                timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
                                seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
             tx.save_transaction()
+
+            # save download log to database
+            log_id = generate_uuid(now_data_id)
+            DownloadLog(log_id = log_id, timestamp = str(datetime.datetime.utcnow().timestamp()), user_id = user.user_id,
+                        science_data_id = now_data_id, action = '下载').save()
+
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'data_name':now_data.data_name,
