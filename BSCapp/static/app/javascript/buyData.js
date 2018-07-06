@@ -41,8 +41,8 @@ function downloadData(obj) {
               // obj_address = data.address
               // obj_ = data.name
               // file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
-              alert(data.data_address)
-              alert(data.data_name)
+              // alert(data.data_address)
+              // alert(data.data_name)
               file.innerHTML = "<a hidden='hidden' id='download' href='" + data.data_address + "' download='" + data.data_name + "'>下载</a>";
               var download = document.getElementById("download")
               download.click()
