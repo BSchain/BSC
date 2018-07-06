@@ -52,8 +52,8 @@ def buyData_sql(request, buyer_id, sort_sql):
     cursor = connection.cursor()
 
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price, data_address, data_score, comment_number ' \
-          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
+          'first_title, second_title, data_type, data_size ' \
+          'from BSCapp_sciencedata where BSCapp_sciencedata.user_id != %s and BSCapp_sciencedata.data_status = 1 '
     search_sql = ''
 
     try:
@@ -82,29 +82,19 @@ def buyData_sql(request, buyer_id, sort_sql):
         data = dict()
         data['data_id'] = content[i][0]
         seller = User.objects.get(user_id=content[i][1]).user_name
-        data['seller'] = seller
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
+        data['user_id'] = seller
+        data['data_name'] = content[i][2]
+        data['data_info'] = content[i][3]
         data['timestamp'] = time_to_str(content[i][4])
-        data['tag'] = content[i][5]
-        data['md5'] = content[i][7]
-        data['size'] = content[i][8]
-        data_size = data['size']
+        data['first_title'] = content[i][5]
+        data['second_title'] = content[i][6]
+        data['data_type'] = content[i][7]
+        data_size = content[i][8]
 
         if data_size < 1:
-            data['size'] = str(round(data_size * 1024.0, 3)) + ' KB'
+            data['data_size'] = str(round(data_size * 1024.0, 3)) + ' KB'
         else:
-            data['size'] = str(round(data_size, 3)) + ' MB'
-        data['price'] = content[i][9]
-        data['address'] = content[i][10]
-        score = content[i][11]
-        comment_number = content[i][12]
-        if comment_number == 0 or score == 0.0:
-            data['score'] = '0 (暂无评级)'
-            data['comment'] = '0 '
-        else:
-            data['score'] = score
-            data['comment'] = comment_number
+            data['data_size'] = str(round(data_size, 3)) + ' MB'
         datas.append(data)
     return datas, len_content
 

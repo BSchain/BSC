@@ -481,18 +481,16 @@ def BuyableData(request):
     buyer_id = user.user_id  # get buyer
 
     try:
-
         now_data_id = request.POST['data_id']
-
         now_op = request.POST['op']
         try:
-            seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
+            seller_id = ScienceData.objects.get(data_id=now_data_id).user_id  # get seller
         except Exception as e:
             # print(e)
             pass
         if now_op == 'download':
             try:
-                now_data = Data.objects.get(data_id=now_data_id)
+                now_data = ScienceData.objects.get(data_id=now_data_id)
                 Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
                 try:
                     now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
@@ -570,153 +568,6 @@ def BuyableData(request):
             }))
         except:
             pass # 数据还未购买,则可以进行购买操作
-
-        # whether this user can buy data
-        user_balance = Wallet.objects.get(user_id=buyer_id).account
-        now_data_price = Data.objects.get(data_id=now_data_id).data_price
-        if user_balance < now_data_price:
-            return HttpResponse(json.dumps({
-                'statCode': -2,
-                'message': '余额不足!'
-            }))
-
-        # get user unspent coins
-        try:
-            cursor = connection.cursor()
-            sql = 'select coin_id, coin_credit from BSCapp_coin ' \
-              'where BSCapp_coin.owner_id = %s and BSCapp_coin.is_spent = False'
-            cursor.execute(sql,[buyer_id])
-            content = cursor.fetchall()
-
-            # get user in_coins
-            in_coins = []
-            len_content = len(content); coin_numbers = 0; coin_credicts = 0
-            for i in range(len_content):
-                if coin_credicts >= now_data_price:
-                    break
-                coin_numbers+=1
-                buyer_coin = COIN.Coin()
-                buyer_coin.new_coin(coin_uuid=content[i][0],number_coin=content[i][1],owner=buyer_id)
-                coin_credicts += content[i][1]
-                in_coins.append(buyer_coin.to_dict())
-
-            # generate out_coins
-            out_coins = []
-            income_user_out_coins = []
-            left_credit = coin_credicts - now_data_price
-            if left_credit > 0:
-                buyer_out_coin = COIN.Coin()
-                buyer_out_coin.new_coin(coin_uuid=generate_uuid(buyer_id),number_coin=left_credit, owner=buyer_id)
-                out_coins.append(buyer_out_coin.to_dict())
-
-            # find the total income user
-            legal_income_user_list = []
-            legal_income_user_id_list = []
-            legal_income_user_ratio_list = []
-
-            try:
-                cursor = connection.cursor()
-                sql = 'select user_name, ratio from BSCapp_income ' \
-                      'where BSCapp_income.data_id = %s'
-                cursor.execute(sql, [now_data_id])
-                income_content = cursor.fetchall()
-                len_income_content = len(income_content)
-
-                # change seller_out_coin !!! add income user
-
-                for i in range(len_income_content):
-                    legal_income_user_list.append(income_content[i][0]) # get income user name
-                    income_user_ratio = income_content[i][1]
-                    legal_income_user_ratio_list.append(income_user_ratio) # get income user ratio
-
-                    income_user_id = User.objects.get(user_name=income_content[i][0]).user_id
-                    legal_income_user_id_list.append(income_user_id) # get income user id
-
-                    seller_out_coin = COIN.Coin()
-                    seller_out_coin.new_coin(coin_uuid=generate_uuid(income_user_id), number_coin=now_data_price*income_user_ratio,
-                                             owner=income_user_id)
-                    out_coins.append(seller_out_coin.to_dict()) # add income user coin to total out coins
-                    income_user_out_coins.append(seller_out_coin.to_dict()) # only keep the coin for income user
-
-            except Exception as e:
-                # print(e)
-                pass
-
-            # generate the transaction files
-
-            # insert one purchase log into table
-            Purchase(user_id=buyer_id,data_id=now_data_id).save()
-
-            # generate new transactions for action: buy
-            tx = TX.Transaction()
-            tx.new_transaction(in_coins=in_coins,out_coins=out_coins, timestamp=str(datetime.datetime.utcnow().timestamp()), action='buy',
-                               seller=seller_id, buyer=buyer_id, data_uuid= now_data_id, credit= now_data_price, reviewer='')
-            tx.save_transaction()
-
-            # update the coin table is_spent = True
-            cursor = connection.cursor()
-            for i in range(coin_numbers):
-                item_coin_id = in_coins[i]['coin_uuid']
-                sql = 'update BSCapp_coin set is_spent = True where coin_id = %s'
-                cursor.execute(sql,[item_coin_id])
-
-            # insert new coin for buyer and seller
-            if left_credit > 0:
-                Coin(coin_id = buyer_out_coin.to_dict()['coin_uuid'], owner_id=buyer_id,
-                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=left_credit).save()
-
-            # update the coin for income user
-
-            len_income_user_coins = len(income_user_out_coins)
-
-            for i in range(len_income_user_coins):
-                Coin(coin_id=income_user_out_coins[i]['coin_uuid'], owner_id=income_user_out_coins[i]['owner'],
-                     is_spent=False, timestamp=str(datetime.datetime.utcnow().timestamp()), coin_credit=income_user_out_coins[i]['number_coin']).save()
-
-            # update the wallet of buyer and seller
-            sql = 'update BSCapp_wallet set  BSCapp_wallet.account = BSCapp_wallet.account + %s where user_id = %s'
-
-            cursor.execute(sql, [0 - now_data_price, buyer_id])
-            wallet_user_id = buyer_id
-            after_account = round(Wallet.objects.get(user_id= wallet_user_id).account,10)
-            before_account = round(after_account + now_data_price,10)
-            credits = round(now_data_price,10)
-            TxLog(TxLog_id=generate_uuid(wallet_user_id), user_id=wallet_user_id,
-                  timestamp=str(datetime.datetime.utcnow().timestamp()), credits= round(credits,3),
-                  before_account=round(before_account,3), after_account=round(after_account,3), action = 1, data_id=now_data_id).save()
-
-            # update the wallet for income user
-
-            for i in range(len_income_user_coins):
-                cursor.execute(sql, [income_user_out_coins[i]['number_coin'], income_user_out_coins[i]['owner']])
-
-                # update the income table for user who have the right to earn coin
-                wallet_user_id = income_user_out_coins[i]['owner']
-                after_account = round(Wallet.objects.get(user_id=wallet_user_id).account, 10)
-                before_account = round(after_account - income_user_out_coins[i]['number_coin'], 10)
-                credits = round(income_user_out_coins[i]['number_coin'],10)
-                TxLog(TxLog_id=generate_uuid(wallet_user_id), user_id=wallet_user_id,
-                      timestamp=str(datetime.datetime.utcnow().timestamp()), credits=round(credits,3),
-                      before_account=round(before_account,3), after_account=round(after_account,3), action=2, data_id=now_data_id).save()
-
-            sql = 'update BSCapp_data set BSCapp_data.data_purchase = BSCapp_data.data_purchase + 1 where data_id = %s'
-            cursor.execute(sql, [now_data_id])
-            cursor.close()
-
-            # generate a new transaction for mysql
-            Transaction(transaction_id=generate_uuid(buyer_id+seller_id), buyer_id=buyer_id, seller_id= seller_id,
-                        data_id=now_data_id, timestamp=str(datetime.datetime.utcnow().timestamp()), price=now_data_price, last_download_time="").save()
-
-            return HttpResponse(json.dumps({
-                'statCode': 0,
-                'message': '购买成功!'
-            }))
-        except Exception as e:
-            # print(str(e))
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '系统错误!'
-            }))
     except Exception as e:
         # print(e)
         pass
@@ -727,10 +578,9 @@ def BuyableData(request):
         default_sort_name = result[0]
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
-        if(new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
-                new_sort_name != 'timestamp' and new_sort_name != 'data_tag' and new_sort_name != 'data_md5' and
-                new_sort_name != 'data_size' and new_sort_name!='data_price' and new_sort_name!= 'data_score' and
-                new_sort_name!='comment_number'):
+        if(new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
+                new_sort_name != 'first_title' and new_sort_name != 'second_title' and
+                new_sort_name != 'data_type' and new_sort_name!='data_size'):
 
             new_sort_name = 'timestamp'
 
@@ -753,7 +603,7 @@ def BuyableData(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    table_name = 'BSCapp_data'
+    table_name = 'BSCapp_sciencedata'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 
@@ -770,7 +620,7 @@ def BuyableData(request):
 
     notices, unread_notices, unread_number = get_notices(request, buyer_id)
 
-    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'data_tag', 'data_md5', 'data_size', 'data_price', 'data_score', 'comment_number']
+    buyData_sort_list = ['data_name', 'data_info', 'timestamp', 'first_title', 'second_title', 'data_type', 'data_size']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, buyData_sort_list)
 
     return render(request, "app/page-buyableData.html", {'datas': paged_datas,

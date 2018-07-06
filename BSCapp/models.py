@@ -185,3 +185,11 @@ class ScienceData(models.Model):
     data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
     data_status = models.IntegerField(default=0)  # status = 0 审核中. =1 审核通过 =2 审核不通过
     data_size = models.FloatField()  # 数据大小
+
+class DownloadLog(models.Model):
+    user_id = models.CharField(max_length=64)
+    data_id = models.CharField(max_length=64)
+    timestamp = models.CharField(max_length=64)
+    action = models.CharField(max_length=64, default="")
+    class Meta:
+        unique_together=("user_id","timestamp","data_id") # 联合主键
