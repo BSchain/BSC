@@ -1027,11 +1027,14 @@ def Upload(request):
                 'message': '所属科技资源未填写，请填写科技资源！'
             }))
 
-        ScienceData(data_id=data_id, user_id=user_id, username = username, timestamp= str(datetime.datetime.utcnow().timestamp()),
+        ScienceData(data_id=data_id, user_id=user_id, timestamp= str(datetime.datetime.utcnow().timestamp()),
              data_name=data_name, data_source=data_source, data_info=data_info, data_type=data_type,
              first_title = first_title,second_title = second_title,
              data_address = data_address, data_status= 0, data_size=data_size).save()
 
+        return HttpResponse(json.dumps({
+            'statCode': 0,
+        }))
     notices, unread_notices, unread_number = get_notices(request, user.user_id)
     return render(request, "app/page-upload.html", {"username": username,
                                                     'unread_number':unread_number,
