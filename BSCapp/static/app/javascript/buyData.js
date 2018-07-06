@@ -43,9 +43,11 @@ function downloadData(obj) {
               // file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
               // alert(data.data_address)
               // alert(data.data_name)
-              file.innerHTML = "<a hidden='hidden' id='download' href='" + data.data_address + "' download='" + data.data_name + "'>下载</a>";
+              file.innerHTML = "<a hidden='hidden' id='download' href='" + data.data_address + " ' download='" + data.data_name + "'>下载</a>";
               var download = document.getElementById("download")
               download.click()
+              // alert('下载成功')
+              location.replace(location)
           }
       })
     return;

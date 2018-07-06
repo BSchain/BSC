@@ -486,19 +486,15 @@ def BuyableData(request):
         now_data = ScienceData.objects.get(data_id=now_data_id)
         seller_id = now_data.user_id  # get seller
         if now_op == 'download':
-            print(now_op)
             try:
                 now_data_file_address = now_data.data_address
-                print(now_data_file_address)
                 file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
-                print(file_path)
                 if(os.path.exists(file_path) == False):
                     return HttpResponse(json.dumps({
                         'statCode': -1,
                         'message': '当前数据已失效!'
                     }))
             except Exception as e:
-                # print(e)
                 return HttpResponse(json.dumps({
                     'statCode': -1,
                     'message': '当前数据已失效!'
@@ -512,7 +508,8 @@ def BuyableData(request):
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'data_name':now_data.data_name,
-                'data_address':now_data.data_address,
+                # 'data_address':file_path,
+                'data_address': now_data.data_address,
                 'message': '下载数据成功!'
             }))
     except Exception as e:
