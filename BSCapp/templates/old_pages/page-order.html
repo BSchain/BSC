@@ -90,16 +90,16 @@
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">操作记录</a></li>
+									<li><a href="/UserInfo/" class="">交易记录</a></li>
                                     <li><a href="/Notify/" class="">通知中心</a></li>
-                                    <li><a href="/MyData/" >我的数据</a></li>
+                                    <li><a href="/MyData/" class="">我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-                        <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
-{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
+						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class="active"><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
@@ -117,73 +117,86 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">科技资源</h3>
+									<h3 class="panel-title">历史订单</h3>
 								</div>
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >数据所有者</th>
-                                                <th align="center" onclick=buySortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
-{#                                                <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>#}
-{#                                                <th align="center" onclick=buySortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>#}
-{#                                                <th align="center" onclick=buySortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>#}
-                                                <th align="center">数据操作</th>
+                                                <th align="center" >出售者</th>
+                                                <th align="center" onclick=orderSortBase('data_name')>数据名称 <i class="{{ sort_class.data_name }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('timestamp')>购买时间 <i class="{{ sort_class.timestamp }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('data_source')>数据来源 <i class="{{ sort_class.data_source }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('price')>购买价格 <i class="{{ sort_class.price }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
+                                                <th align="center" onclick=orderSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
+                                                <th align="center">我的评价</th>
+                                                <th align="center">下载链接</th>
 											</tr>
 										</thead>
 
 										<tbody>
-										{% for data in datas %}
+										{% for order in orders %}
 											<tr>
-                                                <td align="">  {{data.user_id}}</td>
-												<td align="">  {{data.data_name}}</td>
-												<td align="">  {{data.data_info}}</td>
-												<td align="">  {{data.timestamp}}</td>
-												<td align="">  {{data.first_title}}</td>
-												<td align="">  {{data.second_title}}</td>
-												<td align=""> {{data.data_type}}</td>
-                                                <td align=""> {{data.data_size}}</td>
-                                                <td>
-{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button> <br/>#}
-{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
-{#													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button> <br/>#}
-                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
-													<div id="{{data.data_id}}"> </div>
+                                                <td align="">  {{order.seller}}</td>
+												<td align="">  {{order.name}}</td>
+                                                <td align="">  {{order.info}}</td>
+												<td align="">  {{order.timestamp}}</td>
+                                                <td align="">  {{order.source}}</td>
+                                                <td align="">  {{order.type}}</td>
+												<td align="">  {{order.price}}</td>
+                                                <td align="">  {{order.avg_score}}</td>
+												<td align="">  {{order.comment_number}}</td>
+                                                <td align="">
+                                                    {% if order.self_score == 0 or order.self_comment == '' %}
+                                                        <div >
+                                                            <select class="form-control" id="data_rating">
+                                                                <option value="5">5星级 优秀推荐资源</option>
+                                                                <option value="4">4星级 资源质量高</option>
+                                                                <option value="3">3星级 数据较好</option>
+                                                                <option value="2">2星级 数据质量差</option>
+                                                                <option value="1">1星级 数据与描述不符</option>
+                                                            </select>
+                                                            <button type="button" class="btn btn-primary" id = "rating_data_id" value="{{order.dataid}}" onclick="commentData(this)" style="float:right"> 确认评价 </button>
+                                                        </div>
+                                                    {% else %}
+                                                        {{ order.self_score }}星级
+                                                    {% endif %}
+                                                </td>
+												<td align="">
+{#                                                    <button class="fa fa-download" style="font-size: 16px" name="{{order.address}}" id="{{order.name}}" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>#}
+                                                    <button class="fa fa-download" style="font-size: 16px" value="{{order.dataid}}" onclick="orderDownloadData(this);">下载</button>
+                                                    <div id="{{order.dataid}}"> </div>
 												</td>
+
+
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/BuyableData/">
+										<form method="POST" action="/Order/">
 											<select id="searchBase" name="searchBase">
-                                                <option value="data_name">数据名</option>
-                                                <option value="data_info">数据简介</option>
-                                                <option value="first_title">所属专题</option>
-                                                <option value="second_title">所属科技资源</option>
+												<option value="data_name">数据名</option>
+												<option value="data_info">数据简介</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
 										</form>
 									</table>
-									
-									{% if datas.has_other_pages %}
+									{% if orders.has_other_pages %}
 									<ul class="pagination">
-										{% if datas.has_previous %}
-      										<li><a href="?page={{ datas.previous_page_number }}">&laquo;</a></li>
+										{% if orders.has_previous %}
+      										<li><a href="?page={{ orders.previous_page_number }}">&laquo;</a></li>
 									 	{% else %}
 											<li class="disabled">
 											<span>&laquo;</span>
 											</li>
 										{% endif %}
-{#										{% for i in datas.paginator.page_range %}#}
-                                        {% for i in datas.paginator.page_range_ext %}
-											{% if datas.number == i %}
+{#										{% for i in orders.paginator.page_range %}#}
+                                        {% for i in orders.paginator.page_range_ext %}
+											{% if orders.number == i %}
 											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
@@ -195,8 +208,8 @@
 											</li>
 											{% endif %}
 										{% endfor %}
-										{% if datas.has_next %}
-											<li><a href="?page={{ datas.next_page_number }}">&raquo;</a></li>
+										{% if orders.has_next %}
+											<li><a href="?page={{ orders.next_page_number }}">&raquo;</a></li>
 									 	{% else %}
 											<li class="disabled"><span>&raquo;</span></li>
 										{% endif %}
@@ -221,10 +234,6 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
-{#    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>#}
-{#    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>#}
-    <link rel="stylesheet" type="text/css" href="../static/app/assets/scripts/datatables.min.css"/>
-    <script type="text/javascript" src="../static/app/assets/scripts/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
@@ -235,9 +244,9 @@
     <script src="../static/app/assets/scripts/jquery.min.js"></script>
 	<script src="../static/app/assets/scripts/jquery.cookie.js"></script>
 	<script src="../static/app/assets/scripts/md5.js"></script>
-    <script src="../static/app/javascript/buyData.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
-
+    <script src="../static/app/javascript/downloadData.js"></script>
+    <script src="../static/app/javascript/commentData.js"></script>
 </body>
 
 </html>

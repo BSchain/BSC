@@ -27,7 +27,7 @@
 		<!-- NAVBAR -->
 		<nav class="navbar navbar-default navbar-fixed-top">
 			<div class="brand">
-				<a href="/ChainInfo/"><img src="../static/app/assets/img/logo.jpg" alt="Beijing Science&Technology BigData Platform" class="img-responsive logo"></a>
+				<a href="/AdminChainInfo/"><img src="../static/app/assets/img/logo.jpg" alt="Beijing Science&Technology BigData Platform" class="img-responsive logo"></a>
 			</div>
 			<div class="container-fluid">
 				<div class="navbar-btn">
@@ -41,19 +41,6 @@
 				</form>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
-								<i class="lnr lnr-alarm"></i>
-                                <span class="badge bg-danger">{{ unread_number }}</span>
-							</a>
-							<ul class="dropdown-menu notifications">
-                                {% for notice in unread_notices %}
-                                    <li><a href="#" class="notification-item"><span class="dot bg-warning"></span>{{ notice.info }}</a></li>
-                                {% endfor %}
-
-								<li><a href="/Notify/" class="more">See all notifications</a></li>
-							</ul>
-						</li>
 {#						<li class="dropdown">#}
 {#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
 {#							<ul class="dropdown-menu">#}
@@ -64,11 +51,8 @@
 {#							</ul>#}
 {#						</li>#}
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
-								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
-								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
-                                <li><a href="/ModifyPwd/"><i class="lnr lnr-envelope"></i> <span>Modify Password</span></a></li>
 								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
@@ -85,23 +69,16 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="/ChainInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
+						<li><a href="/AdminChainInfo/" class=""><i class="lnr lnr-home"></i> <span>主页</span></a></li>
 						<li>
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">操作记录</a></li>
-                                    <li><a href="/Notify/" class="">通知中心</a></li>
-                                    <li><a href="/MyData/" >我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-                        <li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/BuyableData/" class="active"><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
-{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
-                        <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
-{#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
+						<li><a href="/AdminDataInfo/" class="active"><i class="lnr lnr-dice"></i> <span>数据审核</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -117,61 +94,63 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">科技资源</h3>
+									<h3 class="panel-title">用户上传</h3>
 								</div>
+                                <button type="button" class="btn btn-primary" onclick="reviewDataAllPass()" style="float:left"> 一键全部通过 </button> <br>
+
 								<div class="panel-body">
 									<table class="table table-striped">
 										<thead>
 											<tr>
-                                                <th align="center" >数据所有者</th>
-                                                <th align="center" onclick=buySortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
-{#                                                <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>#}
-{#                                                <th align="center" onclick=buySortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>#}
-{#                                                <th align="center" onclick=buySortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>#}
-                                                <th align="center">数据操作</th>
+                                                <th align="center" >出售者</th>
+												<th align="center" onclick=adminDataSortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
+												<th align="center" onclick=adminDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_source')>数据来源 <i class="{{ sort_class.data_source }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_score')>数据星级 <i class="{{ sort_class.data_score }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
+												<th align="center" onclick=adminDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
+                                                <th align="center" >审核操作</th>
 											</tr>
 										</thead>
 
 										<tbody>
+                                        <!-- data.status = 0 待审核， =1 审核通过，=2 审核不通过 -->
 										{% for data in datas %}
 											<tr>
-                                                <td align="">  {{data.user_id}}</td>
-												<td align="">  {{data.data_name}}</td>
-												<td align="">  {{data.data_info}}</td>
+                                                <td align="">  {{data.seller}}</td>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
 												<td align="">  {{data.timestamp}}</td>
-												<td align="">  {{data.first_title}}</td>
-												<td align="">  {{data.second_title}}</td>
-												<td align=""> {{data.data_type}}</td>
-                                                <td align=""> {{data.data_size}}</td>
-                                                <td>
-{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button> <br/>#}
-{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
-{#													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button> <br/>#}
-                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
-													<div id="{{data.data_id}}"> </div>
-												</td>
+                                                <td align="">  {{data.source}}</td>
+                                                <td align="">  {{data.type}}</td>
+                                                <td align="">  {{data.data_size}}</td>
+                                                <td align="">  {{data.purchase}}</td>
+                                                <td align="">  {{data.download}}</td>
+                                                <td align="">  {{data.score}}</td>
+                                                <td align="">  {{data.comment}}</td>
+                                                <td align="">  {{data.price}}</td>
+                                                <td align="">  {{data.status}}</td>
+												<td><button class="label label-success" id="{{data.dataid}}" onclick="reviewAcknowledge(this);">审核通过</button>
+													<button class="label label-warning" id="{{data.dataid}}" onclick="reviewReject(this);">审核不通过</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/BuyableData/">
+										<form method="POST" action="/AdminDataInfo/">
 											<select id="searchBase" name="searchBase">
-                                                <option value="data_name">数据名</option>
-                                                <option value="data_info">数据简介</option>
-                                                <option value="first_title">所属专题</option>
-                                                <option value="second_title">所属科技资源</option>
+												<option value="data_name">数据名</option>
+												<option value="data_info">数据简介</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>
 										</form>
 									</table>
-									
 									{% if datas.has_other_pages %}
 									<ul class="pagination">
 										{% if datas.has_previous %}
@@ -221,10 +200,6 @@
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
-{#    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css"/>#}
-{#    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>#}
-    <link rel="stylesheet" type="text/css" href="../static/app/assets/scripts/datatables.min.css"/>
-    <script type="text/javascript" src="../static/app/assets/scripts/datatables.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery/jquery.min.js"></script>
 	<script src="../static/app/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
 	<script src="../static/app/assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js"></script>
@@ -235,9 +210,8 @@
     <script src="../static/app/assets/scripts/jquery.min.js"></script>
 	<script src="../static/app/assets/scripts/jquery.cookie.js"></script>
 	<script src="../static/app/assets/scripts/md5.js"></script>
-    <script src="../static/app/javascript/buyData.js"></script>
+	<script src="../static/app/javascript/review.js"></script>
     <script src="../static/app/javascript/sort.js"></script>
-
 </body>
 
 </html>

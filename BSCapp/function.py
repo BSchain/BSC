@@ -52,8 +52,8 @@ def buyData_sql(request, buyer_id, sort_sql):
     cursor = connection.cursor()
 
     sql = 'select data_id, user_id, data_name, data_info, timestamp, ' \
-          'data_tag, data_status, data_md5, data_size, data_price, data_address, data_score, comment_number ' \
-          'from BSCapp_data where BSCapp_data.user_id != %s and BSCapp_data.data_status = 1 '
+          'first_title, second_title, data_type, data_size ' \
+          'from BSCapp_sciencedata where BSCapp_sciencedata.user_id != %s and BSCapp_sciencedata.data_status = 1 '
     search_sql = ''
 
     try:
@@ -82,29 +82,19 @@ def buyData_sql(request, buyer_id, sort_sql):
         data = dict()
         data['data_id'] = content[i][0]
         seller = User.objects.get(user_id=content[i][1]).user_name
-        data['seller'] = seller
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
+        data['user_id'] = seller
+        data['data_name'] = content[i][2]
+        data['data_info'] = content[i][3]
         data['timestamp'] = time_to_str(content[i][4])
-        data['tag'] = content[i][5]
-        data['md5'] = content[i][7]
-        data['size'] = content[i][8]
-        data_size = data['size']
+        data['first_title'] = content[i][5]
+        data['second_title'] = content[i][6]
+        data['data_type'] = content[i][7]
+        data_size = content[i][8]
 
         if data_size < 1:
-            data['size'] = str(round(data_size * 1024.0, 3)) + ' KB'
+            data['data_size'] = str(round(data_size * 1024.0, 3)) + ' KB'
         else:
-            data['size'] = str(round(data_size, 3)) + ' MB'
-        data['price'] = content[i][9]
-        data['address'] = content[i][10]
-        score = content[i][11]
-        comment_number = content[i][12]
-        if comment_number == 0 or score == 0.0:
-            data['score'] = '0 (暂无评级)'
-            data['comment'] = '0 '
-        else:
-            data['score'] = score
-            data['comment'] = comment_number
+            data['data_size'] = str(round(data_size, 3)) + ' MB'
         datas.append(data)
     return datas, len_content
 
@@ -171,9 +161,9 @@ def orderData_sql(request, user_id, sort_sql):
 def uploadData_sql(request, user_id, sort_sql):
     context = {}
     cursor = connection.cursor()
-    sql = 'select data_name, data_info, timestamp, data_tag, data_download, ' \
-          'data_status, data_purchase, data_price,data_score, comment_number,data_id, data_size ' \
-          'from BSCapp_data where BSCapp_data.user_id = %s '
+    sql = 'select data_name, data_info, timestamp, first_title, second_title, ' \
+          'data_type, data_status, data_size ' \
+          'from BSCapp_sciencedata where BSCapp_sciencedata.user_id = %s '
     search_sql = ''
     try:
         search_base = request.POST["searchBase"]
@@ -182,6 +172,7 @@ def uploadData_sql(request, user_id, sort_sql):
     except:
         pass
     sql = sql + search_sql + sort_sql
+    # print(sql)
     try:
         if search_sql:
             cursor.execute(sql, [user_id, "%" + search_field + "%"])
@@ -193,58 +184,31 @@ def uploadData_sql(request, user_id, sort_sql):
         # print(e)
         cursor.close()
         return context
-
     datas = []
     len_content = len(content)
     for i in range(len_content):
         data = dict()
-        data['name'] = content[i][0]
-        data['info'] = content[i][1]
+        data['data_name'] = content[i][0]
+        data['data_info'] = content[i][1]
         data['timestamp'] = time_to_str(content[i][2])
-        data['tag'] = content[i][3]
-        data['download'] = content[i][4]
+        data['first_title'] = content[i][3]
+        data['second_title'] = content[i][4]
+        data['data_type'] = content[i][5]
         # status = 0 审核中
         # status = 1 审核通过
         # status = 2 审核不通过
-        # data['status'] = content[i][5]
-        if content[i][5] == 0:
-            data['status'] = '审核中'
-        elif content[i][5] == 1:
-            data['status'] = '审核通过'
+        if content[i][6] == 0:
+            data['data_status'] = '审核中'
+        elif content[i][6] == 1:
+            data['data_status'] = '审核通过'
         else:
-            data['status'] = '审核不通过'
-        data['purchase'] = content[i][6]
-        data['price'] = content[i][7]
-        score = content[i][8]
-        comment_number = content[i][9]
-        if comment_number == 0 or score == 0.0:
-            data['score'] = '0 (暂无评级)'
-            data['comment'] = '0 '
-        else:
-            data['score'] = score
-            data['comment'] = comment_number
-        item_data_id = content[i][10]
-
-        data['data_size'] = content[i][11]
+            data['data_status'] = '审核不通过'
+        data['data_size'] = content[i][7]
         data_size = data['data_size']
-
         if data_size < 1 :
             data['data_size'] = str(round(data_size * 1024.0,3)) + ' KB'
         else:
             data['data_size'] = str(round(data_size, 3)) + ' MB'
-        item_cursor = connection.cursor()
-        sql = 'select BSCapp_income.user_name, BSCapp_income.ratio from BSCapp_income where BSCapp_income.data_id = %s '
-        item_cursor.execute(sql, [item_data_id])
-        income_user_result = item_cursor.fetchall()
-        len_result = len(income_user_result)
-        income_info_list = []
-        for i in range(len_result):
-            user_name = income_user_result[i][0]
-            user_ratio = income_user_result[i][1]
-            income_info_list.append('用户:'+user_name +' 收益比:'+str(round(user_ratio,3)))
-
-        data['income_info'] = income_info_list
-        item_cursor.close()
 
         datas.append(data)
     return datas, len_content
@@ -259,10 +223,11 @@ def adminData_sql(request, sort_sql):
     except Exception as e:
         # print(e)
         pass
-    sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
-           data_source, data_type, data_status, data_price, ' \
-          'data_download, data_purchase, data_score, comment_number, data_size from BSCapp_data '
+    sql = 'select data_id, user_id, timestamp, data_name, data_source,   \
+           data_info, data_type, first_title, second_title, data_status, data_size ' \
+          ' from BSCapp_sciencedata '
     sql = sql + search_sql + sort_sql
+    # print(sql)
     try:
         if search_sql:
             cursor.execute(sql, ["%"+search_field+"%"])
@@ -271,50 +236,47 @@ def adminData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
+        # print(e)
         cursor.close()
         return {}
     datas = []
     len_content = len(content)
+    # print(len_content)
     for i in range(len_content):
         data = dict()
-        data['dataid'] = content[i][0]
+        data['data_id'] = content[i][0]
         seller = User.objects.get(user_id=content[i][1])
-        data['seller'] = seller.user_name
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['source'] = content[i][5]
-        data['type'] = content[i][6]
-        if content[i][7] == 0:
-            data['status'] = '审核中'
-        elif content[i][7] == 1:
-            data['status'] = '审核通过'
+        data['user_id'] = seller.user_name
+        data['timestamp'] = time_to_str(content[i][2])
+        data['data_name'] = content[i][3]
+        data['data_source'] = content[i][4]
+        data['data_info'] = content[i][5]
+        data['data_type'] = content[i][6]
+        data['first_title'] = content[i][7]
+        data['second_title'] = content[i][8]
+
+        if content[i][9] == 0:
+            data['data_status'] = '审核中'
+        elif content[i][9] == 1:
+            data['data_status'] = '审核通过'
         else:
-            data['status'] = '审核不通过'
-        data['price'] = content[i][8]
-        data['download'] = content[i][9]
-        data['purchase'] = content[i][10]
-        score = content[i][11]
-        comment_number = content[i][12]
-        data['data_size'] = round((float)(content[i][13]),5)
+            data['data_status'] = '审核不通过'
+
+        data['data_size'] = round((float)(content[i][10]),5)
         data_size = data['data_size']
         if data_size < 1 :
             data['data_size'] = str(round(data_size * 1024.0,3)) + ' KB'
         else:
             data['data_size'] = str(round(data_size , 3)) + ' MB'
-        if comment_number == 0 or score == 0.0:
-            data['score'] = '0 (暂无评级)'
-            data['comment'] = '0 '
-        else:
-            data['score'] = score
-            data['comment'] = comment_number
         datas.append(data)
+
     return datas
 
 def txLog_sql(user_id):
     content = {}
     cursor = connection.cursor()
-    sql = 'select timestamp,credits,before_account,after_account,action,data_id from BSCapp_txLog where BSCapp_txLog.user_id = %s order by timestamp DESC;'
+    sql = 'select science_data_id, timestamp, action ' \
+          'from BSCapp_downloadLog where BSCapp_downloadLog.user_id = %s order by timestamp DESC;'
     try:
         cursor.execute(sql, [user_id])
         content = cursor.fetchall()
@@ -324,17 +286,14 @@ def txLog_sql(user_id):
     tx_logs = []
     for i in range(len(content)):
         tx_log = dict()
-        tx_log['timestamp'] = time_to_str(content[i][0])
-        tx_log['credits'] = content[i][1]
-        tx_log['before_account'] = content[i][2]
-        tx_log['after_account'] = content[i][3]
-        if content[i][4] == 0:
-            tx_log['action'] = '上传奖励'
-        elif content[i][4] == 1:
-            tx_log['action'] = '购买支出'
-        elif content[i][4] == 2:
-            tx_log['action'] = '数据收益'
-        tx_log['data_name'] = Data.objects.get(data_id=content[i][5]).data_name
+        sciencd_data = ScienceData.objects.get(data_id=content[i][0])
+        tx_log['science_data_id'] = sciencd_data.data_name
+        tx_log['timestamp'] = time_to_str(content[i][1])
+        tx_log['first_title'] = sciencd_data.first_title
+        tx_log['second_title'] = sciencd_data.second_title
+        tx_log['data_source'] = sciencd_data.data_source
+        tx_log['data_type'] = sciencd_data.data_type
+        tx_log['action'] = content[i][2]
         tx_logs.append(tx_log)
     return tx_logs
 #
@@ -448,7 +407,20 @@ def GetUploadData(user_id):
     #get upload data
     content = {}
     cursor = connection.cursor()
-    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
+    sql = 'select data_id from BSCapp_sciencedata where BSCapp_sciencedata.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
+
+def GetDownloadData(user_id):
+    #get purchase data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select log_id from BSCapp_downloadlog where BSCapp_downloadlog.user_id = %s;'
     try:
         cursor.execute(sql, [user_id])
         content = cursor.fetchall()
@@ -583,9 +555,9 @@ def sendResetPwdEmail(receiver, secretKey):
         smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(mail_user, receivers, message.as_string())
-        print("邮件发送成功!!!")
+        # print("邮件发送成功!!!")
         return True
     except smtplib.SMTPException as e:
-        print(str(e))
-        print("Error: 无法发送邮件")
+        # print(str(e))
+        # print("Error: 无法发送邮件")
         return False

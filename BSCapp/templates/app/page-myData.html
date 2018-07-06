@@ -90,7 +90,7 @@
 							<a href="#subPages" data-toggle="collapse" class="active"><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse in">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">交易记录</a></li>
+									<li><a href="/UserInfo/" class="">操作记录</a></li>
 									<li><a href="/Notify/" class="">通知中心</a></li>
                                     <li><a href="/MyData/" class="active">我的数据</a></li>
                                     <li><a href="/Index/" class="">登出</a></li>
@@ -98,8 +98,8 @@
 							</div>
 						</li>
 						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
-						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
+						<li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
+{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
 {#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
@@ -126,43 +126,31 @@
 												<th align="center" onclick=myDataSortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_tag')>数据标签 <i class="{{ sort_class.data_tag }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
-                                                <th align="center" onclick=>收益占比</th>
+												<th align="center" onclick=myDataSortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
+												<th align="center" onclick=myDataSortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
                                                 <th align="center" onclick=myDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_purchase')>数据购买量 <i class="{{ sort_class.data_purchase }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_download')>数据下载量 <i class="{{ sort_class.data_download }}"> </i></th>
-                                                <th align="center" onclick=myDataSortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>
-                                                <th align="center" onclick=myDataSortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>
-												<th align="center" onclick=myDataSortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('data_status')>审核状态 <i class="{{ sort_class.data_status }}"> </i></th>
 											</tr>
 										</thead>
 
 										<tbody>
 										{% for data in datas %}
 											<tr>
-												<td align="">  {{data.name}}</td>
-												<td align="">  {{data.info}}</td>
+												<td align="">  {{data.data_name}}</td>
+												<td align="">  {{data.data_info}}</td>
 												<td align="">  {{data.timestamp}}</td>
-												<td align="">  {{data.tag}}</td>
-                                                {% if data.status == '审核中' %}
-												    <td align="" bgcolor="aqua">  {{data.status}}</td>
-                                                {% elif data.status == '审核通过' %}
-                                                    <td align="" bgcolor="#7fffd4">  {{data.status}}</td>
-                                                {% elif data.status == '审核不通过' %}
-                                                    <td align="" bgcolor="#deb887">  {{data.status}}</td>
-                                                {% endif %}
-                                                <td align="">
-                                                {% for item_info in data.income_info %}
-                                                    {{ item_info }} <br/>
-                                                {% endfor %}
-                                                </td>
+												<td align="">  {{data.first_title}}</td>
+                                                <td align="">  {{data.second_title}}</td>
+                                                <td align="">  {{data.data_type}}</td>
                                                 <td align="">  {{data.data_size}}</td>
-												<td align="">  {{data.purchase}}</td>
-												<td align="">  {{data.download}}</td>
-                                                <td align="">  {{data.score}}</td>
-                                                <td align="">  {{data.comment}}</td>
-												<td align="">  {{data.price}}</td>
+                                                {% if data.data_status == '审核中' %}
+												    <td align="" bgcolor="aqua">  {{data.data_status}}</td>
+                                                {% elif data.data_status == '审核通过' %}
+                                                    <td align="" bgcolor="#7fffd4">  {{data.data_status}}</td>
+                                                {% elif data.data_status == '审核不通过' %}
+                                                    <td align="" bgcolor="#deb887">  {{data.data_status}}</td>
+                                                {% endif %}
 											</tr>
 										{% endfor %}
 										</tbody>
@@ -170,7 +158,9 @@
                                             <select id="searchBase" name="searchBase">
                                                 <option value="data_name">数据名</option>
                                                 <option value="data_info">数据简介</option>
-                                                <option value="data_tag">数据标签</option>
+                                                <option value="data_source">数据来源</option>
+                                                <option value="first_title">所属专题</option>
+                                                <option value="second_title">所属科技资源</option>
                                             </select>
                                             <input type="text" id="searchField" name="searchField" value="">
                                             <button class="btn btn-primary btn-xs" type="submit">搜索</button>

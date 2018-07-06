@@ -90,7 +90,7 @@
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">操作记录</a></li>
+									<li><a href="/UserInfo/" class="">交易记录</a></li>
                                     <li><a href="/Notify/" class="">通知中心</a></li>
                                     <li><a href="/MyData/" >我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
@@ -127,10 +127,9 @@
                                                 <th align="center" onclick=buySortBase('data_name')>数据名 <i class="{{ sort_class.data_name }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
                                                 <th align="center" onclick=buySortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=buySortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_tag')>所属专题 <i class="{{ sort_class.data_tag }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_md5')>所属科技资源 <i class="{{ sort_class.data_md5 }}"> </i></th>
+                                                <th align="center" onclick=buySortBase('data_size')>数据类型 <i class="{{ sort_class.data_size }}"> </i></th>
 {#                                                <th align="center" onclick=buySortBase('data_price')>数据标价 <i class="{{ sort_class.data_price }}"> </i></th>#}
 {#                                                <th align="center" onclick=buySortBase('data_score')>数据评级 <i class="{{ sort_class.data_score }}"> </i></th>#}
 {#                                                <th align="center" onclick=buySortBase('comment_number')>评价人数 <i class="{{ sort_class.comment_number }}"> </i></th>#}
@@ -141,19 +140,21 @@
 										<tbody>
 										{% for data in datas %}
 											<tr>
-                                                <td align="">  {{data.user_id}}</td>
-												<td align="">  {{data.data_name}}</td>
-												<td align="">  {{data.data_info}}</td>
+                                                <td align="">  {{data.seller}}</td>
+												<td align="">  {{data.name}}</td>
+												<td align="">  {{data.info}}</td>
 												<td align="">  {{data.timestamp}}</td>
-												<td align="">  {{data.first_title}}</td>
-												<td align="">  {{data.second_title}}</td>
-												<td align=""> {{data.data_type}}</td>
-                                                <td align=""> {{data.data_size}}</td>
+												<td align="">  {{data.tag}}</td>
+												<td align="">  {{data.md5}}</td>
+{#                                                <td align="">  {{data.size}}</td>#}
+{#												<td align=""> {{data.price}}</td>#}
+{#                                                <td align="">  {{data.score}}</td>#}
+												<td align=""> {{data.comment}}</td>
                                                 <td>
-{#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button> <br/>#}
+                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="buyData(this);">下载</button> <br/>
 {#                                                    <button class="fa fa-download" style="font-size: 16px" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
 {#													<button class="fa fa-shopping-cart" style="font-size: 16px" name="data_id" id="data_id" value="{{data.data_id}}" onclick="buyData(this);">购买</button> <br/>#}
-                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>
+{#                                                    <button class="fa fa-download" style="font-size: 16px" name="{{data.address}}" id="{{data.name}}" value="{{data.data_id}}" onclick="downloadData(this);">下载</button>#}
 													<div id="{{data.data_id}}"> </div>
 												</td>
 											</tr>
@@ -162,10 +163,8 @@
 										<br>
 										<form method="POST" action="/BuyableData/">
 											<select id="searchBase" name="searchBase">
-                                                <option value="data_name">数据名</option>
-                                                <option value="data_info">数据简介</option>
-                                                <option value="first_title">所属专题</option>
-                                                <option value="second_title">所属科技资源</option>
+												<option value="data_name">数据名</option>
+												<option value="data_info">数据简介</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>

@@ -135,3 +135,69 @@ class Reset(models.Model):
 class Modify(models.Model):
     user_name = models.CharField(max_length=20, unique=True, primary_key=True)  # 用户登录名
     last_modify_time = models.CharField(max_length=32)  # default = ""
+
+class Conference(models.Model):# 会议
+    article_id = models.CharField(max_length=20, primary_key=True)
+    article_name = models.CharField(max_length=400, default="")
+    article_authors = models.CharField(max_length=400, default="")
+    conference_name = models.CharField(max_length=400, default="")
+    keywords = models.CharField(max_length=400, default="")
+    abstract = models.CharField(max_length=1000, default="")
+
+class Journal(models.Model): # 期刊
+    article_id = models.CharField(max_length=64, primary_key=True)
+    article_name = models.CharField(max_length=400, default="")
+    article_authors = models.CharField(max_length=400, default="")
+    journal_name = models.CharField(max_length=200, default="")
+    keywords = models.CharField(max_length=400, default="")
+    abstract = models.CharField(max_length=1000, default="")
+
+class Patent(models.Model): # 专利
+    patent_id = models.CharField(max_length=20, primary_key=True)
+    patent_openId = models.CharField(max_length=64)
+    patent_name = models.CharField(max_length=100)
+    patent_applicant = models.CharField(max_length=100)
+    patent_authors = models.CharField(max_length=200)
+    patent_keywords = models.CharField(max_length=400)
+    patent_province = models.CharField(max_length=20)
+
+class DataStat(models.Model): #数据统计
+    first_title = models.CharField(max_length=64)
+    second_title = models.CharField(max_length=64)
+    first_number = models.IntegerField(default=0)
+    second_number = models.IntegerField(default=0)
+    class Meta:
+        unique_together=("first_title","second_title") # 联合主键
+
+class ScienceData(models.Model):
+    data_id = models.CharField(max_length=64,primary_key=True)
+    user_id = models.CharField(max_length=64)
+    timestamp = models.CharField(max_length=64)
+
+    data_name = models.CharField(max_length=64)
+    data_source = models.CharField(max_length=64)
+    data_info = models.CharField(max_length=90)
+    data_type = models.CharField(max_length=64)
+
+    first_title = models.CharField(max_length=64)
+    second_title = models.CharField(max_length=64)
+    # 后台计算
+    data_address = models.CharField(max_length=200)  # 数据保存在服务器地址url
+    data_status = models.IntegerField(default=0)  # status = 0 审核中. =1 审核通过 =2 审核不通过
+    data_size = models.FloatField()  # 数据大小
+
+class DownloadLog(models.Model):
+    log_id = models.CharField(max_length=64,primary_key=True)
+    timestamp = models.CharField(max_length=64)
+    user_id = models.CharField(max_length=64)
+    science_data_id = models.CharField(max_length=64)
+    action = models.CharField(max_length=64, default="") # 下载
+
+class CheckLog(models.Model):
+    log_id = models.CharField(max_length=64, primary_key=True)
+    timestamp = models.CharField(max_length=64)
+    user_id = models.CharField(max_length=64)
+    conference_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    journal_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    patent_data_id_list = models.CharField(max_length=2000) # 逗号分隔
+    action = models.CharField(max_length=64, default="") # 查看 或 下载

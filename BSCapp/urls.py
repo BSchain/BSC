@@ -29,8 +29,8 @@ urlpatterns = [
     url(r'^MyData/$',views.MyData),
     url(r'^myData/$',views.MyData),
 
-    url(r'^Order/$',views.Order),
-    url(r'^order/$',views.Order),
+    # url(r'^Order/$',views.Order),
+    # url(r'^order/$',views.Order),
 
     url(r'^DataStatistics/$',views.DataStatistics),
     url(r'^dataStatistics/$',views.DataStatistics),

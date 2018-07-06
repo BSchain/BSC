@@ -54,8 +54,17 @@
 								<li><a href="/Notify/" class="more">See all notifications</a></li>
 							</ul>
 						</li>
+{#						<li class="dropdown">#}
+{#							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="lnr lnr-question-circle"></i> <span>Help</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>#}
+{#							<ul class="dropdown-menu">#}
+{#								<li><a href="#">Basic Use</a></li>#}
+{#								<li><a href="#">Working With Data</a></li>#}
+{#								<li><a href="#">Security</a></li>#}
+{#								<li><a href="#">Troubleshooting</a></li>#}
+{#							</ul>#}
+{#						</li>#}
 						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{username}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="../static/app/assets/img/user.png" class="img-circle" alt="Avatar"> <span>{{id}}</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
 								<li><a href="/UserInfo/"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
 								<li><a href="/Notify/"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
@@ -63,6 +72,9 @@
 								<li><a href="/Index/"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
+						<!-- <li>
+							<a class="update-pro" href="#downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
+						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -78,18 +90,18 @@
 							<a href="#subPages" data-toggle="collapse" class=""><i class="lnr lnr-file-empty"></i> <span>个人中心</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 							<div id="subPages" class="collapse">
 								<ul class="nav">
-									<li><a href="/UserInfo/" class="">操作记录</a></li>
+									<li><a href="/UserInfo/" class="">个人信息</a></li>
                                     <li><a href="/Notify/" class="">通知中心</a></li>
                                     <li><a href="/MyData/" class="">我的数据</a></li>
 									<li><a href="/Index/" class="">登出</a></li>
 								</ul>
 							</div>
 						</li>
-						<li><a href="/Upload/" class="active"><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
-                        <li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>科技资源</span></a></li>
-{#						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>#}
+						<li><a href="/Upload/" class=""><i class="lnr lnr-dice"></i> <span>上传数据</span></a></li>
+                        <li><a href="/BuyableData/" class=""><i class="lnr lnr-dice"></i> <span>数据市场</span></a></li>
+						<li><a href="/Order/" class=""><i class="lnr lnr-chart-bars"></i> <span>历史订单</span></a></li>
                         <li><a href="/DataStatistics/" class=""><i class="lnr lnr-chart-bars"></i> <span>数据统计</span></a></li>
-{#                        <li><a href="/Recharge/" class=""><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
+{#                        <li><a href="/Recharge/" class="active"><i class="lnr lnr-dice"></i> <span>账户充值</span></a></li>#}
 					</ul>
 				</nav>
 			</div>
@@ -101,102 +113,61 @@
 			<div class="main-content">
 				<div class="container-fluid">
 					<div class="row">
-						<form class="form-auth-small" enctype="multipart/form-data">
+						<form class="form-auth-small">
 							<div class="col-md-12">
 								<div class="panel">
 									<div class="panel-heading">
-										<h3 class="panel-title">完善数据信息</h3>
+										<h3 class="panel-title">充值信息</h3>
 									</div>
 									<div class="panel-body">
 										<div class="row">
 											<div class="col-md-2">
-												<span> 数据名 </span>
+												<span> 充值账号 </span>
 											</div>
 											<div class="col-md-5">
 												<div class="form-group">
-													<input name ="data_name" class="form-control" id="data_name" value="" placeholder="数据名">
+													<input name ="account" class="form-control" id="account" value="" placeholder="充值账号">
 												</div>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-md-2">
-												<span> 数据简介 </span>
+												<span> 确认账号 </span>
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<input name ="data_info" class="form-control" id="data_info" value="" placeholder="数据简介">
+													<input name ="reaccount" class="form-control" id="reaccount" value="" placeholder="确认账号">
 												</div>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-md-2">
-												<span> 数据来源 </span>
+												<span> 充值方式 </span>
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-                                                    <input name ="data_info" class="form-control" id="data_source" value="" placeholder="(清华,北大,北航,万方,知网等)">
-												</div>
-											</div>
-										</div>
-										<div class="row">
-											<div class="col-md-2">
-												<span> 数据类型 </span>
-											</div>
-											<div class="col-md-10">
-												<div class="form-group">
-													<select class="form-control" id="data_type">
-														<option value="专利">专利</option>
-                                                        <option value="会议">会议</option>
-														<option value="期刊">期刊</option>
-                                                        <option value="其他">其他</option>
+													<select class="form-control" name="payment">
+														<option value="支付宝">支付宝</option>
+														<option value="微信支付">微信支付</option>
+														<option value="网上银行">网上银行</option>
+														<option value="其他">其他</option>
 													</select>
 												</div>
 											</div>
 										</div>
 										<div class="row">
 											<div class="col-md-2">
-												<span> 所属专题 </span>
+												<span> 充值金额 </span>
 											</div>
 											<div class="col-md-10">
 												<div class="form-group">
-													<select class="form-control" id="first_title" >
-														<option value="科技资源地图" >科技资源地图</option>
-														<option value="前沿预判跟踪">前沿预判跟踪</option>
-														<option value="重点领域综合分析">重点领域综合分析</option>
-														<option value="企业创新活动">企业创新活动</option>
-                                                        <option value="科技成果转化">科技成果转化</option>
-                                                        <option value="区域协同">区域协同</option>
-                                                        <option value="科技政策">科技政策</option>
-                                                        <option value="城市化精细管理">城市化精细管理</option>
-													</select>
-												</div>
-											</div>
-										</div>
-										<div class="row">
-											<div class="col-md-2">
-												<span> 所属科技资源 </span>
-											</div>
-											<div class="col-md-10">
-												<div class="form-group">
-                                                    <div class="form-group">
-													<select class="form-control" id="second_title" onclick="changeSecondTitle()">
-                                                        <option value="科技资源">科技资源</option>
-													</select>
-												</div>
+													<input name ="amount" class="form-control" id="amount" value="" placeholder="充值金额">
 												</div>
 											</div>
 										</div>
 
-                                    </div>
-                                    <div class="panel-body">
-                                        <div class="row">
-                                        <div class="form-group">
-										　　　	<input type="file" id="file" name="file" /> <br />
-										</div>
-
-										<button type="button" class="btn btn-primary" onclick="checkUpload()" style="float:right"> 上传 </button>
-									    </div>
-                                    </div>
+										<button class="btn btn-primary " onclick="rechagreAccount()" style="float:right"> 充值 </button>
+									</div>
 								</div>
 							</div>
 						</form>
@@ -229,4 +200,3 @@
 </body>
 
 </html>
-
