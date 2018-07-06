@@ -22,4 +22,5 @@ admin.site.register(Journal)
 admin.site.register(Patent)
 admin.site.register(DataStat)
 admin.site.register(ScienceData)
+admin.site.register(DownloadLog)
 

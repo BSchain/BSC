@@ -483,91 +483,38 @@ def BuyableData(request):
     try:
         now_data_id = request.POST['data_id']
         now_op = request.POST['op']
-        try:
-            seller_id = ScienceData.objects.get(data_id=now_data_id).user_id  # get seller
-        except Exception as e:
-            # print(e)
-            pass
+        now_data = ScienceData.objects.get(data_id=now_data_id)
+        seller_id = now_data.user_id  # get seller
         if now_op == 'download':
+            print(now_op)
             try:
-                now_data = ScienceData.objects.get(data_id=now_data_id)
-                Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
-                try:
-                    now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
-                    file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
-                    if(os.path.exists(file_path) == False):
-                        return HttpResponse(json.dumps({
-                            'statCode': -1,
-                            'message': '当前数据已失效，请联系管理员!'
-                        }))
-                except Exception as e:
-                    # print(e)
+                now_data_file_address = now_data.data_address
+                print(now_data_file_address)
+                file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
+                print(file_path)
+                if(os.path.exists(file_path) == False):
                     return HttpResponse(json.dumps({
                         'statCode': -1,
                         'message': '当前数据已失效!'
                     }))
-                # get last download time
-                try:
-                    old_last_download_time = Transaction.objects.get(buyer_id=buyer_id,
-                                                                     data_id=now_data_id).last_download_time
-                    if old_last_download_time == '':  # the first time to download data
-                        now_time = str(datetime.datetime.utcnow().timestamp())
-                        cursor = connection.cursor()
-                        sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                        cursor.execute(sql, [now_time, buyer_id, now_data_id])
-                        cursor.close()
-                    else:
-                        limit_download_time = 300  # same data only download once in 5 minutes
-                        old_last_download_time = (float)(old_last_download_time)
-                        now_time = (float)(str(datetime.datetime.utcnow().timestamp()))
-                        left_time = now_time - old_last_download_time
-                        if left_time < limit_download_time:
-                            return HttpResponse(json.dumps({
-                                'statCode': -1,
-                                'message': '同一数据5分钟内仅可下载一次! 剩余等待时间:' + str((int)(limit_download_time - left_time)) + '秒'
-                            }))
-                        else:  # between the 300 seconds
-                            now_time = str(datetime.datetime.utcnow().timestamp())
-                            cursor = connection.cursor()
-                            sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                            cursor.execute(sql, [now_time, buyer_id, now_data_id])
-                            cursor.close()
-                except Exception as e:
-                    # print(e)
-                    pass
-                # add action: download to file
-                tx = TX.Transaction()
-                tx.new_transaction(in_coins=[], out_coins=[],
-                                   timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
-                                   seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
-                tx.save_transaction()
-
-                cursor = connection.cursor()
-                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
-                cursor.execute(sql, [now_data_id])
-                cursor.close()
-
-                return HttpResponse(json.dumps({
-                    'statCode': 0,
-                    'name':now_data.data_name,
-                    'address':now_data.data_address,
-                    'message': '已购买此数据,可以下载!'
-                }))
-            except:
+            except Exception as e:
+                # print(e)
                 return HttpResponse(json.dumps({
                     'statCode': -1,
-                    'message': '未购买此数据,无法下载!'
+                    'message': '当前数据已失效!'
                 }))
-        # insert new purchase_log for buyer
-        try:
-            Purchase.objects.get(user_id=buyer_id, data_id=now_data_id)
-
-            return HttpResponse(json.dumps({  # 到这一步说明已经购买过数据
-                'statCode': -3,
-                'message': '已经购买此数据，请勿重复购买！'
+            # add action: download to file
+            tx = TX.Transaction()
+            tx.new_transaction(in_coins=[], out_coins=[],
+                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
+                               seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
+            tx.save_transaction()
+            return HttpResponse(json.dumps({
+                'statCode': 0,
+                'data_name':now_data.data_name,
+                'data_address':now_data.data_address,
+                'message': '下载数据成功!'
             }))
-        except:
-            pass # 数据还未购买,则可以进行购买操作
     except Exception as e:
         # print(e)
         pass

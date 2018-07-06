@@ -9,14 +9,14 @@ function buyData(obj) {
         }
       }).done(function(data){
           if (data.statCode !=0){
-              alert(data.message)
+              alert(data.message);
               return false
           }
           else{
-              alert(data.message)
+              alert(data.message);
               window.location.replace("/Order/");
           }
-      })
+      });
     return;
 }
 
@@ -30,21 +30,23 @@ function downloadData(obj) {
             "op":'download'
         }
       }).done(function(data){
+          alert(data)
           if (data.statCode !=0){
-              alert(data.message)
+              alert(data.message);
               return false
           }
           else{
               // download transaction in the view.py file
-              // alert(data.message)
+              // alert(data.message);
               var file = document.getElementById(obj.value);
               // obj_address = data.address
               // obj_ = data.name
               // file.innerHTML = "<a hidden='hidden' id='download' href='" + obj.name + "' download='" + obj.id + "'>下载</a>";
-              file.innerHTML = "<a hidden='hidden' id='download' href='" + data.address + "' download='" + data.name + "'>下载</a>";
+              file.innerHTML = "<a hidden='hidden' id='download' href='" + data.data_address + "' download='" + data.data_name + "'>下载</a>";
               var download = document.getElementById("download")
               download.click()
+              return true
           }
-      })
+      });
     return;
 }
