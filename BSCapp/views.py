@@ -441,7 +441,7 @@ def UserInfo(request):
         #get the number of upload data
         upload_data_num = len(GetUploadData(user.user_id))
         #get the number of purchase data
-        purchase_data_num = len(GetPurchaseData(user.user_id))
+        purchase_data_num = len(GetDownloadData(user.user_id))
 
         # #get the recharge record
         # recharges = rechargeData_sql(user.user_id)

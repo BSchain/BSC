@@ -409,7 +409,20 @@ def GetUploadData(user_id):
     #get upload data
     content = {}
     cursor = connection.cursor()
-    sql = 'select data_id from BSCapp_data where BSCapp_data.user_id = %s;'
+    sql = 'select data_id from BSCapp_sciencedata where BSCapp_sciencedata.user_id = %s;'
+    try:
+        cursor.execute(sql, [user_id])
+        content = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        cursor.close()
+    return content
+
+def GetDownloadData(user_id):
+    #get purchase data
+    content = {}
+    cursor = connection.cursor()
+    sql = 'select log_id from BSCapp_downloadlog where BSCapp_downloadlog.user_id = %s;'
     try:
         cursor.execute(sql, [user_id])
         content = cursor.fetchall()
