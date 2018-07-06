@@ -182,7 +182,7 @@ def uploadData_sql(request, user_id, sort_sql):
     except:
         pass
     sql = sql + search_sql + sort_sql
-    print(sql)
+    # print(sql)
     try:
         if search_sql:
             cursor.execute(sql, [user_id, "%" + search_field + "%"])
@@ -191,7 +191,7 @@ def uploadData_sql(request, user_id, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        print(e)
+        # print(e)
         cursor.close()
         return context
     datas = []
@@ -233,10 +233,11 @@ def adminData_sql(request, sort_sql):
     except Exception as e:
         # print(e)
         pass
-    sql = 'select data_id, user_id, data_name, data_info, timestamp,  \
-           data_source, data_type, data_status, data_price, ' \
-          'data_download, data_purchase, data_score, comment_number, data_size from BSCapp_data '
+    sql = 'select data_id, user_id, timestamp, data_name, data_source,   \
+           data_info, data_type, first_title, second_title, data_status, data_size ' \
+          ' from BSCapp_sciencedata '
     sql = sql + search_sql + sort_sql
+    # print(sql)
     try:
         if search_sql:
             cursor.execute(sql, ["%"+search_field+"%"])
@@ -245,44 +246,40 @@ def adminData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
+        # print(e)
         cursor.close()
         return {}
     datas = []
     len_content = len(content)
+    # print(len_content)
     for i in range(len_content):
         data = dict()
-        data['dataid'] = content[i][0]
+        data['data_id'] = content[i][0]
         seller = User.objects.get(user_id=content[i][1])
-        data['seller'] = seller.user_name
-        data['name'] = content[i][2]
-        data['info'] = content[i][3]
-        data['timestamp'] = time_to_str(content[i][4])
-        data['source'] = content[i][5]
-        data['type'] = content[i][6]
-        if content[i][7] == 0:
-            data['status'] = '审核中'
-        elif content[i][7] == 1:
-            data['status'] = '审核通过'
+        data['user_id'] = seller.user_name
+        data['timestamp'] = time_to_str(content[i][2])
+        data['data_name'] = content[i][3]
+        data['data_source'] = content[i][4]
+        data['data_info'] = content[i][5]
+        data['data_type'] = content[i][6]
+        data['first_title'] = content[i][7]
+        data['second_title'] = content[i][8]
+
+        if content[i][9] == 0:
+            data['data_status'] = '审核中'
+        elif content[i][9] == 1:
+            data['data_status'] = '审核通过'
         else:
-            data['status'] = '审核不通过'
-        data['price'] = content[i][8]
-        data['download'] = content[i][9]
-        data['purchase'] = content[i][10]
-        score = content[i][11]
-        comment_number = content[i][12]
-        data['data_size'] = round((float)(content[i][13]),5)
+            data['data_status'] = '审核不通过'
+
+        data['data_size'] = round((float)(content[i][10]),5)
         data_size = data['data_size']
         if data_size < 1 :
             data['data_size'] = str(round(data_size * 1024.0,3)) + ' KB'
         else:
             data['data_size'] = str(round(data_size , 3)) + ' MB'
-        if comment_number == 0 or score == 0.0:
-            data['score'] = '0 (暂无评级)'
-            data['comment'] = '0 '
-        else:
-            data['score'] = score
-            data['comment'] = comment_number
         datas.append(data)
+
     return datas
 
 def txLog_sql(user_id):
@@ -557,9 +554,9 @@ def sendResetPwdEmail(receiver, secretKey):
         smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(mail_user, receivers, message.as_string())
-        print("邮件发送成功!!!")
+        # print("邮件发送成功!!!")
         return True
     except smtplib.SMTPException as e:
-        print(str(e))
-        print("Error: 无法发送邮件")
+        # print(str(e))
+        # print("Error: 无法发送邮件")
         return False

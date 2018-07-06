@@ -146,7 +146,7 @@
                                                 <td align="">  {{data.data_size}}</td>
                                                 {% if data.data_status == '审核中' %}
 												    <td align="" bgcolor="aqua">  {{data.data_status}}</td>
-                                                {% elif data.status == '审核通过' %}
+                                                {% elif data.data_status == '审核通过' %}
                                                     <td align="" bgcolor="#7fffd4">  {{data.data_status}}</td>
                                                 {% elif data.data_status == '审核不通过' %}
                                                     <td align="" bgcolor="#deb887">  {{data.data_status}}</td>

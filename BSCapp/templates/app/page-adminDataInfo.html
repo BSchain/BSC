@@ -107,10 +107,10 @@
                                                 <th align="center" onclick=adminDataSortBase('data_info')>数据简介 <i class="{{ sort_class.data_info }}"> </i></th>
 												<th align="center" onclick=adminDataSortBase('timestamp')>上传时间 <i class="{{ sort_class.timestamp }}"> </i></th>
                                                 <th align="center" onclick=adminDataSortBase('data_source')>数据来源 <i class="{{ sort_class.data_source }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_type')>所属专题 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_size')>所属科技资源 <i class="{{ sort_class.data_size }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_purchase')>数据类型 <i class="{{ sort_class.data_purchase }}"> </i></th>
-                                                <th align="center" onclick=adminDataSortBase('data_download')>数据大小 <i class="{{ sort_class.data_download }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
+                                                <th align="center" onclick=adminDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
 												<th align="center" onclick=adminDataSortBase('data_status')>数据状态 <i class="{{ sort_class.data_status }}"> </i></th>
                                                 <th align="center" >审核操作</th>
 											</tr>
@@ -120,26 +120,37 @@
                                         <!-- data.status = 0 待审核， =1 审核通过，=2 审核不通过 -->
 										{% for data in datas %}
 											<tr>
-                                                <td align="">  {{data.seller}}</td>
-												<td align="">  {{data.name}}</td>
-												<td align="">  {{data.info}}</td>
+                                                <td align="">  {{data.user_id}}</td>
+												<td align="">  {{data.data_name}}</td>
+												<td align="">  {{data.data_info}}</td>
 												<td align="">  {{data.timestamp}}</td>
-                                                <td align="">  {{data.source}}</td>
-                                                <td align="">  {{data.type}}</td>
+                                                <td align="">  {{data.data_source}}</td>
+                                                <td align="">  {{data.first_title}}</td>
+                                                <td align="">  {{data.second_title}}</td>
+                                                <td align="">  {{data.data_type}}</td>
                                                 <td align="">  {{data.data_size}}</td>
-                                                <td align="">  {{data.purchase}}</td>
-                                                <td align="">  {{data.download}}</td>
-                                                <td align="">  {{data.status}}</td>
-												<td><button class="label label-success" id="{{data.dataid}}" onclick="reviewAcknowledge(this);">审核通过</button>
-													<button class="label label-warning" id="{{data.dataid}}" onclick="reviewReject(this);">审核不通过</button></td>
+                                                {% if data.data_status == '审核中' %}
+												    <td align="" bgcolor="aqua">  {{data.data_status}}</td>
+                                                {% elif data.data_status == '审核通过' %}
+                                                    <td align="" bgcolor="#b0e0e6">  {{data.data_status}}</td>
+                                                {% elif data.data_status == '审核不通过' %}
+                                                    <td align="" bgcolor="#d3d3d3">  {{data.data_status}}</td>
+                                                {% endif %}
+												<td><button class="btn btn-info"  id="{{data.data_id}}" onclick="reviewAcknowledge(this);">审核通过</button>
+													<button class="btn" style="background: #dca7a7;" id="{{data.data_id}}" onclick="reviewReject(this);">审核不通过</button></td>
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
 										<form method="POST" action="/AdminDataInfo/">
 											<select id="searchBase" name="searchBase">
-												<option value="data_name">数据名</option>
-												<option value="data_info">数据简介</option>
+{#												<option value="data_name">数据名</option>#}
+{#												<option value="data_info">数据简介</option>#}
+                                                <option value="data_name">数据名</option>
+                                                <option value="data_info">数据简介</option>
+                                                <option value="data_source">数据来源</option>
+                                                <option value="first_title">所属专题</option>
+                                                <option value="second_title">所属科技资源</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>

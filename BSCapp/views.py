@@ -796,12 +796,12 @@ def AdminDataInfo(request):
             now_data_status = 2
         elif now_op == 'pass':
             now_data_status = 1
-        sql = 'update BSCapp_data set data_status = %s where data_id = %s;'
+        sql = 'update BSCapp_sciencedata set data_status = %s where data_id = %s;'
         cursor = connection.cursor()
         cursor.execute(sql, [now_data_status, now_data_id])
         cursor.close()
 
-        now_data = Data.objects.get(data_id=now_data_id)
+        now_data = ScienceData.objects.get(data_id=now_data_id)
         seller_id = now_data.user_id
         now_action = ''
         if now_data_status == 1:
@@ -866,9 +866,8 @@ def AdminDataInfo(request):
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
         if (new_sort_name != 'data_name' and new_sort_name != 'data_info' and new_sort_name != 'timestamp' and
-                new_sort_name != 'data_source' and new_sort_name != 'data_type' and new_sort_name != 'data_price' and
-                new_sort_name != 'data_status' and new_sort_name!= 'data_purchase' and new_sort_name != 'data_download' and
-                new_sort_name != 'data_score' and new_sort_name!= 'comment_number' and new_sort_name!= 'data_size'):
+                new_sort_name != 'data_source' and new_sort_name != 'first_title' and new_sort_name != 'second_title' and
+                new_sort_name != 'data_type' and new_sort_name!= 'data_size' and new_sort_name != 'data_status'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -892,7 +891,7 @@ def AdminDataInfo(request):
     if default_sort_name == 'user_id':
         table_name = 'BSCapp_user'
     else:
-        table_name = 'BSCapp_data'
+        table_name = 'BSCapp_sciencedata'
 
 
     try:
@@ -903,7 +902,7 @@ def AdminDataInfo(request):
             data_all_waiting_status = 0
             # get all reject data
             cursor = connection.cursor()
-            sql = 'select data_id from BSCapp_data where data_status = %s or data_status = %s;'
+            sql = 'select data_id from BSCapp_sciencedata where data_status = %s or data_status = %s;'
             cursor.execute(sql, [data_all_reject_status, data_all_waiting_status])
             cursor.close()
             content = cursor.fetchall()
@@ -913,7 +912,7 @@ def AdminDataInfo(request):
             for i in range(len_all_pass_data):
                 # print('data id', content[i][0])
                 now_data_id = content[i][0]
-                now_data = Data.objects.get(data_id=now_data_id)
+                now_data = ScienceData.objects.get(data_id=now_data_id)
                 now_data.data_status = data_all_pass_status
                 now_data.save()
                 seller_id = now_data.user_id
