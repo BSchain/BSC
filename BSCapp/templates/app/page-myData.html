@@ -129,7 +129,7 @@
 												<th align="center" onclick=myDataSortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
 												<th align="center" onclick=myDataSortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
                                                 <th align="center" onclick=myDataSortBase('data_type')>数据类型 <i class="{{ sort_class.data_type }}"> </i></th>
-                                                <th align="center" onclick=myDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_status }}"> </i></th>
+                                                <th align="center" onclick=myDataSortBase('data_size')>数据大小 <i class="{{ sort_class.data_size }}"> </i></th>
                                                 <th align="center" onclick=myDataSortBase('data_status')>审核状态 <i class="{{ sort_class.data_status }}"> </i></th>
 											</tr>
 										</thead>
@@ -158,7 +158,9 @@
                                             <select id="searchBase" name="searchBase">
                                                 <option value="data_name">数据名</option>
                                                 <option value="data_info">数据简介</option>
-                                                <option value="data_tag">数据标签</option>
+                                                <option value="data_source">数据来源</option>
+                                                <option value="first_title">所属专题</option>
+                                                <option value="second_title">所属科技资源</option>
                                             </select>
                                             <input type="text" id="searchField" name="searchField" value="">
                                             <button class="btn btn-primary btn-xs" type="submit">搜索</button>
