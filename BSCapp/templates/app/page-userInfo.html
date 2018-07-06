@@ -192,12 +192,13 @@
 											<tbody>
 											{% for tx_log in tx_logs %}
 												<tr>
-                                                    <td align="">  {{tx_log.data_name}}</td>
+                                                    <td align="">  {{tx_log.science_data_id}}</td>
 	                                                <td align="">  {{tx_log.timestamp}}</td>
-													<td align="">  {{tx_log.credits}}</td>
-	                                                <td align="">  {{tx_log.before_account}}</td>
-													<td align="">  {{tx_log.after_account}}</td>
-{#                                                    <td align="">  {{tx_log.action}}</td>#}
+													<td align="">  {{tx_log.first_title}}</td>
+	                                                <td align="">  {{tx_log.second_title}}</td>
+													<td align="">  {{tx_log.data_source}}</td>
+                                                    <td align="">  {{tx_log.data_type}}</td>
+                                                    <td align="">  {{tx_log.action}}</td>
 												</tr>
 											{% endfor %}
 											</tbody>

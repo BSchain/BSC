@@ -463,7 +463,6 @@ def UserInfo(request):
             'account':account,
             'upload_data_num':upload_data_num,
             'purchase_data_num':purchase_data_num,
-            # 'recharges':paged_recharges,
             'tx_logs': paged_tx_logs,
             'unread_number': unread_number,
             'unread_notices': unread_notices
