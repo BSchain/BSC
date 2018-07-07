@@ -22,6 +22,14 @@ BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocks/' # the bloc
 BLOCK_SAVE_SUFFIX = '.json' # block suffix
 BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
 
+LOG_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/logs/'
+LOG_SAVE_SUFFIX = '.json'
+NEW_BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocksNew/' # the blocks saving root
+NEW_BLOCK_SAVE_SUFFIX = '.json' # block suffix
+NEW_BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
+
+
+
 def hash_block(block): # json block
     block_str = json.dumps(block, sort_keys=True).encode() # here generate the block string
     return str(hasher.sha256(block_str).hexdigest())

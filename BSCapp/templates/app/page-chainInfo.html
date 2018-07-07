@@ -135,7 +135,7 @@
                                                 <th align="center" onclick=blockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('block_size')>所属专题 <i class="{{ sort_class.block_size }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('tx_number')>所属科技资源 <i class="{{ sort_class.tx_number }}"> </i></th>
-                                                <th align="center" onclick=blockSortBase('block_hash')>包含资源类型 <i class="{{ sort_class.block_hash }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('block_hash')>资源类型 <i class="{{ sort_class.block_hash }}"> </i></th>
                                                 <th align="center" >所属区块 </th>
                                                 <th align="center" >访问记录详情 </th>
                                                 <th align="center" >区块链源文件 </th>
@@ -149,10 +149,12 @@
 												<td align="">  {{block.timestamp}}</td>
 												<td align="">  {{block.block_size}}</td>
 												<td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.block_hash}}</td>
+                                                <td align="">  {{block.tx_number}}</td>
+                                                <td align="">  {{block.tx_number}}</td>
+                                                <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block.height}})">区块详情</button></a></td>
                                                 <td>
 {#                                                    <a href="#blockDetail{{ block.height }}" data-toggle="collapse" class="">#}
-                                                        <a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block.height}})">区块详情</button></a>
+{#                                                        <a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block.height}})">区块详情</button></a>#}
 {#                                                        <button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="block_height_detail" value="{{block.height}}" onclick="interpreterBlock(this);">区块详情</button></a>#}
 													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">区块源文件</button>
 													<div id="{{ block.height }}"> </div>

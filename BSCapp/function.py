@@ -241,7 +241,6 @@ def adminData_sql(request, sort_sql):
         return {}
     datas = []
     len_content = len(content)
-    # print(len_content)
     for i in range(len_content):
         data = dict()
         data['data_id'] = content[i][0]
@@ -389,20 +388,6 @@ def get_notices(request, user_id):
     notices, unread_notices, unread_number = noticeData_sql(user_id, sort_sql)
     return notices, unread_notices, unread_number
 
-
-# def GetAccount(user_id):
-#     #get the wallet account
-#     content = {}
-#     cursor = connection.cursor()
-#     sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
-#     try:
-#         cursor.execute(sql, [user_id])
-#         content = cursor.fetchall()
-#         cursor.close()
-#     except Exception as e:
-#         cursor.close()
-#     return content[0][0]
-
 def GetUploadData(user_id):
     #get upload data
     content = {}
@@ -518,17 +503,6 @@ def chainData_sql(request, sort_sql):
             except:
                 pass
         blocks.append(block)
-        # action = login
-        # action = buy
-        # action = download
-        # action =
-
-
-    # print(blocks[0]['wholeInfo']['transactions'][0]['timestamp'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['seller'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['data_uuid'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['credit'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['action'])
 
     return blocks, len_content
 
@@ -555,9 +529,7 @@ def sendResetPwdEmail(receiver, secretKey):
         smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(mail_user, receivers, message.as_string())
-        # print("邮件发送成功!!!")
         return True
     except smtplib.SMTPException as e:
-        # print(str(e))
-        # print("Error: 无法发送邮件")
         return False
+
