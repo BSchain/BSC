@@ -201,3 +201,21 @@ class CheckLog(models.Model):
     journal_data_id_list = models.CharField(max_length=2000) # 逗号分隔
     patent_data_id_list = models.CharField(max_length=2000) # 逗号分隔
     action = models.CharField(max_length=64, default="") # 查看 或 下载
+
+class OperationLog(models.Model): # save to database
+    tx_id = models.CharField(max_length=64, primary_key=True)
+    user_id = models.CharField(max_length=64)
+    timestamp = models.CharField(max_length=64)
+    science_data_id_list = models.CharField(max_length=2000, default='') # 逗号分隔
+    conference_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    journal_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    patent_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    action = models.CharField(max_length=64) # login & modify_pwd & reset_pwd & download & check
+    reviewer = models.CharField(max_length=64, default='')
+    first_title = models.CharField(max_length=64, default='')
+    second_title = models.CharField(max_length=64, default='')
+
+    block_height = models.IntegerField(default=0)  # after mining the transaction
+    prev_hash = models.CharField(max_length=64, default='')
+    block_timestamp = models.CharField(max_length=64, default='')
+    nonce = models.CharField(max_length=64, default='')

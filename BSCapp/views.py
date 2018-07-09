@@ -124,11 +124,15 @@ def Login(request):
             # tx.save_transaction()
 
             log = LOG.Logs()
-            log.new_log(tx_id=generate_uuid(a.admin_id), user_id=a.admin_id,
-                        timestamp=str(datetime.datetime.utcnow().timestamp()),
-                        science_data=[], conerence_data=[], journal_data=[], patent_data=[], action='login',
+            tx_id = generate_uuid(a.admin_id)
+            now_time = str(datetime.datetime.utcnow().timestamp())
+            log.new_log(tx_id=tx_id, user_id=a.admin_id, timestamp=now_time,
+                        science_data=[], conference_data=[], journal_data=[], patent_data=[], action='login',
                         reviewer=a.admin_name)
             log.save_log()
+            OperationLog(tx_id=tx_id, user_id=a.admin_id, timestamp=now_time,
+                        science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[], action='login',
+                        reviewer=a.admin_name).save()
 
             request.session['username'] = username
             request.session['isAdmin'] = True
@@ -162,11 +166,16 @@ def Login(request):
         # tx.save_transaction()
 
         log = LOG.Logs()
-        log.new_log(tx_id=generate_uuid(u.user_id), user_id=u.user_id,
-                    timestamp=str(datetime.datetime.utcnow().timestamp()),
-                    science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+        tx_id = generate_uuid(u.user_id)
+        now_time = str(datetime.datetime.utcnow().timestamp())
+        log.new_log(tx_id=tx_id, user_id=u.user_id, timestamp=now_time,
+                    science_data=[], conference_data=[], journal_data=[], patent_data=[],
                     action='login', reviewer='')
         log.save_log()
+
+        OperationLog(tx_id=tx_id, user_id=u.user_id, timestamp=now_time,
+                    science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    action='login', reviewer='').save()
 
         request.session['username'] = username
         request.session['isAdmin'] = False
@@ -241,12 +250,16 @@ def FindPwd(request):
             # tx.save_transaction()
 
             log = LOG.Logs()
-            log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
-                        timestamp=str(datetime.datetime.utcnow().timestamp()),
-                        science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+            tx_id = generate_uuid(user.user_id)
+            now_time = str(datetime.datetime.utcnow().timestamp())
+            log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+                        science_data=[], conference_data=[], journal_data=[], patent_data=[],
                         action='reset_pwd', reviewer='')
             log.save_log()
 
+            OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+                        science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                        action='reset_pwd', reviewer='').save()
 
             return HttpResponse(json.dumps({
                 'statCode': 0,
@@ -342,11 +355,16 @@ def ModifyPwd(request):
         # tx.save_transaction()
 
         log = LOG.Logs()
-        log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
-                    timestamp=str(datetime.datetime.utcnow().timestamp()),
-                    science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+        tx_id = generate_uuid(user.user_id)
+        now_time = str(datetime.datetime.utcnow().timestamp())
+        log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+                    science_data=[], conference_data=[], journal_data=[], patent_data=[],
                     action='modify_pwd', reviewer='')
         log.save_log()
+        # LOG:修改密码
+        OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+                    science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    action='modify_pwd', reviewer='').save()
 
 
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
@@ -531,12 +549,22 @@ def BuyableData(request):
                 }))
             # add transaction to file
             log = LOG.Logs()
-            log.new_log(tx_id = generate_uuid(user.user_id), user_id = user.user_id, timestamp = str(datetime.datetime.utcnow().timestamp()),
-                        science_data = now_data_id, conerence_data = [], journal_data = [], patent_data = [], action = 'download', reviewer = '')
+            tx_id =  generate_uuid(user.user_id)
+            now_time = str(datetime.datetime.utcnow().timestamp())
+            log.new_log(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
+                        science_data = now_data_id, conference_data = [], journal_data = [], patent_data = [], action = 'download', reviewer = '')
             log.save_log()
 
+            # LOG:下载数据
+            try:
+                OperationLog(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
+                        science_data_id_list = now_data_id, conference_data_id_list = [], journal_data_id_list = [], patent_data_id_list = [],
+                         action = 'download', reviewer = '', first_title=now_data.first_title, second_title= now_data.second_title).save()
+            except Exception as e:
+                print(e)
+                pass
             # save download log to database
-            DownloadLog(log_id = generate_uuid(now_data_id), timestamp = str(datetime.datetime.utcnow().timestamp()), user_id = user.user_id,
+            DownloadLog(log_id = generate_uuid(now_data_id), timestamp = now_time, user_id = user.user_id,
                         science_data_id = now_data_id, action = '下载').save()
 
             return HttpResponse(json.dumps({
@@ -639,10 +667,15 @@ def AdminDataInfo(request):
         now_time = str(datetime.datetime.utcnow().timestamp())
 
         log = LOG.Logs()
-        log.new_log(tx_id=generate_uuid(now_admin.admin_id), user_id=now_admin.admin_id,timestamp=now_time,
-                    science_data=now_data_id, conerence_data=[], journal_data=[], patent_data=[], action=now_action,
+        tx_id = generate_uuid(now_admin.admin_id)
+        log.new_log(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
+                    science_data=now_data_id, conference_data=[], journal_data=[], patent_data=[], action=now_action,
                     reviewer=now_admin.admin_name)
         log.save_log()
+
+        OperationLog(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
+                    science_data_id_list =now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[], action=now_action,
+                    reviewer=now_admin.admin_name).save()
 
         # insert the review into history and save a notice
         try: # can change
@@ -748,11 +781,17 @@ def AdminDataInfo(request):
                 now_action = 'review_pass'
                 now_time = str(datetime.datetime.utcnow().timestamp())
 
+
                 log = LOG.Logs()
-                log.new_log(tx_id=generate_uuid(now_admin.admin_id), user_id=now_admin.admin_id, timestamp=now_time,
-                            science_data=now_data_id, conerence_data=[], journal_data=[], patent_data=[],
+                tx_id = generate_uuid(now_admin.admin_id)
+                log.new_log(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
+                            science_data=now_data_id, conference_data=[], journal_data=[], patent_data=[],
                             action=now_action, reviewer=now_admin.admin_name)
-                log.save_log()
+
+                OperationLog(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
+                            science_data_id_list=now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                            action=now_action, reviewer=now_admin.admin_name).save()
+
 
                 # insert the review into history and save a notice
                 try:  # can change
@@ -861,12 +900,16 @@ def Upload(request):
              data_address = data_address, data_status= 0, data_size=data_size).save()
 
         log = LOG.Logs()
-        log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
-                    timestamp=str(datetime.datetime.utcnow().timestamp()),
-                    science_data=data_id, conerence_data=[], journal_data=[], patent_data=[], action='upload',
-                    reviewer='')
+        tx_id = generate_uuid(user.user_id)
+        now_time = str(datetime.datetime.utcnow().timestamp())
+        log.new_log(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
+                    science_data=data_id, conference_data=[], journal_data=[],
+                    patent_data=[], action='upload', reviewer='')
         log.save_log()
 
+        OperationLog(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
+                    science_data_id_list=data_id, conference_data_id_list=[], journal_data_id_list=[],
+                    patent_data_id_list=[], action='upload', reviewer='').save()
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))

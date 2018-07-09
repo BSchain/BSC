@@ -23,4 +23,6 @@ admin.site.register(Patent)
 admin.site.register(DataStat)
 admin.site.register(ScienceData)
 admin.site.register(DownloadLog)
+admin.site.register(CheckLog)
+admin.site.register(OperationLog)
 
