@@ -5,7 +5,7 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-from BSCapp.root_chain.block import *
+from BSCapp.root_chain.newBlock import *
 import requests
 from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
@@ -147,7 +147,7 @@ class Chain:
         self.last_block = json_block # get the last json block
 
     def new_get_last_block(self):
-        self.init_chain_length() # chain_length equal to the number of block
+        self.new_init_chain_length() # chain_length equal to the number of block
         last_block_file = new_get_block_file(self.chain_length)
         with open(last_block_file,'r') as f:
             json_block = json.load(f)

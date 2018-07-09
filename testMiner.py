@@ -28,9 +28,9 @@ def insert_gensis_block():
     gensis_hash = UTILS.hash_block(gensis_block)
     try:
         block_insert = "insert into BSCapp_Newblock \
-                        (block_height, prev_hash, block_timestamp, nonce, block_hash) \
-                        values ('%d', '%s', '%s', '%s', '%s')" % \
-                       (gensis_block_height, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash)
+                        (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
+                        values ('%d', '%s', '%s', '%s', '%s', '%s')" % \
+                       (gensis_block_height, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash, '')
         cursor.execute(block_insert)
         db.commit()
         print('now ' + UTILS.time_to_str(str(time.time())))
@@ -44,7 +44,7 @@ def insert_gensis_block():
 
 def mine_block(mineChain, diff=5, debug = False):
     # mineChain.get_total_chain()  # get total chain
-    mineChain.get_last_block() # get the last block
+    mineChain.new_get_last_block() # get the last block
 
     if debug:
         sleepTime = 10  # change to 10 seconds
@@ -56,40 +56,51 @@ def mine_block(mineChain, diff=5, debug = False):
 
     while True:
         # get current transaction not contain empty transaction
-        mineChain.get_current_transaction(blockSizeLimit, deleteFile=True)
+        mineChain.new_get_current_transaction(blockSizeLimit, deleteFile=True)
         transaction_number = len(mineChain.current_transactions) # transaction numbers !!!
         if transaction_number == 0 :
             print(UTILS.time_to_str(str(time.time())) +' now is empty transaction')
             time.sleep(sleepTime)
             continue
         # print(mineChain.current_transactions)
-        chain_height, block_timestamp, block_size, now_block_hash = MINE.mine(mineChain, diff=diff) # mine the block
-        print('chain_height',chain_height)
-        print('block_timestamp', block_timestamp)
-        print('block_size',block_size)
-        print('now_block_hash',now_block_hash)
-        try:
+        tx_id_list = []
+        for i in range(0,transaction_number):
+            item_tx_id = mineChain.current_transactions[i]['tx_id']
+            tx_id_list.append(item_tx_id)
+        tx_num = len(tx_id_list)
 
-            block_insert = "insert into BSCapp_block \
-                            (height, timestamp, block_size, tx_number, block_hash) \
-                            values ('%d', '%s', '%d', '%d',  '%s')" % \
-                           (chain_height, block_timestamp, block_size, transaction_number, now_block_hash)
-            cursor.execute(block_insert)
-            db.commit()
-            print(UTILS.time_to_str(str(time.time())) +' insert success!')
-        except Exception as e:
-            print(str(e))
-            db.rollback()
-            print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
-        time.sleep(sleepTime)
+        chain_height, prev_hash, block_timestamp, nonce , now_block_hash = MINE.mine(mineChain, diff=diff) # mine the block
+        print('chain_height',chain_height)
+        print('prev_hash', prev_hash)
+        print('block_timestamp',block_timestamp)
+        print('nonce',nonce)
+        print('now_block_hash', now_block_hash)
+
+        for i in range(0, tx_num):
+            try:
+                tx_id = tx_id_list[i]
+
+                block_insert = "insert into BSCapp_Newblock \
+                                (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
+                                values ('%d', '%s', '%s', '%d',  '%s', '%s')" % \
+                               (chain_height, prev_hash, block_timestamp, nonce, now_block_hash, tx_id)
+                cursor.execute(block_insert)
+                db.commit()
+                print(UTILS.time_to_str(str(time.time())) +' insert success!')
+            except Exception as e:
+                print(str(e))
+                db.rollback()
+                print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
+            time.sleep(sleepTime)
+
 
 def run_mine(mineChain, insert_gensis = False, diff=5, debug = False):
     if insert_gensis:
         insert_gensis_block()
     mine_block(mineChain, diff=diff, debug = debug)
 
-mineChain = CHAIN.Chain() # new a init chain
 
+mineChain = CHAIN.Chain() # new a init chain
 
 default_diff = 5 # very quick
 # default_diff = 6 #  60 seconds to mine
