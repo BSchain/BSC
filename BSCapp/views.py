@@ -1165,8 +1165,8 @@ def ChainInfo(request):
         default_sort_name = result[0]
         default_sort_type = result[1]
         new_sort_name = request.POST['sort_name']
-        if (new_sort_name != 'height' and new_sort_name != 'timestamp' and new_sort_name != 'block_size' and
-                new_sort_name != 'tx_number' and new_sort_name != 'block_hash'):
+        if (new_sort_name != 'tx_id' and new_sort_name != 'timestamp' and new_sort_name != 'first_title' and
+                new_sort_name != 'second_title'):
             new_sort_name = 'timestamp'
 
         if new_sort_name == default_sort_name:
@@ -1187,10 +1187,10 @@ def ChainInfo(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    myData_sort_list = ['tx_id', 'timestamp', 'first_title', 'second_title']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
-    table_name = 'BSCapp_block'
+    table_name = 'BSCapp_OperationLog'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
 

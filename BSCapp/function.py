@@ -441,8 +441,9 @@ def generate_sort_class(sort_name, sort_type, sort_list):
 def chainData_sql(request, sort_sql):
     context = {}
     cursor = connection.cursor()
-    sql = 'select height, timestamp, block_size, tx_number, block_hash ' \
-          'from BSCapp_block '
+    sql = 'select tx_id, user_id, timestamp, science_data_id_list, conference_data_id_list, journal_data_id_list, ' \
+          ' patent_data_id_list, action, reviewer, first_title, second_title ' \
+          ' from BSCapp_OperationLog '
 
     search_sql = ''
     try:
@@ -470,12 +471,28 @@ def chainData_sql(request, sort_sql):
     len_content = len(content)
     for i in range(len_content):
         block = dict()
-        block['height'] = content[i][0]
-        block['timestamp'] = time_to_str(content[i][1])
-        block['block_size'] = content[i][2]
-        block['tx_number'] = content[i][3]
-        block['block_hash'] = content[i][4]
-        block['wholeInfo'] = get_block_by_index_json(content[i][0])
+        block['tx_id'] = content[i][0]
+        block['user_id'] = time_to_str(content[i][1])
+        block['timestamp'] = content[i][2]
+        block['science_data_id_list'] = content[i][3]
+        block['conference_data_id_list'] = content[i][4]
+        block['journal_data_id_list'] = content[i][5]
+        block['patent_data_id_list'] = content[i][6]
+        block['action'] = content[i][7]
+        block['reviewer'] = content[i][8]
+        block['first_title'] = content[i][9]
+        block['second_title'] = content[i][10]
+        blockDetail =  NewBlock.objects.get(tx_id=block['tx_id'])
+        block['block_height'] = blockDetail.block_height
+        block['prev_hash'] = blockDetail.prev_hash
+        block['block_timestamp'] = blockDetail.block_timestamp
+        block['nonce'] = blockDetail.nonce
+        block['block_hash'] = blockDetail.block_hash
+
+
+
+        block['journal_data_id_list'] = get_block_by_index_json(content[i][0])
+
 
         for i in range(block['tx_number']):
             timestamp = block['wholeInfo']['transactions'][i]['timestamp']
