@@ -12,6 +12,7 @@ import BSCapp.root_chain.transaction as TX
 from time import time, localtime
 import BSCapp.root_chain.coin as COIN
 from BSCapp.function import *
+import BSCapp.Logs as LOG
 
 
 # Create your views here.
@@ -117,10 +118,17 @@ def Login(request):
                         'errormessage': 'wrong password',
                         }))
         else:
-            tx = TX.Transaction()
-            tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
-                               seller=a.admin_id, buyer='',data_uuid='',credit=0.0, reviewer='')
-            tx.save_transaction()
+            # tx = TX.Transaction()
+            # tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
+            #                    seller=a.admin_id, buyer='',data_uuid='',credit=0.0, reviewer='')
+            # tx.save_transaction()
+
+            log = LOG.Logs()
+            log.new_log(tx_id=generate_uuid(a.admin_id), user_id=a.admin_id,
+                        timestamp=str(datetime.datetime.utcnow().timestamp()),
+                        science_data=[], conerence_data=[], journal_data=[], patent_data=[], action='login',
+                        reviewer=a.admin_name)
+            log.save_log()
 
             request.session['username'] = username
             request.session['isAdmin'] = True
@@ -148,10 +156,17 @@ def Login(request):
             'errormessage': 'Incorrect username or password',
             }))
     else:
-        tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
-                           seller=u.user_id, buyer='',data_uuid='',credit=0.0, reviewer='')
-        tx.save_transaction()
+        # tx = TX.Transaction()
+        # tx.new_transaction(in_coins=[], out_coins=[],timestamp=datetime.datetime.utcnow().timestamp(), action='login',
+        #                    seller=u.user_id, buyer='',data_uuid='',credit=0.0, reviewer='')
+        # tx.save_transaction()
+
+        log = LOG.Logs()
+        log.new_log(tx_id=generate_uuid(u.user_id), user_id=u.user_id,
+                    timestamp=str(datetime.datetime.utcnow().timestamp()),
+                    science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+                    action='login', reviewer='')
+        log.save_log()
 
         request.session['username'] = username
         request.session['isAdmin'] = False
@@ -219,11 +234,19 @@ def FindPwd(request):
                    notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
 
             # generate now transaction file
-            tx = TX.Transaction()
-            tx.new_transaction(in_coins=[], out_coins=[],
-                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='reset_pwd',
-                               seller=now_user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
-            tx.save_transaction()
+            # tx = TX.Transaction()
+            # tx.new_transaction(in_coins=[], out_coins=[],
+            #                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='reset_pwd',
+            #                    seller=now_user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
+            # tx.save_transaction()
+
+            log = LOG.Logs()
+            log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
+                        timestamp=str(datetime.datetime.utcnow().timestamp()),
+                        science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+                        action='reset_pwd', reviewer='')
+            log.save_log()
+
 
             return HttpResponse(json.dumps({
                 'statCode': 0,
@@ -312,11 +335,19 @@ def ModifyPwd(request):
         # update the password
         user.user_pwd = new_pwd
         user.save()
-        tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=[],
-                           timestamp=str(datetime.datetime.utcnow().timestamp()), action='modify_pwd',
-                           seller=user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
-        tx.save_transaction()
+        # tx = TX.Transaction()
+        # tx.new_transaction(in_coins=[], out_coins=[],
+        #                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='modify_pwd',
+        #                    seller=user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
+        # tx.save_transaction()
+
+        log = LOG.Logs()
+        log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
+                    timestamp=str(datetime.datetime.utcnow().timestamp()),
+                    science_data=[], conerence_data=[], journal_data=[], patent_data=[],
+                    action='modify_pwd', reviewer='')
+        log.save_log()
+
 
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
         # send notify to user
@@ -498,22 +529,19 @@ def BuyableData(request):
                     'statCode': -1,
                     'message': '当前数据已失效!'
                 }))
-            # add action: download to file
-            tx = TX.Transaction()
-            tx.new_transaction(in_coins=[], out_coins=[],
-                               timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
-                               seller=seller_id, buyer=buyer_id, data_uuid=now_data_id, credit=0, reviewer='')
-            tx.save_transaction()
+            # add transaction to file
+            log = LOG.Logs()
+            log.new_log(tx_id = generate_uuid(user.user_id), user_id = user.user_id, timestamp = str(datetime.datetime.utcnow().timestamp()),
+                        science_data = now_data_id, conerence_data = [], journal_data = [], patent_data = [], action = 'download', reviewer = '')
+            log.save_log()
 
             # save download log to database
-            log_id = generate_uuid(now_data_id)
-            DownloadLog(log_id = log_id, timestamp = str(datetime.datetime.utcnow().timestamp()), user_id = user.user_id,
+            DownloadLog(log_id = generate_uuid(now_data_id), timestamp = str(datetime.datetime.utcnow().timestamp()), user_id = user.user_id,
                         science_data_id = now_data_id, action = '下载').save()
 
             return HttpResponse(json.dumps({
                 'statCode': 0,
                 'data_name':now_data.data_name,
-                # 'data_address':file_path,
                 'data_address': now_data.data_address,
                 'message': '下载数据成功!'
             }))
@@ -609,10 +637,13 @@ def AdminDataInfo(request):
             now_action = 'review_reject'
 
         now_time = str(datetime.datetime.utcnow().timestamp())
-        tx = TX.Transaction()
-        tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
-                           seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
-        tx.save_transaction()
+
+        log = LOG.Logs()
+        log.new_log(tx_id=generate_uuid(now_admin.admin_id), user_id=now_admin.admin_id,timestamp=now_time,
+                    science_data=now_data_id, conerence_data=[], journal_data=[], patent_data=[], action=now_action,
+                    reviewer=now_admin.admin_name)
+        log.save_log()
+
         # insert the review into history and save a notice
         try: # can change
             review_history = Review.objects.get(data_id=now_data_id, reviewer_id=now_admin_id)
@@ -714,15 +745,14 @@ def AdminDataInfo(request):
                 now_data = ScienceData.objects.get(data_id=now_data_id)
                 now_data.data_status = data_all_pass_status
                 now_data.save()
-                seller_id = now_data.user_id
                 now_action = 'review_pass'
                 now_time = str(datetime.datetime.utcnow().timestamp())
 
-                # generate transaction files
-                tx = TX.Transaction()
-                tx.new_transaction(in_coins=[], out_coins=[], timestamp=now_time, action=now_action,
-                                   seller=seller_id, buyer='', data_uuid=now_data_id, credit=0.0, reviewer=now_admin_id)
-                tx.save_transaction()
+                log = LOG.Logs()
+                log.new_log(tx_id=generate_uuid(now_admin.admin_id), user_id=now_admin.admin_id, timestamp=now_time,
+                            science_data=now_data_id, conerence_data=[], journal_data=[], patent_data=[],
+                            action=now_action, reviewer=now_admin.admin_name)
+                log.save_log()
 
                 # insert the review into history and save a notice
                 try:  # can change
@@ -830,6 +860,13 @@ def Upload(request):
              first_title = first_title,second_title = second_title,
              data_address = data_address, data_status= 0, data_size=data_size).save()
 
+        log = LOG.Logs()
+        log.new_log(tx_id=generate_uuid(user.user_id), user_id=user.user_id,
+                    timestamp=str(datetime.datetime.utcnow().timestamp()),
+                    science_data=data_id, conerence_data=[], journal_data=[], patent_data=[], action='upload',
+                    reviewer='')
+        log.save_log()
+
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
@@ -906,208 +943,6 @@ def MyData(request):
                                                     'unread_notices':unread_notices})
 
 @csrf_exempt
-def Order(request):
-    try:
-        username = request.session['username']
-        user = User.objects.get(user_name=username)
-    except Exception:
-        return render(request, "app/page-login.html")
-    user_id = user.user_id
-    # get the data score Done!
-    # add the data score to the transaction table
-    # update the data_avg_score in data table
-    # update the comment_number in data table
-    try:
-        self_data_score = (int)(request.POST['data_score'])
-        rating_data_id = request.POST['rating_data_id']
-        #
-        # print('self_data_score',self_data_score)
-        # print('rating_data_id', rating_data_id)
-        # print('user_id', user_id)
-        # insert self_score into transaction table
-        try:
-            cursor = connection.cursor()
-            sql = 'update BSCapp_transaction ' \
-                  'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
-            cursor.execute(sql, [self_data_score, user_id, rating_data_id])
-            cursor.close()
-
-            # get old data_avg_score and comment_number
-            rating_data = Data.objects.get(data_id= rating_data_id)
-            old_data_avg_score = rating_data.data_score
-            old_comment_number = rating_data.comment_number
-
-            # calculate the new score
-            new_data_avg_score = (float)((old_data_avg_score * old_comment_number + self_data_score) / (old_comment_number + 1))
-            new_comment_number = old_comment_number + 1
-
-
-            # update the data_avg_score and comment_number in data table
-            try:
-                cursor = connection.cursor()
-                sql = 'update BSCapp_data ' \
-                      'set BSCapp_data.data_score = %s, BSCapp_data.comment_number = %s ' \
-                      'where data_id = %s'
-                cursor.execute(sql, [new_data_avg_score, new_comment_number, rating_data_id])
-                cursor.close()
-            except Exception as e:
-                print(str(e))
-                # rechange to no score state
-                default_score = 0.0
-                cursor = connection.cursor()
-                sql = 'update BSCapp_transaction ' \
-                      'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
-                cursor.execute(sql, [default_score, user_id, rating_data_id])
-                cursor.close()
-
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '评价失败！'
-                }))
-
-            return HttpResponse(json.dumps({
-                'statCode': 0,
-                'message': '评价成功！'
-            }))
-        except Exception as e:
-            # print(str(e))
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '评价失败！'
-            }))
-    except Exception as e:
-        # print(e)
-        pass
-    try:
-        # add download action in Order page
-        now_data_id = request.POST['data_id']
-        now_op = request.POST['op']
-        seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
-        if now_op == 'download':
-            try:
-                Purchase.objects.get(user_id=user_id, data_id=now_data_id)
-                now_data = Data.objects.get(data_id = now_data_id)
-                try:
-
-                    now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
-                    file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
-                    if(os.path.exists(file_path) == False):
-                        return HttpResponse(json.dumps({
-                            'statCode': -1,
-                            'message': '当前数据已失效，请联系管理员!'
-                        }))
-                except Exception as e:
-                    # print(e)
-                    return HttpResponse(json.dumps({
-                        'statCode': -1,
-                        'message': '当前数据已失效!'
-                    }))
-                # get last download time
-                try:
-                    old_last_download_time = Transaction.objects.get(buyer_id = user_id, data_id = now_data_id).last_download_time
-                    if old_last_download_time == '': # the first time to download data
-                        now_time = str(datetime.datetime.utcnow().timestamp())
-                        cursor = connection.cursor()
-                        sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                        cursor.execute(sql, [now_time, user_id, now_data_id])
-                        cursor.close()
-                    else:
-                        limit_download_time = 300 # same data only download once in 5 minutes
-                        old_last_download_time = (float)(old_last_download_time)
-                        now_time = (float)(str(datetime.datetime.utcnow().timestamp()))
-                        left_time = now_time - old_last_download_time
-                        if  left_time < limit_download_time:
-                            return HttpResponse(json.dumps({
-                                'statCode': -1,
-                                'message': '同一数据5分钟内仅可下载一次! 剩余等待时间:'+str((int)(limit_download_time - left_time))+'秒'
-                            }))
-                        else: # between the 300 seconds
-                            now_time = str(datetime.datetime.utcnow().timestamp())
-                            cursor = connection.cursor()
-                            sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                            cursor.execute(sql, [now_time, user_id, now_data_id])
-                            cursor.close()
-                except Exception as e:
-                    # print(e)
-                    pass
-                # add action: download to file
-                tx = TX.Transaction()
-                tx.new_transaction(in_coins=[], out_coins=[],
-                                   timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
-                                   seller=seller_id, buyer=user_id, data_uuid=now_data_id, credit=0, reviewer='')
-                tx.save_transaction()
-
-                # change the download numebr
-                cursor = connection.cursor()
-                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
-                cursor.execute(sql, [now_data_id])
-                cursor.close()
-
-                return HttpResponse(json.dumps({
-                    'statCode': 0,
-                    'address': now_data.data_address,
-                    'name': now_data.data_name,
-                    'message': '已购买此数据,可以下载!'
-                }))
-            except:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '未购买此数据,无法下载!'
-                }))
-        # insert new purchase_log for buyer
-    except Exception as e:
-        # print(e)
-        pass
-
-    try:
-        Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
-        result = Buy_sort_name_and_type.split('&')
-        default_sort_name = result[0]
-        default_sort_type = result[1]
-        new_sort_name = request.POST['sort_name']
-        # check name in data table
-        if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
-                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and
-                new_sort_name != 'price' and new_sort_name!='data_score' and new_sort_name!='comment_number'):
-            new_sort_name = 'timestamp'
-
-        if new_sort_name == default_sort_name:
-            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
-        else:
-            new_sort_type = 'DESC'  # default = DESC
-
-        request.session['Order_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
-
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-        }))
-    except Exception as e:
-        # print(e)
-        pass
-    Order_sort_name_and_type = request.session['Order_sort_name_and_type']
-    result = Order_sort_name_and_type.split('&')
-    default_sort_name = result[0]
-    default_sort_type = result[1]
-    table_name = 'BSCapp_data'
-    if default_sort_name == 'price' or default_sort_name == 'timestamp':
-        table_name = 'BSCapp_transaction'
-    # default sort using session
-    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    orders = orderData_sql(request, user_id, sort_sql)
-    paged_orders = pagingData(request, orders)
-    notices, unread_notices, unread_number = get_notices(request, user_id)
-
-    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price', 'data_score', 'comment_number']
-    sort_class = generate_sort_class(default_sort_name, default_sort_type, order_sort_list)
-
-    return render(request, "app/page-order.html", {'orders': paged_orders,
-                                                   'id': username,
-                                                   'sort_class':sort_class,
-                                                   'unread_number':unread_number,
-                                                   'unread_notices':unread_notices})
-
-
-@csrf_exempt
 def DataStatistics(request):
     try:
         username = request.session['username']
@@ -1115,316 +950,12 @@ def DataStatistics(request):
     except Exception:
         return render(request, "app/page-login.html")
     user_id = user.user_id
-    # get the data score Done!
-    # add the data score to the transaction table
-    # update the data_avg_score in data table
-    # update the comment_number in data table
-    try:
-        self_data_score = (int)(request.POST['data_score'])
-        rating_data_id = request.POST['rating_data_id']
-        #
-        # print('self_data_score',self_data_score)
-        # print('rating_data_id', rating_data_id)
-        # print('user_id', user_id)
-        # insert self_score into transaction table
-        try:
-            cursor = connection.cursor()
-            sql = 'update BSCapp_transaction ' \
-                  'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
-            cursor.execute(sql, [self_data_score, user_id, rating_data_id])
-            cursor.close()
 
-            # get old data_avg_score and comment_number
-            rating_data = Data.objects.get(data_id= rating_data_id)
-            old_data_avg_score = rating_data.data_score
-            old_comment_number = rating_data.comment_number
-
-            # calculate the new score
-            new_data_avg_score = (float)((old_data_avg_score * old_comment_number + self_data_score) / (old_comment_number + 1))
-            new_comment_number = old_comment_number + 1
-
-
-            # update the data_avg_score and comment_number in data table
-            try:
-                cursor = connection.cursor()
-                sql = 'update BSCapp_data ' \
-                      'set BSCapp_data.data_score = %s, BSCapp_data.comment_number = %s ' \
-                      'where data_id = %s'
-                cursor.execute(sql, [new_data_avg_score, new_comment_number, rating_data_id])
-                cursor.close()
-            except Exception as e:
-                print(str(e))
-                # rechange to no score state
-                default_score = 0.0
-                cursor = connection.cursor()
-                sql = 'update BSCapp_transaction ' \
-                      'set BSCapp_transaction.data_score = %s where buyer_id = %s and data_id = %s'
-                cursor.execute(sql, [default_score, user_id, rating_data_id])
-                cursor.close()
-
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '评价失败！'
-                }))
-
-            return HttpResponse(json.dumps({
-                'statCode': 0,
-                'message': '评价成功！'
-            }))
-        except Exception as e:
-            # print(str(e))
-            return HttpResponse(json.dumps({
-                'statCode': -1,
-                'message': '评价失败！'
-            }))
-    except Exception as e:
-        # print(e)
-        pass
-    try:
-        # add download action in Order page
-        now_data_id = request.POST['data_id']
-        now_op = request.POST['op']
-        seller_id = Data.objects.get(data_id=now_data_id).user_id  # get seller
-        if now_op == 'download':
-            try:
-                Purchase.objects.get(user_id=user_id, data_id=now_data_id)
-                now_data = Data.objects.get(data_id = now_data_id)
-                try:
-
-                    now_data_file_address = Data.objects.get(data_id = now_data_id).data_address
-                    file_path = os.getcwd() +"/BSCapp"+now_data_file_address[2:]
-                    if(os.path.exists(file_path) == False):
-                        return HttpResponse(json.dumps({
-                            'statCode': -1,
-                            'message': '当前数据已失效，请联系管理员!'
-                        }))
-                except Exception as e:
-                    # print(e)
-                    return HttpResponse(json.dumps({
-                        'statCode': -1,
-                        'message': '当前数据已失效!'
-                    }))
-                # get last download time
-                try:
-                    old_last_download_time = Transaction.objects.get(buyer_id = user_id, data_id = now_data_id).last_download_time
-                    if old_last_download_time == '': # the first time to download data
-                        now_time = str(datetime.datetime.utcnow().timestamp())
-                        cursor = connection.cursor()
-                        sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                        cursor.execute(sql, [now_time, user_id, now_data_id])
-                        cursor.close()
-                    else:
-                        limit_download_time = 300 # same data only download once in 5 minutes
-                        old_last_download_time = (float)(old_last_download_time)
-                        now_time = (float)(str(datetime.datetime.utcnow().timestamp()))
-                        left_time = now_time - old_last_download_time
-                        if  left_time < limit_download_time:
-                            return HttpResponse(json.dumps({
-                                'statCode': -1,
-                                'message': '同一数据5分钟内仅可下载一次! 剩余等待时间:'+str((int)(limit_download_time - left_time))+'秒'
-                            }))
-                        else: # between the 300 seconds
-                            now_time = str(datetime.datetime.utcnow().timestamp())
-                            cursor = connection.cursor()
-                            sql = 'update BSCapp_transaction set BSCapp_transaction.last_download_time = %s where buyer_id = %s and data_id = %s'
-                            cursor.execute(sql, [now_time, user_id, now_data_id])
-                            cursor.close()
-                except Exception as e:
-                    # print(e)
-                    pass
-                # add action: download to file
-                tx = TX.Transaction()
-                tx.new_transaction(in_coins=[], out_coins=[],
-                                   timestamp=str(datetime.datetime.utcnow().timestamp()), action='download',
-                                   seller=seller_id, buyer=user_id, data_uuid=now_data_id, credit=0, reviewer='')
-                tx.save_transaction()
-
-                # change the download numebr
-                cursor = connection.cursor()
-                sql = 'update BSCapp_data set BSCapp_data.data_download = BSCapp_data.data_download + 1 where data_id = %s'
-                cursor.execute(sql, [now_data_id])
-                cursor.close()
-
-                return HttpResponse(json.dumps({
-                    'statCode': 0,
-                    'address': now_data.data_address,
-                    'name': now_data.data_name,
-                    'message': '已购买此数据,可以下载!'
-                }))
-            except:
-                return HttpResponse(json.dumps({
-                    'statCode': -1,
-                    'message': '未购买此数据,无法下载!'
-                }))
-        # insert new purchase_log for buyer
-    except Exception as e:
-        # print(e)
-        pass
-
-    try:
-        Buy_sort_name_and_type = request.session['Order_sort_name_and_type']
-        result = Buy_sort_name_and_type.split('&')
-        default_sort_name = result[0]
-        default_sort_type = result[1]
-        new_sort_name = request.POST['sort_name']
-        # check name in data table
-        if (new_sort_name!='user_id' and new_sort_name != 'data_name' and new_sort_name != 'data_info' and
-                new_sort_name != 'timestamp' and new_sort_name != 'data_source' and new_sort_name != 'data_type'and
-                new_sort_name != 'price' and new_sort_name!='data_score' and new_sort_name!='comment_number'):
-            new_sort_name = 'timestamp'
-
-        if new_sort_name == default_sort_name:
-            new_sort_type = 'DESC' if default_sort_type == 'ASC' else 'ASC'  # the same just ~
-        else:
-            new_sort_type = 'DESC'  # default = DESC
-
-        request.session['Order_sort_name_and_type'] = new_sort_name + '&' + new_sort_type
-
-        return HttpResponse(json.dumps({
-            'statCode': 0,
-        }))
-    except Exception as e:
-        # print(e)
-        pass
-    Order_sort_name_and_type = request.session['Order_sort_name_and_type']
-    result = Order_sort_name_and_type.split('&')
-    default_sort_name = result[0]
-    default_sort_type = result[1]
-    table_name = 'BSCapp_data'
-    if default_sort_name == 'price' or default_sort_name == 'timestamp':
-        table_name = 'BSCapp_transaction'
-    # default sort using session
-    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    orders = orderData_sql(request, user_id, sort_sql)
-    paged_orders = pagingData(request, orders)
     notices, unread_notices, unread_number = get_notices(request, user_id)
 
-    order_sort_list = ['data_name', 'data_info', 'timestamp', 'data_source', 'data_type', 'price', 'data_score', 'comment_number']
-    sort_class = generate_sort_class(default_sort_name, default_sort_type, order_sort_list)
-
-    return render(request, "app/page-dataStatistics.html", {'orders': paged_orders,
-                                                   'id': username,
-                                                   'sort_class':sort_class,
+    return render(request, "app/page-dataStatistics.html", {'id': username,
                                                    'unread_number':unread_number,
                                                    'unread_notices':unread_notices})
-
-
-# @csrf_exempt
-# def Recharge(request):
-#     username = request.session['username']
-#     try:
-#         user = User.objects.get(user_name=username)
-#     except Exception:
-#         return render(request, "app/page-login.html")
-#     user_id = user.user_id
-#
-#     try:
-#         account = request.POST["account"]
-#         reaccount = request.POST["reaccount"]
-#         amount = request.POST["amount"]
-#
-#         # print('account',account)
-#         # print('reaccount', reaccount)
-#         # print('amount','amount')
-#
-#         if account != reaccount:
-#             return HttpResponse(json.dumps({
-#                 'statCode': -1,
-#                 'message': '账户不同,请重新输入！'
-#             }))
-#         try:
-#             check_user = User.objects.get(user_name=account)
-#             account_user_id =  check_user.user_id
-#         except Exception as e:
-#             return HttpResponse(json.dumps({
-#                 'statCode': -1,
-#                 'message': '账户:'+account+' 不存在，请重新输入!'
-#             }))
-#         try:
-#             amount = (float)(amount)
-#             if amount <=0 :
-#                 return HttpResponse(json.dumps({
-#                     'statCode': -1,
-#                     'message': '充值金额应大于0，请重新输入!'
-#                 }))
-#         except Exception as e:
-#             return HttpResponse(json.dumps({
-#                 'statCode': -1,
-#                 'message': '充值金额有误，请重新输入!'
-#             }))
-#         now_time = str(datetime.datetime.utcnow().timestamp())
-#         #1. generate new coin_id for the user_id
-#         # to keep the coin_id is unique, we use datetime.datetime.utcnow().timestamp() in generate_uuid amount means the recharge money
-#
-#         new_coin_id = generate_uuid(account_user_id)
-#
-#         Coin(coin_id=new_coin_id, owner_id=account_user_id, is_spent=False,
-#              timestamp=now_time,coin_credit=amount).save()
-#
-#         buyer_coin = COIN.Coin()
-#         buyer_coin.new_coin(coin_uuid=new_coin_id, number_coin=amount, owner=account_user_id)
-#         out_coins = []
-#         out_coins.append(buyer_coin.to_dict())
-#
-#         tx = TX.Transaction()
-#         tx.new_transaction(in_coins=[], out_coins=out_coins, timestamp=datetime.datetime.utcnow().timestamp(), action='recharge',
-#                            seller=user_id, buyer='', data_uuid='', credit=amount, reviewer='')
-#         tx.save_transaction()
-#
-#         #get the wallet account before recharge
-#         before_account = Wallet.objects.get(user_id=account_user_id).account
-#         # before_account = GetAccount(user_id)
-#
-#         #2. modify wallet of the user_id
-#         cursor = connection.cursor()
-#         sql = 'update BSCapp_wallet set BSCapp_wallet.account = %s + %s where BSCapp_wallet.user_id = %s;'
-#         try:
-#             cursor.execute(sql, [before_account, amount, account_user_id])
-#             cursor.close()
-#         except Exception as e:
-#             cursor.close()
-#         #get the wallet account after recharge
-#         after_account = Wallet.objects.get(user_id=account_user_id).account
-#         # after_account = GetAccount(user_id)
-#
-#         #3. add the recharge record into the recharge tables
-#         recharge_id = generate_uuid(account_user_id)
-#         cursor = connection.cursor()
-#         sql = 'insert into BSCapp_recharge(recharge_id, user_id, timestamp, credits, before_account, after_account, coin_id) values (%s,%s,%s,%s,%s,%s,%s);'
-#         try:
-#             timestamp = datetime.datetime.utcnow().timestamp()
-#             cursor.execute(sql, [recharge_id, account_user_id, timestamp, amount, before_account, after_account, new_coin_id])
-#             cursor.close()
-#         except Exception as e:
-#             cursor.close()
-#         # 4. generate notice for a successful recharge
-#         cursor = connection.cursor()
-#         notice_insert = 'insert into BSCapp_notice \
-#             (notice_id, sender_id, receiver_id, notice_type, notice_info, if_check, timestamp) \
-#             values \
-#             (%s, %s, %s, %s, %s, 0, %s)'
-#         sender_id = user_id
-#         notice_id = generate_uuid(sender_id)
-#         receiver_id = account_user_id
-#         notice_type = 3
-#         timestamp = datetime.datetime.utcnow().timestamp()
-#         notice_info = '{} 在 {} 为账户 {} 充值成功, 充值金额为 {}'.format(username, time_to_str(timestamp), account, amount)
-#         cursor.execute(notice_insert, [notice_id, sender_id, receiver_id, notice_type,
-#                                        notice_info, timestamp])
-#         cursor.close()
-#         return HttpResponse(json.dumps({
-#             'statCode': 0,
-#             'message': '充值成功!'
-#         }))
-#     except Exception as e:
-#         # print(e)
-#         pass
-#     notices, unread_notices, unread_number = get_notices(request, user_id)
-#
-#     return render(request, "app/page-recharge.html",
-#                   {'id':username,
-#                    'unread_number':unread_number,
-#                    'unread_notices':unread_notices})
 
 @csrf_exempt
 def Notify(request):
