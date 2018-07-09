@@ -89,17 +89,17 @@
 							<!-- TABLE STRIPED -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">区块链详情</h3>
+									<h3 class="panel-title">访问记录详情</h3>
 								</div>
 								<div class="panel-body">
-									<table class="table table-striped">
+									<table class="table table-striped ">
 										<thead>
 											<tr>
                                                 <th align="center" onclick=blockSortBase('height')>操作id <i class="{{ sort_class.height }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('block_size')>所属专题 <i class="{{ sort_class.block_size }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('tx_number')>所属科技资源 <i class="{{ sort_class.tx_number }}"> </i></th>
-                                                <th align="center" onclick=blockSortBase('block_hash')>包含资源类型 <i class="{{ sort_class.block_hash }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('block_hash')>资源类型 <i class="{{ sort_class.block_hash }}"> </i></th>
                                                 <th align="center" >所属区块 </th>
                                                 <th align="center" >访问记录详情 </th>
                                                 <th align="center" >区块链源文件 </th>
@@ -113,88 +113,20 @@
 												<td align="">  {{block.timestamp}}</td>
 												<td align="">  {{block.block_size}}</td>
 												<td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.block_hash}}</td>
+                                                <td align="">  {{block.tx_number}}</td>
+                                                <td align="">  {{block.tx_number}}</td>
+                                                <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block}})">区块详情</button></a></td>
                                                 <td>
-                                                    <a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block.height}})">区块详情</button></a>
-													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="indexShowBlockDetail(this);">区块源文件</button>
-													<div id="myModelPos{{block.height}}"> </div>
-                                                    <div id="myModal{{ block.height }}" class="modal">
-                                                      <!-- 弹窗内容 -->
-                                                        <div class="modal-content">
-                                                          <div class="modal-header">
-                                                            <span id="close{{ block.height }}" class="close" onclick="hideWindow({{block.height}})">&times;</span>
-                                                            <h2>区块{{ block.height }}详细信息</h2>
-                                                          </div>
-                                                          <div class="modal-body">
-                                                            <p>区块诞生时间: <strong>{{ block.timestamp }}</strong></p>
-                                                            <p>区块记录数据条数: <strong>{{ block.tx_number }}</strong></p>
-                                                            <p>区块自身hash值: <strong>{{ block.block_hash }}</strong></p>
-                                                            <p style="color: #009cd7"><strong> 详情记录如下: </strong> </p>
-                                                              <ul>
-                                                              {% for itemTX in  block.wholeInfo.transactions %}
+													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">区块源文件</button>
+													{# add pop window #}
+                                                    <div id="block{{ block.height }}"> </div>
 
-                                                                  {% if itemTX.action == 'upload' %}
-                                                                      <li><p>用户 <strong style="color: #761c19;"> {{ itemTX.seller }} </strong>
-                                                                          在 <strong> {{ itemTX.timestamp }} </strong>
-                                                                          以 <strong style="color: #761c19;"> 价格{{ itemTX.credit }} </strong>
-                                                                          上传了数据 <strong style="color: #009cd7"> {{ itemTX.data_uuid }}  </strong> .</p></li>
-                                                                  {% endif %}
-
-                                                                  {% if itemTX.action == 'buy' %}
-                                                                      <li><p>用户 <strong style="color: #761c19;"> {{ itemTX.buyer }} </strong>
-                                                                          在 <strong> {{ itemTX.timestamp }} </strong>
-                                                                          以 <strong style="color: darkorchid"> 价格{{ itemTX.credit }} </strong>
-                                                                          使用了数据所有方 <strong style="color: #761c19;"> {{ itemTX.seller }} </strong>
-                                                                          的数据 <strong style="color: #009cd7"> {{ itemTX.data_uuid }}  </strong> .</p></li>
-                                                                  {% endif %}
-
-                                                                  {% if itemTX.action == 'login' %}
-                                                                      <li><p>用户 <strong style="color: #761c19;">{{ itemTX.seller }} </strong> 在 <strong> {{ itemTX.timestamp }}</strong> 登录系统. </p></li>
-                                                                  {% endif %}
-
-                                                                  {% if itemTX.action == 'download' %}
-                                                                      <li><p>用户 <strong style="color: #761c19;"> {{ itemTX.seller }} </strong>
-                                                                          在 <strong> {{ itemTX.timestamp }} </strong>
-                                                                          下载了数据 <strong style="color: #009cd7"> {{ itemTX.data_uuid }}  </strong> .</p></li>
-                                                                  {% endif %}
-
-                                                                  {% if itemTX.action == 'review_pass' %}
-                                                                      <li><p>管理员 <strong style="color: #005be2"> {{ itemTX.reviewer }} </strong>
-                                                                          在 <strong> {{ itemTX.timestamp }} </strong>
-                                                                          <strong style="color: green">审核通过</strong>了用户<strong style="color: #761c19;"> {{ itemTX.seller }}  </strong>
-                                                                          的数据<strong style="color: #009cd7"> {{ itemTX.data_uuid }}  </strong> .</p></li>
-                                                                  {% endif %}
-
-                                                                  {% if itemTX.action == 'review_reject' %}
-                                                                      <li><p>管理员 <strong style="color: #005be2"> {{ itemTX.reviewer }} </strong>
-                                                                          在 <strong> {{ itemTX.timestamp }} </strong>
-                                                                          <strong style="color: #de1219">审核拒绝</strong>了用户<strong style="color: #761c19;"> {{ itemTX.seller }}  </strong>
-                                                                          的数据<strong style="color: #009cd7"> {{ itemTX.data_uuid }}  </strong> .</p></li>
-                                                                  {% endif %}
-{#                                                                  <p>数据使用方: {{ itemTX.buyer }}</p>#}
-{#                                                                  <p>时间: {{ itemTX.timestamp }}</p>#}
-{#                                                                  <p>数据所有方: {{ itemTX.seller }}</p>#}
-{#                                                                  <p>被使用的数据名: {{ itemTX.data_uuid }}</p>#}
-{#                                                                  <p>数据标价: {{ itemTX.credit }}</p>#}
-                                                                  {% endfor %}
-                                                                </ul>
-                                                          </div>
-{#                                                          <div class="modal-footer">#}
-{#                                                            <h3>弹窗底部</h3>#}
-{#                                                          </div>#}
-                                                        </div>
-
-                                                    </div>
 												</td>
-{#                                                <td>#}
-{#													<button class="fa fa-diamond" style=" background: honeydew;  font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="indexShowBlockDetail(this);">详情</button>#}
-{#													<div id="{{block.height}}"> </div>#}
-{#												</td>#}
 											</tr>
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/Index/">
+										<form method="POST" action="/ChainInfo/">
 											<select id="searchBase" name="searchBase">
 												<option value="height">区块高度</option>
 												<option value="block_hash">区块hash</option>
@@ -215,6 +147,7 @@
 										{% endif %}
 {#										{% for i in blocks.paginator.page_range %}#}
                                         {% for i in blocks.paginator.page_range_ext %}
+
 											{% if blocks.number == i %}
 											<li class="active">
 												<span>{{ i }}
