@@ -193,15 +193,6 @@ class DownloadLog(models.Model):
     science_data_id = models.CharField(max_length=64)
     action = models.CharField(max_length=64, default="") # 下载
 
-class CheckLog(models.Model):
-    log_id = models.CharField(max_length=64, primary_key=True)
-    timestamp = models.CharField(max_length=64)
-    user_id = models.CharField(max_length=64)
-    conference_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    journal_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    patent_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    action = models.CharField(max_length=64, default="") # 查看 或 下载
-
 class OperationLog(models.Model): # save to database
     tx_id = models.CharField(max_length=64, primary_key=True)
     user_id = models.CharField(max_length=64)
@@ -215,7 +206,10 @@ class OperationLog(models.Model): # save to database
     first_title = models.CharField(max_length=64, default='')
     second_title = models.CharField(max_length=64, default='')
 
-    block_height = models.IntegerField(default=0)  # after mining the transaction
-    prev_hash = models.CharField(max_length=64, default='')
-    block_timestamp = models.CharField(max_length=64, default='')
-    nonce = models.CharField(max_length=64, default='')
+class NewBlock(models.Model):
+    block_height = models.IntegerField(primary_key=True)  # after mining the transaction
+    prev_hash = models.CharField(max_length=64)
+    tx_id = models.CharField(max_length=64, default='') # save_the operation log id
+    block_timestamp = models.CharField(max_length=64)
+    nonce = models.CharField(max_length=64)
+    block_hash = models.CharField(max_length=64) # 自身hash值

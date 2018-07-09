@@ -72,6 +72,8 @@ def get_block_by_index_object(index):
 def get_block_file(index):
     return BLOCK_SAVE_ROOT + str(index) + BLOCK_SAVE_SUFFIX
 
+def new_get_block_file(index):
+    return NEW_BLOCK_SAVE_ROOT + str(index) + NEW_BLOCK_SAVE_SUFFIX
 
 def get_total_tx():
     tx_total = []
