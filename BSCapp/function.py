@@ -443,8 +443,7 @@ def chainData_sql(request, sort_sql):
     cursor = connection.cursor()
     sql = 'select tx_id, user_id, timestamp, science_data_id_list, conference_data_id_list, journal_data_id_list, ' \
           ' patent_data_id_list, action, reviewer, first_title, second_title ' \
-          ' from BSCapp_OperationLog '
-
+          'from BSCapp_OperationLog '
     search_sql = ''
     try:
         search_base = request.POST["searchBase"]
@@ -463,62 +462,48 @@ def chainData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+
         cursor.close()
         return context
-
     blocks = []
     len_content = len(content)
     for i in range(len_content):
         block = dict()
         block['tx_id'] = content[i][0]
-        block['user_id'] = time_to_str(content[i][1])
-        block['timestamp'] = content[i][2]
-        block['science_data_id_list'] = content[i][3]
-        block['conference_data_id_list'] = content[i][4]
-        block['journal_data_id_list'] = content[i][5]
-        block['patent_data_id_list'] = content[i][6]
+        block['user_id'] = content[i][1]
+        block['timestamp'] = time_to_str(content[i][2])
+        science_data_id_list = content[i][3] # split by ,
+        conference_data_id_list = content[i][4]
+        journal_data_id_list = content[i][5]
+        patent_data_id_list = content[i][6]
+        print('science_data_id_list',len(science_data_id_list))
+        print('conference_data_id_list', len(conference_data_id_list))
+        print('journal_data_id_list', len(journal_data_id_list))
+        print('patent_data_id_list', patent_data_id_list)
         block['action'] = content[i][7]
         block['reviewer'] = content[i][8]
-        block['first_title'] = content[i][9]
-        block['second_title'] = content[i][10]
-        blockDetail =  NewBlock.objects.get(tx_id=block['tx_id'])
-        block['block_height'] = blockDetail.block_height
-        block['prev_hash'] = blockDetail.prev_hash
-        block['block_timestamp'] = blockDetail.block_timestamp
-        block['nonce'] = blockDetail.nonce
-        block['block_hash'] = blockDetail.block_hash
+        first_title = content[i][9]
+        second_title = content[i][10]
+        block['data_type'] = ''
 
-
-
-        block['journal_data_id_list'] = get_block_by_index_json(content[i][0])
-
-
-        for i in range(block['tx_number']):
-            timestamp = block['wholeInfo']['transactions'][i]['timestamp']
-            block['wholeInfo']['transactions'][i]['timestamp'] = time_to_str(timestamp)
-
-            seller = block['wholeInfo']['transactions'][i]['seller']
-            try:
-                block['wholeInfo']['transactions'][i]['seller'] = User.objects.get(user_id=seller).user_name
-            except:
-                pass
-
-            buyer = block['wholeInfo']['transactions'][i]['buyer']
-            try:
-                block['wholeInfo']['transactions'][i]['buyer'] = User.objects.get(user_id=buyer).user_name
-            except:
-                pass
-
-            data_uuid = block['wholeInfo']['transactions'][i]['data_uuid']
-            try:
-                block['wholeInfo']['transactions'][i]['data_uuid'] = Data.objects.get(data_id=data_uuid).data_name
-            except:
-                pass
-            try:
-                block['wholeInfo']['transactions'][i]['credit'] = Data.objects.get(data_id=data_uuid).data_price
-            except:
-                pass
+        if len(science_data_id_list) == 0:
+            continue
+        # only have science data
+        elif len(science_data_id_list)!= 0:
+            science_data_id = science_data_id_list
+            print('science_data_id', science_data_id)
+            science_data = ScienceData.objects.get(data_id= science_data_id)
+            block['first_title'] = science_data.first_title
+            block['second_title'] = science_data.second_title
+            block['data_type'] = '其他'
+        elif len(conference_data_id_list) != 0 :
+            block['data_type'] = ' 会议 '
+            if len(journal_data_id_list) != 0 :
+                block['data_type']+=' 期刊 '
+            if len(patent_data_id_list[0]) != 0 :
+                block['data_type']+=' 专利 '
+            block['first_title'] = '待补充'
+            block['second_title'] = '待补充'
         blocks.append(block)
 
     return blocks, len_content

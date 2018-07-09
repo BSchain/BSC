@@ -68,13 +68,12 @@ def Index(request):
     default_sort_name = result[0]
     default_sort_type = result[1]
 
-    myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    myData_sort_list = ['tx_id', 'timestamp', 'first_title', 'second_title']
     sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
 
-    table_name = 'BSCapp_block'
+    table_name = 'BSCapp_OperationLog'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-
     blocks, len_content = chainData_sql(request, sort_sql)
     try:
         search_base = request.POST["searchBase"]
@@ -86,6 +85,25 @@ def Index(request):
     except Exception as e:
         # print(e)
         paged_blocks = pagingData(request, blocks)
+
+    # myData_sort_list = ['height', 'timestamp', 'block_size', 'tx_number', 'block_hash']
+    # sort_class = generate_sort_class(default_sort_name, default_sort_type, myData_sort_list)
+    #
+    # table_name = 'BSCapp_block'
+    # # default sort using session
+    # sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    #
+    # blocks, len_content = chainData_sql(request, sort_sql)
+    # try:
+    #     search_base = request.POST["searchBase"]
+    #     search_field = request.POST["searchField"]
+    #     if search_field == '':
+    #         paged_blocks = pagingData(request, blocks)
+    #     else:
+    #         paged_blocks = pagingData(request, blocks, each_num=len_content)
+    # except Exception as e:
+    #     # print(e)
+    #     paged_blocks = pagingData(request, blocks)
 
     request.session['username'] = ""
     request.session['isAdmin'] = False
@@ -131,7 +149,7 @@ def Login(request):
                         reviewer=a.admin_name)
             log.save_log()
             OperationLog(tx_id=tx_id, user_id=a.admin_id, timestamp=now_time,
-                        science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[], action='login',
+                        science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='', action='login',
                         reviewer=a.admin_name).save()
 
             request.session['username'] = username
@@ -174,7 +192,7 @@ def Login(request):
         log.save_log()
 
         OperationLog(tx_id=tx_id, user_id=u.user_id, timestamp=now_time,
-                    science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
                     action='login', reviewer='').save()
 
         request.session['username'] = username
@@ -258,7 +276,7 @@ def FindPwd(request):
             log.save_log()
 
             OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
-                        science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                        science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
                         action='reset_pwd', reviewer='').save()
 
             return HttpResponse(json.dumps({
@@ -363,7 +381,7 @@ def ModifyPwd(request):
         log.save_log()
         # LOG:修改密码
         OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
-                    science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
                     action='modify_pwd', reviewer='').save()
 
 
@@ -558,7 +576,7 @@ def BuyableData(request):
             # LOG:下载数据
             try:
                 OperationLog(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
-                        science_data_id_list = now_data_id, conference_data_id_list = [], journal_data_id_list = [], patent_data_id_list = [],
+                        science_data_id_list = now_data_id, conference_data_id_list = '', journal_data_id_list = '', patent_data_id_list = '',
                          action = 'download', reviewer = '', first_title=now_data.first_title, second_title= now_data.second_title).save()
             except Exception as e:
                 print(e)
@@ -674,7 +692,7 @@ def AdminDataInfo(request):
         log.save_log()
 
         OperationLog(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
-                    science_data_id_list =now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[], action=now_action,
+                    science_data_id_list =now_data_id, conference_data_id_list='', journal_data_id_list='', patent_data_id_list='', action=now_action,
                     reviewer=now_admin.admin_name).save()
 
         # insert the review into history and save a notice
@@ -789,7 +807,7 @@ def AdminDataInfo(request):
                             action=now_action, reviewer=now_admin.admin_name)
 
                 OperationLog(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
-                            science_data_id_list=now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                            science_data_id_list=now_data_id, conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
                             action=now_action, reviewer=now_admin.admin_name).save()
 
 
@@ -908,8 +926,8 @@ def Upload(request):
         log.save_log()
 
         OperationLog(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
-                    science_data_id_list=data_id, conference_data_id_list=[], journal_data_id_list=[],
-                    patent_data_id_list=[], action='upload', reviewer='').save()
+                    science_data_id_list=data_id, conference_data_id_list='', journal_data_id_list='',
+                    patent_data_id_list='', action='upload', reviewer='').save()
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
@@ -1193,7 +1211,7 @@ def ChainInfo(request):
     table_name = 'BSCapp_OperationLog'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-
+    print(default_sort_name, default_sort_type)
     blocks, len_content = chainData_sql(request, sort_sql)
     try:
         search_base = request.POST["searchBase"]

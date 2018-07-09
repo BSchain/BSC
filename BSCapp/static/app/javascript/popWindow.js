@@ -1,16 +1,13 @@
-function getModal(height){
-    return document.getElementById('myModal'+ height)
-}
 
 function popWindow(block) {
-    height = block['height']
-    posId = "block"+height
+    tx_id = block['tx_id']
+    posId = "block"+tx_id
     item = document.getElementById(posId)
-    str_html = '<div id="myModal'+height+'" class="modal" style="display: block; width: content-box; " >' +
+    str_html = '<div id="myModal'+tx_id+'" class="modal" style="display: block; " >' +
         '          <div class="modal-content" style="width: available"> ' +
         '            <div class="modal-header" > ' +
-        '               <span id="close'+ height +'" class="close" onclick="hideWindow('+height+')">&times;</span>' +
-        '                <h4>操作'+height+'详细信息</h4>' +
+        '               <span id="close'+ tx_id +'" class="close" onclick="hideWindow('+tx_id+')">&times;</span>' +
+        '                <h4>操作'+tx_id+'详细信息</h4>' +
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
         '                   <p align="left"> 查看会议 </p> ' +
@@ -140,8 +137,8 @@ function popWindow(block) {
 
 }
 
-function hideWindow(height) {
-    modal = getModal(height)
+function hideWindow(tx_id) {
+    modal = document.getElementById('myModal'+ tx_id)
     modal.style.display = "none";
 
 }

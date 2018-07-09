@@ -139,17 +139,17 @@
 										<tbody>
 										{% for block in blocks %}
 											<tr>
-                                                <td align="">  {{block.height}}</td>
+                                                <td align="">  {{block.tx_id}}</td>
 												<td align="">  {{block.timestamp}}</td>
-												<td align="">  {{block.block_size}}</td>
-												<td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.tx_number}}</td>
+												<td align="">  {{block.first_title}}</td>
+												<td align="">  {{block.second_title}}</td>
+                                                <td align="">  {{block.data_type}}</td>
+                                                <td align="">  {{block.data_type}}</td>
                                                 <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block}})">区块详情</button></a></td>
                                                 <td>
 													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">区块源文件</button>
 													{# add pop window #}
-                                                    <div id="block{{ block.height }}"> </div>
+                                                    <div id="block{{ block.tx_id }}"> </div>
 
 												</td>
 											</tr>

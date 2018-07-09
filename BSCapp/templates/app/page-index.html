@@ -95,11 +95,11 @@
 									<table class="table table-striped ">
 										<thead>
 											<tr>
-                                                <th align="center" onclick=blockSortBase('height')>操作id <i class="{{ sort_class.height }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('tx_id')>操作id <i class="{{ sort_class.tx_id }}"> </i></th>
                                                 <th align="center" onclick=blockSortBase('timestamp')>时间戳 <i class="{{ sort_class.timestamp }}"> </i></th>
-                                                <th align="center" onclick=blockSortBase('block_size')>所属专题 <i class="{{ sort_class.block_size }}"> </i></th>
-                                                <th align="center" onclick=blockSortBase('tx_number')>所属科技资源 <i class="{{ sort_class.tx_number }}"> </i></th>
-                                                <th align="center" onclick=blockSortBase('block_hash')>资源类型 <i class="{{ sort_class.block_hash }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('first_title')>所属专题 <i class="{{ sort_class.first_title }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('second_title')>所属科技资源 <i class="{{ sort_class.second_title }}"> </i></th>
+                                                <th align="center" onclick=blockSortBase('data_type')>资源类型 <i class="{{ sort_class.data_type }}"> </i></th>
                                                 <th align="center" >所属区块 </th>
                                                 <th align="center" >访问记录详情 </th>
                                                 <th align="center" >区块链源文件 </th>
@@ -109,17 +109,17 @@
 										<tbody>
 										{% for block in blocks %}
 											<tr>
-                                                <td align="">  {{block.height}}</td>
+                                                <td align="">  {{block.tx_id}}</td>
 												<td align="">  {{block.timestamp}}</td>
-												<td align="">  {{block.block_size}}</td>
-												<td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.tx_number}}</td>
-                                                <td align="">  {{block.tx_number}}</td>
+												<td align="">  {{block.first_title}}</td>
+												<td align="">  {{block.second_title}}</td>
+                                                <td align="">  {{block.data_type}}</td>
+                                                <td align="">  {{block.data_type}}</td>
                                                 <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block}})">区块详情</button></a></td>
                                                 <td>
 													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">区块源文件</button>
 													{# add pop window #}
-                                                    <div id="block{{ block.height }}"> </div>
+                                                    <div id="block{{ block.tx_id }}"> </div>
 
 												</td>
 											</tr>
