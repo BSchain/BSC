@@ -1578,6 +1578,7 @@ pre code {
   border-radius: 0;
 }
 .pre-scrollable {
+  /*max-height: 800px;*/
   max-height: 340px;
   overflow-y: scroll;
 }
@@ -5944,7 +5945,7 @@ button.close {
 }
 .modal-body {
   position: relative;
-  padding: 15px;
+  padding: 0px;
 }
 .modal-footer {
   padding: 15px;

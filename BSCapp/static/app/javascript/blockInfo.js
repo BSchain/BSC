@@ -58,11 +58,6 @@ function showBlockDetail(obj) {
             return false
         }
         else {
-            // alert('index: '+ data.block.index+
-            // 'timestamp: ' + data.block.timestamp+
-            // ' prev_hash: ' + data.block.prev_hash +
-            // ' transactions: ' + data.block.transactions)
-            // alert(data.message)
             alert(data.block)
         }
     })
