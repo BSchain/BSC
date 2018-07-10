@@ -471,19 +471,24 @@ def chainData_sql(request, sort_sql):
         block = dict()
         tx_id = content[i][0]
         block['tx_id'] = tx_id
-        user_id = content[i][1]
-        try:
-            block['user_id'] = User.objects.get(user_id = user_id).user_name
-        except Exception as e:
-            block['user_id'] = Admin.objects.get(admin_id=user_id).admin_name
+        block['user_id'] = content[i][1]
+        # user_id = content[i][1]
+        # try:
+        #     block['user_id'] = User.objects.get(user_id = user_id).user_name
+        # except Exception as e:
+        #     block['user_id'] = Admin.objects.get(admin_id=user_id).admin_name
         block['timestamp'] = time_to_str(content[i][2])
         science_data_id_list = content[i][3] # split by ,
-        conference_data_id_list = content[i][4]
-        journal_data_id_list = content[i][5]
-        patent_data_id_list = content[i][6]
-        # print('science_data_id_list',len(science_data_id_list))
-        # print('conference_data_id_list', len(conference_data_id_list))
-        # print('journal_data_id_list', len(journal_data_id_list))
+        block['conference_data_id_list'] = content[i][4]
+        block['journal_data_id_list'] = content[i][5]
+        block['patent_data_id_list'] = content[i][6]
+        # conference_data_id_list = content[i][4]
+        # journal_data_id_list = content[i][5]
+        # patent_data_id_list = content[i][6]
+        #
+        # print('science_data_id_list',(science_data_id_list))
+        # print('conference_data_id_list', (conference_data_id_list))
+        # print('journal_data_id_list', (journal_data_id_list))
         # print('patent_data_id_list', patent_data_id_list)
         block['action'] = content[i][7]
         block['reviewer'] = content[i][8]
