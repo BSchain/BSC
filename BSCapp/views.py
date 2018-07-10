@@ -28,7 +28,7 @@ def Index(request):
             'block': json.dumps(now_block_dict),
         }))
     except Exception as e:
-        print(e)
+        # print(e)
         pass
     try:
         Block_sort_name_and_type = request.session['Block_sort_name_and_type']
@@ -51,6 +51,7 @@ def Index(request):
         }))
     except Exception as e:
         # print(e)
+        # request.session['Block_sort_name_and_type'] = 'timestamp&DESC'
         pass
 
     Block_sort_name_and_type = request.session['Block_sort_name_and_type']
@@ -63,13 +64,14 @@ def Index(request):
 
     table_name = 'BSCapp_OperationLog'
     # default sort using session
-    sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    blocks, len_content = chainData_sql(request, sort_sql)
+    # sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
+    # blocks, len_content = chainData_sql(request, sort_sql)
+    blocks, len_content = newChainData_sql(request, default_sort_name, default_sort_type)
     try:
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]
         if search_field == '':
-            paged_blocks = pagingData(request, blocks)
+            paged_blocks = pagingData(request, blocks, each_num=5)
         else:
             paged_blocks = pagingData(request, blocks, each_num=len_content)
     except Exception as e:
@@ -121,7 +123,7 @@ def Login(request):
             log.save_log()
             OperationLog(tx_id=tx_id, user_id=a.admin_id, timestamp=now_time,
                         science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='', action='login',
-                        reviewer=a.admin_name).save()
+                        reviewer=a.admin_name, data_type='').save()
 
             request.session['username'] = username
             request.session['isAdmin'] = True
@@ -164,7 +166,7 @@ def Login(request):
 
         OperationLog(tx_id=tx_id, user_id=u.user_id, timestamp=now_time,
                     science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
-                    action='login', reviewer='').save()
+                    action='login', reviewer='', data_type='').save()
 
         request.session['username'] = username
         request.session['isAdmin'] = False
@@ -353,7 +355,7 @@ def ModifyPwd(request):
         # LOG:修改密码
         OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
                     science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
-                    action='modify_pwd', reviewer='').save()
+                    action='modify_pwd', reviewer='', data_type='').save()
 
 
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
@@ -548,7 +550,7 @@ def BuyableData(request):
             try:
                 OperationLog(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
                         science_data_id_list = now_data_id, conference_data_id_list = '', journal_data_id_list = '', patent_data_id_list = '',
-                         action = 'download', reviewer = '', first_title=now_data.first_title, second_title= now_data.second_title).save()
+                         action = 'download', reviewer = '', first_title=now_data.first_title, second_title= now_data.second_title, data_type='其他').save()
             except Exception as e:
                 print(e)
                 pass
@@ -664,7 +666,7 @@ def AdminDataInfo(request):
 
         OperationLog(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
                     science_data_id_list =now_data_id, conference_data_id_list='', journal_data_id_list='', patent_data_id_list='', action=now_action,
-                    reviewer=now_admin.admin_name).save()
+                    reviewer=now_admin.admin_name, data_type='').save()
 
         # insert the review into history and save a notice
         try: # can change
@@ -779,7 +781,7 @@ def AdminDataInfo(request):
 
                 OperationLog(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
                             science_data_id_list=now_data_id, conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
-                            action=now_action, reviewer=now_admin.admin_name).save()
+                            action=now_action, reviewer=now_admin.admin_name, data_type='其他').save()
 
 
                 # insert the review into history and save a notice
@@ -898,7 +900,7 @@ def Upload(request):
 
         OperationLog(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
                     science_data_id_list=data_id, conference_data_id_list='', journal_data_id_list='',
-                    patent_data_id_list='', action='upload', reviewer='').save()
+                    patent_data_id_list='', action='upload', reviewer='', data_type='其他').save()
         return HttpResponse(json.dumps({
             'statCode': 0,
         }))
@@ -1117,7 +1119,10 @@ def Notify(request):
 @csrf_exempt
 def ChainInfo(request):
     username = request.session['username']
-    user = User.objects.get(user_name=username)
+    try:
+        user = User.objects.get(user_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     user_id = user.user_id
     notices, unread_notices, unread_number = get_notices(request, user_id)
     try:
@@ -1183,7 +1188,8 @@ def ChainInfo(request):
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
     # print(default_sort_name, default_sort_type)
-    blocks, len_content = chainData_sql(request, sort_sql)
+    # blocks, len_content = chainData_sql(request, sort_sql)
+    blocks, len_content = newChainData_sql(request, default_sort_name)
     try:
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]
@@ -1205,7 +1211,10 @@ def ChainInfo(request):
 @csrf_exempt
 def AdminChainInfo(request):
     username = request.session['username']
-    user = Admin.objects.get(admin_name=username)
+    try:
+        user = Admin.objects.get(admin_name=username)
+    except Exception:
+        return render(request, "app/page-login.html")
     try:
         now_block_height = request.POST['height']
         now_block_dict = get_block_by_index_json(now_block_height)
@@ -1250,7 +1259,8 @@ def AdminChainInfo(request):
     table_name = 'BSCapp_OperationLog'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    blocks, len_content = chainData_sql(request, sort_sql)
+    # blocks, len_content = chainData_sql(request, sort_sql)
+    blocks, len_content = newChainData_sql(request, sort_sql)
     try:
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]

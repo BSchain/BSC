@@ -30,10 +30,10 @@ def insert_gensis_block():
         block_insert = "insert into BSCapp_Newblock \
                         (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
                         values ('%d', '%s', '%s', '%s', '%s', '%s')" % \
-                       (gensis_block_height, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash, '')
+                       (gensis_block_height, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash, '2018')
         cursor.execute(block_insert)
         db.commit()
-        print('now ' + UTILS.time_to_str(str(time.time())))
+        print('now ' + UTILS.time_to_str(str(float(time.time())-28800)))
         print('insert success!')
     except Exception as e:
         print(str(e))
@@ -70,16 +70,17 @@ def mine_block(mineChain, diff=5, debug = False):
         tx_num = len(tx_id_list)
 
         chain_height, prev_hash, block_timestamp, nonce , now_block_hash = MINE.mine(mineChain, diff=diff) # mine the block
-        print('chain_height',chain_height)
-        print('prev_hash', prev_hash)
-        print('block_timestamp',block_timestamp)
-        print('nonce',nonce)
-        print('now_block_hash', now_block_hash)
-
+        # print('chain_height',chain_height)
+        # print('prev_hash', prev_hash)
+        # print('block_timestamp',block_timestamp)
+        # print('nonce',nonce)
+        # print('now_block_hash', now_block_hash)
+        print('now tx numbers', tx_num)
+        print('tx_id_list', tx_id_list)
         for i in range(0, tx_num):
             try:
                 tx_id = tx_id_list[i]
-
+                print(tx_id)
                 block_insert = "insert into BSCapp_Newblock \
                                 (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
                                 values ('%d', '%s', '%s', '%d',  '%s', '%s')" % \

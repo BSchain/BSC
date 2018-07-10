@@ -205,11 +205,12 @@ class OperationLog(models.Model): # save to database
     reviewer = models.CharField(max_length=64, default='')
     first_title = models.CharField(max_length=64, default='')
     second_title = models.CharField(max_length=64, default='')
+    data_type = models.CharField(max_length=64, default='')
 
-class NewBlock(models.Model):
-    block_height = models.IntegerField(primary_key=True)  # after mining the transaction
+class NewBlock(models.Model): # each tx_id save one block but in one block file
+    tx_id = models.CharField(max_length=64, primary_key=True)  # save_the operation log id
+    block_height = models.IntegerField()  # after mining the transaction
     prev_hash = models.CharField(max_length=64)
-    tx_id = models.CharField(max_length=64, default='') # save_the operation log id
     block_timestamp = models.CharField(max_length=64)
     nonce = models.CharField(max_length=64, default='')
     block_hash = models.CharField(max_length=64, default='')  # 自身hash值

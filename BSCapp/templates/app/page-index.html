@@ -114,10 +114,10 @@
 												<td align="">  {{block.first_title}}</td>
 												<td align="">  {{block.second_title}}</td>
                                                 <td align="">  {{block.data_type}}</td>
-                                                <td align="">  {{block.data_type}}</td>
+                                                <td align="">  {{block.block_height}}</td>
                                                 <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="1" onclick="popWindow({{block}})">区块详情</button></a></td>
                                                 <td>
-													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="1" onclick="indexShowBlockDetail(this);">区块源文件</button>
+													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.block_height}}" onclick="indexShowBlockDetail(this);">区块源文件</button>
 													{# add pop window #}
                                                     <div id="block{{ block.tx_id }}"> </div>
 
@@ -126,10 +126,11 @@
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/ChainInfo/">
+										<form method="POST" action="/Index/">
 											<select id="searchBase" name="searchBase">
-												<option value="height">区块高度</option>
-												<option value="block_hash">区块hash</option>
+												<option value="first_title">所属专题</option>
+												<option value="second_title">所属科技资源</option>
+                                                <option value="tx_id">操作id</option>
 											</select>
 											<input type="text" id="searchField" name="searchField" value="">
 											<button class="btn btn-primary btn-xs" type="submit">搜索</button>

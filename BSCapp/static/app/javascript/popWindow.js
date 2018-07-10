@@ -5,9 +5,21 @@ function popWindow(block) {
     item = document.getElementById(posId)
 
     conference_html = ''
-
     if(block['conference_data_id_list'] != ''){
-        conference_html += '<p align="left"> 查看会议资源 </p> ' +
+        conference_data_id_list = block['conference_data_id_list'].split(',')
+        len_conference = conference_data_id_list.length
+        conference_body_html = ''
+        for( i=0; i < len_conference; i++){
+            item_conference_id = conference_data_id_list[i]
+            conference_body_html += '<tr>' +
+                                    '    <td align="left">'+block[item_conference_id]['article_name']+'</td>' +
+                                    '    <td align="left">'+block[item_conference_id]['article_authors']+'</td>' +
+                                    '    <td align="left">'+block[item_conference_id]['conference_name']+'</td>' +
+                                    '    <td align="left">'+block[item_conference_id]['keywords']+'</td>' +
+                                    '    <td align="left">'+block[item_conference_id]['abstract']+'</td>' +
+                                    '</tr>'
+        }
+        conference_html += '<p align="left"> 操作类型: 查看会议资源 </p> ' +
         '                       <table class="table table-striped table-bordered table-condensed table-hover">' +
         '                           <thead >' +
         '                               <tr>' +
@@ -19,21 +31,28 @@ function popWindow(block) {
         '                               </tr>' +
         '                           </thead>' +
         '                           <tbody>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                                   <td align="left">该系统bababbababa......</td>' +
-        '                               </tr>' +
+                                        conference_body_html +
         '                           </tbody>' +
         '                       </table>'
     }
 
     journal_html = ''
     if(block['journal_data_id_list'] != ''){
+        journal_data_id_list = block['journal_data_id_list'].split(',')
+        len_journal = journal_data_id_list.length
+        journal_body_html = ''
+        for( i=0; i < len_journal; i++){
+            item_journal_id = journal_data_id_list[i]
+            journal_body_html += '<tr>' +
+                                 '    <td align="left">'+block[item_journal_id]['article_name']+'</td>' +
+                                 '    <td align="left">'+block[item_journal_id]['article_authors']+'</td>' +
+                                 '    <td align="left">'+block[item_journal_id]['journal_name']+'</td>' +
+                                 '    <td align="left">'+block[item_journal_id]['keywords']+'</td>' +
+                                 '    <td align="left">'+block[item_journal_id]['abstract']+'</td>' +
+                                 '</tr>'
+        }
 
-        journal_html += '<p align="left"> 查看期刊资源 </p> ' +
+        journal_html += '<p align="left"> 操作类型: 查看期刊资源 </p> ' +
         '                     <table class="table table-striped table-bordered">' +
         '                         <thead>' +
         '                             <tr>' +
@@ -45,39 +64,79 @@ function popWindow(block) {
         '                             </tr>' +
         '                         </thead>' +
         '                         <tbody>' +
-        '                             <tr>' +
-        '                                 <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                 <td align="left">郑鹏飞</td>' +
-        '                                 <td align="left">北航软件学院本科答辩</td>' +
-        '                                 <td align="left">区块链 数据确权 共识机制</td>' +
-        '                                 <td align="left">该系统bababbababa......</td>' +
-        '                             </tr>' +
+                                    journal_body_html +
         '                         </tbody>' +
         '                     </table>'
     }
-                patent_html = ''
+
+    patent_html = ''
     if(block['patent_data_id_list'] != ''){
-        patent_html += '<p align="left"> 查看专利资源 </p> ' +
+        patent_data_id_list = block['patent_data_id_list'].split(',')
+        len_patent = patent_data_id_list.length
+        patent_body_html = ''
+        for( i=0; i < len_patent; i++){
+            item_patent_id = patent_data_id_list[i]
+            patent_body_html += '<tr>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_name']+'</td>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_openId']+'</td>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_applicant']+'</td>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_authors']+'</td>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_keywords']+'</td>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_province']+'</td>' +
+                                '</tr>'
+        }
+        patent_html += '<p align="left"> 操作类型: 查看专利资源 </p> ' +
     '                       <table class="table table-striped table-bordered">' +
     '                           <thead>' +
     '                               <tr>' +
     '                                   <th align="center"> 专利名称 </th>' +
     '                                   <th align="center"> 专利号 </th>' +
     '                                   <th align="center"> 专利申请人 </th>' +
-    '                                   <th align="center"> 专利关键字 </th>' +
     '                                   <th align="center"> 专利作者 </th>' +
+    '                                   <th align="center"> 专利关键字 </th>' +
+    '                                   <th align="center"> 所属省份 </th>' +
     '                               </tr>' +
     '                           </thead>' +
     '                           <tbody>' +
-    '                               <tr>' +
-    '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-    '                                   <td align="left">郑鹏飞</td>' +
-    '                                   <td align="left">北航软件学院本科答辩</td>' +
-    '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-    '                                   <td align="left">该系统bababbababa......</td>' +
-    '                               </tr>' +
+                                    patent_body_html +
     '                           </tbody>' +
     '                       </table>'
+    }
+
+    science_data_html = ''
+    if(block['science_data_id_list'] != ''){
+        operation_str = ''
+        if(block['action'] == 'upload'){
+            operation_str ='上传数据'
+        }
+        else if(block['action'] == 'review_pass'){
+            operation_str ='审核数据通过'
+        }
+        else if(block['action'] == 'review_reject'){
+            operation_str ='审核数据不通过'
+        }
+        else if(block['action'] == 'download'){
+            operation_str ='下载数据'
+        }
+        science_data_html += '<p align="left">操作类型:'+operation_str+' </p> ' +
+        '                       <table class="table table-striped table-bordered">' +
+        '                           <thead>' +
+        '                               <tr>' +
+        '                                   <th align="center"> 数据名称 </th>' +
+        '                                   <th align="center"> 数据简介 </th>' +
+        '                                   <th align="center"> 数据来源 </th>' +
+        '                                   <th align="center"> 数据大小 </th>' +
+        '                               </tr>' +
+        '                           </thead>' +
+        '                           <tbody>' +
+        '                               <tr>' +
+        '                                   <td align="left">'+block['science_data_name']+'</td>' +
+        '                                   <td align="left">'+block['science_data_info']+'</td>' +
+        '                                   <td align="left">'+block['science_data_source']+'</td>' +
+        '                                   <td align="left">'+block['science_data_size']+'</td>' +
+        '                               </tr>' +
+        '                           </tbody>' +
+        '                       </table>'
     }
     str_html = '<div id="myModal'+tx_id+'" class="modal" style="display: block; " >' +
         '          <div class="modal-content" style="width: available"> ' +
@@ -91,61 +150,7 @@ function popWindow(block) {
                             conference_html +
                             journal_html +
                             patent_html +
-        '                   <p align="left"> 其他操作 </p> ' +
-        '                       <table class="table table-striped table-bordered">' +
-        '                           <thead>' +
-        '                               <tr>' +
-        '                                   <th align="center"> 数据名称 </th>' +
-        '                                   <th align="center"> 数据简介 </th>' +
-        '                                   <th align="center"> 数据来源 </th>' +
-        '                                   <th align="center"> 数据大小 </th>' +
-        '                               </tr>' +
-        '                           </thead>' +
-        '                           <tbody>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                               <tr>' +
-        '                                   <td align="left">基于区块链的科技资源确权系统的设计与实现</td>' +
-        '                                   <td align="left">郑鹏飞</td>' +
-        '                                   <td align="left">北航软件学院本科答辩</td>' +
-        '                                   <td align="left">区块链 数据确权 共识机制</td>' +
-        '                               </tr>' +
-        '                           </tbody>' +
-        '                       </table>' +
+                            science_data_html +
         '                   </div>' +
         '                </div>' +
         '           </div>' +

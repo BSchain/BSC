@@ -126,7 +126,7 @@
 												<td align="">  {{block.first_title}}</td>
 												<td align="">  {{block.second_title}}</td>
                                                 <td align="">  {{block.data_type}}</td>
-                                                <td align="">  {{block.data_type}}</td>
+                                                <td align="">  {{block.block_height}}</td>
                                                 <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="{{block.height}}" onclick="popWindow({{block}})">区块详情</button></a></td>
                                                 <td>
 													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.height}}" onclick="showBlockDetail(this);">区块源文件</button>
@@ -138,7 +138,7 @@
 										{% endfor %}
 										</tbody>
 										<br>
-										<form method="POST" action="/ChainInfo/">
+										<form method="POST" action="/AdminChainInfo/">
 											<select id="searchBase" name="searchBase">
 												<option value="height">区块高度</option>
 												<option value="block_hash">区块hash</option>
