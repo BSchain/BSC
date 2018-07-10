@@ -476,10 +476,10 @@ def chainData_sql(request, sort_sql):
         conference_data_id_list = content[i][4]
         journal_data_id_list = content[i][5]
         patent_data_id_list = content[i][6]
-        print('science_data_id_list',len(science_data_id_list))
-        print('conference_data_id_list', len(conference_data_id_list))
-        print('journal_data_id_list', len(journal_data_id_list))
-        print('patent_data_id_list', patent_data_id_list)
+        # print('science_data_id_list',len(science_data_id_list))
+        # print('conference_data_id_list', len(conference_data_id_list))
+        # print('journal_data_id_list', len(journal_data_id_list))
+        # print('patent_data_id_list', patent_data_id_list)
         block['action'] = content[i][7]
         block['reviewer'] = content[i][8]
         first_title = content[i][9]
@@ -491,7 +491,7 @@ def chainData_sql(request, sort_sql):
         # only have science data
         elif len(science_data_id_list)!= 0:
             science_data_id = science_data_id_list
-            print('science_data_id', science_data_id)
+            # print('science_data_id', science_data_id)
             science_data = ScienceData.objects.get(data_id= science_data_id)
             block['first_title'] = science_data.first_title
             block['second_title'] = science_data.second_title

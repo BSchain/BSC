@@ -1183,7 +1183,7 @@ def ChainInfo(request):
     table_name = 'BSCapp_OperationLog'
     # default sort using session
     sort_sql = generate_sort_sql(table_name, default_sort_name, default_sort_type)
-    print(default_sort_name, default_sort_type)
+    # print(default_sort_name, default_sort_type)
     blocks, len_content = chainData_sql(request, sort_sql)
     try:
         search_base = request.POST["searchBase"]

@@ -5,9 +5,9 @@ function popWindow(block) {
     item = document.getElementById(posId)
     str_html = '<div id="myModal'+tx_id+'" class="modal" style="display: block; " >' +
         '          <div class="modal-content" style="width: available"> ' +
-        '            <div class="modal-header" > ' +
-        '               <span id="close'+ tx_id +'" class="close" onclick="hideWindow('+tx_id+')">&times;</span>' +
-        '                <h4>操作'+tx_id+'详细信息</h4>' +
+        '            <div class="modal-header"  >' +
+        '               <button type="button" data-dismiss="modal" id="close'+ tx_id +'" class="close">&times; </button>' +
+        '                <h4>操作记录详细信息</h4>' +
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
         '                   <p align="left"> 查看会议 </p> ' +
@@ -132,13 +132,16 @@ function popWindow(block) {
         '                </div>' +
         '           </div>' +
         '         </div>' +
-        '       </div>'
+        '       </div>';
     item.innerHTML = str_html
 
 }
 
 function hideWindow(tx_id) {
-    modal = document.getElementById('myModal'+ tx_id)
-    modal.style.display = "none";
+    posId = "block"+tx_id
+    item = document.getElementById(posId)
+    item.remove()
+    // modal = document.getElementById('myModal'+ tx_id)
+    // modal.style.display = "none";
 
 }
