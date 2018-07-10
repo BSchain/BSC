@@ -475,24 +475,25 @@ def newChainData_sql(request, default_sort_name, default_sort_type):
         if block['tx_id']=='2018': # the gensis block
             continue
 
-
+        item_log = OperationLog.objects.get(tx_id=block['tx_id'])
         # 确保存在此数据
         if(default_sort_type == 'ASC'):
-            sort_data = OperationLog.objects.order_by('-'+default_sort_name)
+            item_log = item_log.order_by('-'+default_sort_name)
         else:
-            sort_data = OperationLog.objects.order_by(default_sort_name)
-        print('search_base',search_base)
+            item_log = item_log.order_by(default_sort_name)
+        # print('search_base',search_base)
         if search_base == 'tx_id':
-            sort_data.filter(tx_id__contains=search_field)
+            item_log.filter(tx_id__contains=search_field)
         elif search_base == 'first_title':
-            sort_data.filter(first_title__contains=search_field)
+            item_log.filter(first_title__contains=search_field)
         elif search_base == 'second_title':
-            sort_data.filter(second_title__contains=search_field)
+            item_log.filter(second_title__contains=search_field)
+
 
         # print(sort_data)
         # item_log = OperationLog.objects.get(tx_id=block['tx_id'])
-        item_log = sort_data.get(tx_id=block['tx_id'])
-        print(item_log)
+
+        # print(item_log)
         block['user_id'] = item_log.user_id
         block['timestamp'] = time_to_str(item_log.timestamp)
         science_data_id_list = item_log.science_data_id_list
