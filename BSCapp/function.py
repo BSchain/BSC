@@ -469,8 +469,13 @@ def chainData_sql(request, sort_sql):
     len_content = len(content)
     for i in range(len_content):
         block = dict()
-        block['tx_id'] = content[i][0]
-        block['user_id'] = content[i][1]
+        tx_id = content[i][0]
+        block['tx_id'] = tx_id
+        user_id = content[i][1]
+        try:
+            block['user_id'] = User.objects.get(user_id = user_id).user_name
+        except Exception as e:
+            block['user_id'] = Admin.objects.get(admin_id=user_id).admin_name
         block['timestamp'] = time_to_str(content[i][2])
         science_data_id_list = content[i][3] # split by ,
         conference_data_id_list = content[i][4]

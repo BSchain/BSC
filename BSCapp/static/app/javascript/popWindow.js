@@ -10,7 +10,8 @@ function popWindow(block) {
         '                <h4>操作记录详细信息</h4>' +
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
-        '                   <p align="left"> 查看会议 </p> ' +
+        '                    <p align="left"> 用户: '+block['user_id']+' </p> ' +
+        '                    <p align="left"> 查看会议资源 </p> ' +
         '                       <table class="table table-striped table-bordered table-condensed table-hover">' +
         '                           <thead >' +
         '                               <tr>' +
@@ -31,7 +32,7 @@ function popWindow(block) {
         '                               </tr>' +
         '                           </tbody>' +
         '                       </table>' +
-        '                   <p align="left"> 查看期刊 </p> ' +
+        '                   <p align="left"> 查看期刊资源 </p> ' +
         '                       <table class="table table-striped table-bordered">' +
         '                           <thead>' +
         '                               <tr>' +
@@ -52,7 +53,7 @@ function popWindow(block) {
         '                               </tr>' +
         '                           </tbody>' +
         '                       </table>' +
-        '                   <p align="left"> 查看专利 </p> ' +
+        '                   <p align="left"> 查看专利资源 </p> ' +
         '                       <table class="table table-striped table-bordered">' +
         '                           <thead>' +
         '                               <tr>' +

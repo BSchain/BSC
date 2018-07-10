@@ -66,6 +66,13 @@ def get_block_by_index_json(index):
     return json_block
 
 
+def new_get_block_by_index_json(index):
+    block_file = new_get_block_file(index)
+    assert os.path.exists(block_file), (block_file, 'not exist')
+    with open(block_file, 'r') as f:
+        json_block = json.load(f)
+    return json_block
+
 def get_block_by_index_object(index):
     return Block.json_to_bloc(get_block_by_index_json(index))
 

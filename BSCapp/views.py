@@ -19,17 +19,16 @@ import BSCapp.Logs as LOG
 
 @csrf_exempt
 def Index(request):
-
     try:
         now_block_height = request.POST['height']
-        now_block_dict = get_block_by_index_json(now_block_height)
+        now_block_dict = new_get_block_by_index_json(now_block_height)
         return HttpResponse(json.dumps({
             'statCode': 0,
             'message': 'block height is ' + str(now_block_height),
             'block': json.dumps(now_block_dict),
         }))
     except Exception as e:
-        # print(e)
+        print(e)
         pass
     try:
         Block_sort_name_and_type = request.session['Block_sort_name_and_type']
