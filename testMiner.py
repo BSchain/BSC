@@ -52,7 +52,7 @@ def mine_block(mineChain, diff=5, debug = False):
 
     else:
         sleepTime = 300  # change to 5 minutes
-        blockSizeLimit = 1024 * 10  # now set 1024 * 10 B
+        blockSizeLimit = 1024 * 3  # now set 1024 * 2 B
 
     while True:
         # get current transaction not contain empty transaction
@@ -80,7 +80,7 @@ def mine_block(mineChain, diff=5, debug = False):
         for i in range(0, tx_num):
             try:
                 tx_id = tx_id_list[i]
-                print(tx_id)
+                # print(tx_id)
                 block_insert = "insert into BSCapp_Newblock \
                                 (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
                                 values ('%d', '%s', '%s', '%d',  '%s', '%s')" % \
@@ -89,10 +89,11 @@ def mine_block(mineChain, diff=5, debug = False):
                 db.commit()
                 print(UTILS.time_to_str(str(time.time())) +' insert success!')
             except Exception as e:
-                print(str(e))
+                # print(str(e))
                 db.rollback()
                 print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
-            time.sleep(sleepTime)
+        print('Sleeping...')
+        time.sleep(sleepTime)
 
 
 def run_mine(mineChain, insert_gensis = False, diff=5, debug = False):

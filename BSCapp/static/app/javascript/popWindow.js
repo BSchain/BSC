@@ -19,7 +19,7 @@ function popWindow(block) {
                                     '    <td align="left">'+block[item_conference_id]['abstract']+'</td>' +
                                     '</tr>'
         }
-        conference_html += '<p align="left"> 操作类型: 查看会议资源 </p> ' +
+        conference_html += '<h5 align="left"> 操作类型: 查看会议资源 </h5> ' +
         '                       <table class="table table-striped table-bordered table-condensed table-hover">' +
         '                           <thead >' +
         '                               <tr>' +
@@ -52,7 +52,7 @@ function popWindow(block) {
                                  '</tr>'
         }
 
-        journal_html += '<p align="left"> 操作类型: 查看期刊资源 </p> ' +
+        journal_html += '<h5 align="left"> 操作类型: 查看期刊资源 </h5> ' +
         '                     <table class="table table-striped table-bordered">' +
         '                         <thead>' +
         '                             <tr>' +
@@ -85,7 +85,7 @@ function popWindow(block) {
                                 '    <td align="left">'+block[item_patent_id]['patent_province']+'</td>' +
                                 '</tr>'
         }
-        patent_html += '<p align="left"> 操作类型: 查看专利资源 </p> ' +
+        patent_html += '<h5 align="left"> 操作类型: 查看专利资源 </h5> ' +
     '                       <table class="table table-striped table-bordered">' +
     '                           <thead>' +
     '                               <tr>' +
@@ -118,7 +118,7 @@ function popWindow(block) {
         else if(block['action'] == 'download'){
             operation_str ='下载数据'
         }
-        science_data_html += '<p align="left">操作类型:'+operation_str+' </p> ' +
+        science_data_html += '<h5 align="left">操作类型:'+operation_str+' </h5> ' +
         '                       <table class="table table-striped table-bordered">' +
         '                           <thead>' +
         '                               <tr>' +
@@ -142,11 +142,11 @@ function popWindow(block) {
         '          <div class="modal-content" style="width: available"> ' +
         '            <div class="modal-header"  >' +
         '               <button type="button" data-dismiss="modal" id="close'+ tx_id +'" class="close">&times; </button>' +
-        '                <h4>操作记录</h4>' +
+        '                <h4>操作详情</h4>' +
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
-        '                    <p align="left"> 用户id: '+block['user_id']+' </p> ' +
-        '                    <p align="left"> 操作时间: '+block['timestamp']+' </p> ' +
+        '                    <h5 align="left"> 用户名: '+block['user_id']+' </h5> ' +
+        '                    <h5 align="left"> 操作时间: '+block['timestamp']+' </h5> ' +
                             conference_html +
                             journal_html +
                             patent_html +
