@@ -7,6 +7,7 @@ function popWindow(block) {
     conference_html = ''
     if(block['conference_data_id_list'] != ''){
         conference_data_id_list = block['conference_data_id_list'].split(',')
+
         len_conference = conference_data_id_list.length
         conference_body_html = ''
         for( i=0; i < len_conference; i++){
@@ -146,16 +147,25 @@ function popWindow(block) {
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
         '                    <h5 align="left"> 用户名: '+block['user_id']+' </h5> ' +
-        '                    <h5 align="left"> 操作时间: '+block['timestamp']+' </h5> ' +
-                            conference_html +
-                            journal_html +
-                            patent_html +
-                            science_data_html +
-        '                   </div>' +
-        '                </div>' +
-        '           </div>' +
-        '         </div>' +
-        '       </div>';
+        '                    <h5 align="left"> 操作时间: '+block['timestamp']+' </h5> '
+    if(block['conference_data_id_list'] != ''){
+        str_html+=conference_html
+    }
+    if(block['journal_data_id_list'] != ''){
+        str_html+=journal_html
+    }
+    if(block['patent_data_id_list'] != ''){
+        str_html+=patent_html
+    }
+    if(block['science_data_id_list'] != ''){
+        str_html+=science_data_html
+    }
+    str_html += '                   </div>' +
+                '                </div>' +
+                '           </div>' +
+                '         </div>' +
+                '       </div>';
+
     item.innerHTML = str_html
 
 }

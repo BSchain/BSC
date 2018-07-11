@@ -240,13 +240,14 @@ def FindPwd(request):
             #                    seller=now_user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
             # tx.save_transaction()
 
-            log = LOG.Logs()
-            tx_id = generate_uuid(user.user_id)
-            now_time = str(datetime.datetime.utcnow().timestamp())
-            log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
-                        science_data=[], conference_data=[], journal_data=[], patent_data=[],
-                        action='reset_pwd', reviewer='')
-            log.save_log()
+            # LOG:修改密码
+            # log = LOG.Logs()
+            # tx_id = generate_uuid(user.user_id)
+            # now_time = str(datetime.datetime.utcnow().timestamp())
+            # log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+            #             science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+            #             action='reset_pwd', reviewer='',first_title='', second_title='', data_type='')
+            # log.save_log()
             # LOG: 修改密码
             # OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
             #             science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
@@ -344,14 +345,14 @@ def ModifyPwd(request):
         #                    timestamp=str(datetime.datetime.utcnow().timestamp()), action='modify_pwd',
         #                    seller=user.user_id, buyer='', data_uuid='', credit=0, reviewer='')
         # tx.save_transaction()
-
-        log = LOG.Logs()
-        tx_id = generate_uuid(user.user_id)
-        now_time = str(datetime.datetime.utcnow().timestamp())
-        log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
-                    science_data=[], conference_data=[], journal_data=[], patent_data=[],
-                    action='modify_pwd', reviewer='')
-        log.save_log()
+        # 修改密码
+        # log = LOG.Logs()
+        # tx_id = generate_uuid(user.user_id)
+        # now_time = str(datetime.datetime.utcnow().timestamp())
+        # log.new_log(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
+        #             science_data_id_list=[], conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+        #             action='modify_pwd', reviewer='',first_title='', second_title='', data_type='')
+        # log.save_log()
         # LOG:修改密码
         # OperationLog(tx_id=tx_id, user_id=user.user_id, timestamp=now_time,
         #             science_data_id_list='', conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
@@ -543,7 +544,8 @@ def BuyableData(request):
             tx_id =  generate_uuid(user.user_id)
             now_time = str(datetime.datetime.utcnow().timestamp())
             log.new_log(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
-                        science_data = now_data_id, conference_data = [], journal_data = [], patent_data = [], action = 'download', reviewer = '')
+                        science_data_id_list = now_data_id, conference_data_id_list = [], journal_data_id_list = [], patent_data_id_list = [],
+                        action = 'download', reviewer = '', first_title='', second_title='', data_type='')
             log.save_log()
 
             try:
@@ -681,8 +683,8 @@ def AdminDataInfo(request):
         log = LOG.Logs()
         tx_id = generate_uuid(now_admin.admin_id)
         log.new_log(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
-                    science_data=now_data_id, conference_data=[], journal_data=[], patent_data=[], action=now_action,
-                    reviewer=now_admin.admin_name)
+                    science_data_id_list=now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    action=now_action, reviewer=now_admin.admin_name,first_title='',second_title='',data_type='')
         log.save_log()
         # LOG:审核数据
         OperationLog(tx_id=tx_id, user_id=now_admin.admin_id,timestamp=now_time,
@@ -797,8 +799,8 @@ def AdminDataInfo(request):
                 log = LOG.Logs()
                 tx_id = generate_uuid(now_admin.admin_id)
                 log.new_log(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
-                            science_data=now_data_id, conference_data=[], journal_data=[], patent_data=[],
-                            action=now_action, reviewer=now_admin.admin_name)
+                            science_data_id_list=now_data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                            action=now_action, reviewer=now_admin.admin_name, first_title='', second_title='', data_type='')
                 #LOG:审核数据
                 OperationLog(tx_id=tx_id, user_id=now_admin.admin_id, timestamp=now_time,
                             science_data_id_list=now_data_id, conference_data_id_list='', journal_data_id_list='', patent_data_id_list='',
@@ -915,8 +917,8 @@ def Upload(request):
         tx_id = generate_uuid(user.user_id)
         now_time = str(datetime.datetime.utcnow().timestamp())
         log.new_log(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
-                    science_data=data_id, conference_data=[], journal_data=[],
-                    patent_data=[], action='upload', reviewer='')
+                    science_data_id_list=data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
+                    action='upload', reviewer='', first_title='', second_title='', data_type='')
         log.save_log()
 
         DownloadLog(log_id=generate_uuid(data_id), timestamp=now_time, user_id=user.user_id,

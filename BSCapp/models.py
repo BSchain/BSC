@@ -202,9 +202,9 @@ class OperationLog(models.Model): # save to database
     journal_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
     patent_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
     action = models.CharField(max_length=64) # login & modify_pwd & reset_pwd & download & check
-    reviewer = models.CharField(max_length=64, default='')
     first_title = models.CharField(max_length=64, default='')
     second_title = models.CharField(max_length=64, default='')
+    reviewer = models.CharField(max_length=64, default='')
     data_type = models.CharField(max_length=64, default='')
 
 class NewBlock(models.Model): # each tx_id save one block but in one block file

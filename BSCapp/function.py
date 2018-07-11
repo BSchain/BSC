@@ -443,7 +443,7 @@ def chainData_sql(request, sort_sql):
     context = {}
     cursor = connection.cursor()
     sql = 'select tx_id, user_id, timestamp, science_data_id_list, conference_data_id_list, journal_data_id_list, ' \
-          ' patent_data_id_list, action, reviewer, first_title, second_title ' \
+          ' patent_data_id_list, action, first_title, second_title,reviewer, data_type ' \
           'from BSCapp_OperationLog '
     search_sql = ''
     try:
@@ -497,17 +497,16 @@ def chainData_sql(request, sort_sql):
             block['user_id'] = Admin.objects.get(admin_id=content[i][1]).admin_name
         else:
             block['user_id'] = User.objects.get(user_id=content[i][1]).user_name
-
-        block['reviewer'] = content[i][8]
-        block['first_title'] = content[i][9]
-        block['first_title'] = content[i][10]
-        block['data_type'] = '待补充'
+        block['first_title'] = content[i][8]
+        block['second_title'] = content[i][9]
+        block['reviewer'] = content[i][10]
+        block['data_type'] = content[i][11]
 
         if len(science_data_id_list) == 0 and block['conference_data_id_list'] =='' and \
                 block['journal_data_id_list']=='' and block['patent_data_id_list'] == '':
             continue
         # only have science data
-        else:
+        if len(science_data_id_list)!=0:
             science_data_id = science_data_id_list
             science_data = ScienceData.objects.get(data_id= science_data_id)
             block['first_title'] = science_data.first_title
@@ -523,85 +522,91 @@ def chainData_sql(request, sort_sql):
             conference_data_id_list = block['conference_data_id_list'].split(',')
             for item_id in conference_data_id_list:
                 block[item_id] = {}
-                conference_data = Conference.objects.get(article_id=item_id)
-                # get article name
-                block[item_id]['article_name'] = conference_data.article_name
+                try:
+                    conference_data = Conference.objects.get(article_id=item_id)
+                    # get article name
+                    block[item_id]['article_name'] = conference_data.article_name
 
-                # get authors
-                article_authors_list = conference_data.article_authors.split('%')
-                authors_str = ''
-                for item_author in article_authors_list:
-                    single_author = item_author.split('^')[1][1:-1]
-                    if authors_str =='':
-                        authors_str += single_author
-                    else:
-                        authors_str += ','+single_author
-                block[item_id]['article_authors'] = authors_str
+                    # get authors
+                    article_authors_list = conference_data.article_authors.split('%')
+                    authors_str = ''
+                    for item_author in article_authors_list:
+                        single_author = item_author.split('^')[1][1:-1]
+                        if authors_str =='':
+                            authors_str += single_author
+                        else:
+                            authors_str += ','+single_author
+                    block[item_id]['article_authors'] = authors_str
 
-                #get conference name
-                block[item_id]['conference_name'] = conference_data.conference_name
+                    #get conference name
+                    block[item_id]['conference_name'] = conference_data.conference_name
 
-                # get keywors
-                keywords_list = conference_data.keywords.split[',']
-                keywords_str = ''
-                for item_keyword in keywords_list:
-                    if keywords_str == '':
-                        keywords_str += item_keyword
-                    else:
-                        item_keyword += ','+item_keyword
 
-                block[item_id]['keywords'] = conference_data.keywords
+                    block[item_id]['keywords'] = conference_data.keywords
 
-                # get abstract
-                block[item_id]['abstract'] = conference_data.abstract
+                    # get abstract
+                    block[item_id]['abstract'] = conference_data.abstract
+                except Exception as e:
+                    print(e)
+                    pass
 
         if block['journal_data_id_list']!='':
             journal_data_id_list = block['journal_data_id_list'].split(',')
+            print(journal_data_id_list)
             for item_id in journal_data_id_list:
                 block[item_id] = {}
-                journal_data = Journal.objects.get(article_id=item_id)
-                # get article name
-                block[item_id]['article_name'] = journal_data.article_name
+                try:
+                    # journal_data = Journal.objects.get(article_id=item_id)
+                    journal_data = Journal.objects.get(article_id='tcxb201704015')
+                    # get article name
+                    block[item_id]['article_name'] = journal_data.article_name
 
-                # get authors
-                article_authors_list = journal_data.article_authors.split('%')
-                authors_str = ''
-                for item_author in article_authors_list:
-                    if authors_str == '':
-                        authors_str += item_author
-                    else:
-                        authors_str += ',' + item_author
-                block[item_id]['article_authors'] = authors_str
+                    # get authors
+                    article_authors_list = journal_data.article_authors.split('%')
+                    authors_str = ''
+                    for item_author in article_authors_list:
+                        if authors_str == '':
+                            authors_str += item_author
+                        else:
+                            authors_str += ',' + item_author
+                    block[item_id]['article_authors'] = authors_str
 
-                # get conference name
-                block[item_id]['journal_name'] = journal_data.journal_name
+                    # get conference name
+                    block[item_id]['journal_name'] = journal_data.journal_name
 
-                # get keywors
-                keywords_list = journal_data.keywords.split[',']
-                keywords_str = ''
-                for item_keyword in keywords_list:
-                    if keywords_str == '':
-                        keywords_str += item_keyword
-                    else:
-                        item_keyword += ',' + item_keyword
+                    # get keywors
+                    keywords_list = journal_data.keywords.split[',']
+                    keywords_str = ''
+                    for item_keyword in keywords_list:
+                        if keywords_str == '':
+                            keywords_str += item_keyword
+                        else:
+                            item_keyword += ',' + item_keyword
 
-                block[item_id]['keywords'] = journal_data.keywords
-                # get abstract
-                block[item_id]['abstract'] = journal_data.abstract
+                    block[item_id]['keywords'] = journal_data.keywords
+                    # get abstract
+                    block[item_id]['abstract'] = journal_data.abstract
+                except Exception as e:
+                    # print(e,'lost_journal_data_id',item_id)
+                    pass
 
         if block['patent_data_id_list']!='':
             patent_data_id_list = block['patent_data_id_list'].split(',')
+            print('patent_data_id_list',patent_data_id_list)
             for item_id in patent_data_id_list:
                 block[item_id] = {}
-                patent_data = Patent.objects.get(patent_id=item_id)
-                # get article name
-                block[item_id]['patent_openId'] = patent_data.patent_openId
-                block[item_id]['patent_name'] = patent_data.patent_name
-                block[item_id]['patent_applicant'] = patent_data.patent_applicant
-                block[item_id]['patent_authors'] = patent_data.patent_authors
-                block[item_id]['patent_keywords'] = patent_data.patent_keywords
-                block[item_id]['patent_province'] = patent_data.patent_province
-
+                try:
+                    patent_data = Patent.objects.get(patent_id=item_id)
+                    # get article name
+                    block[item_id]['patent_openId'] = patent_data.patent_openId
+                    block[item_id]['patent_name'] = patent_data.patent_name
+                    block[item_id]['patent_applicant'] = patent_data.patent_applicant
+                    block[item_id]['patent_authors'] = patent_data.patent_authors
+                    block[item_id]['patent_keywords'] = patent_data.patent_keywords
+                    block[item_id]['patent_province'] = patent_data.patent_province
+                except Exception as e:
+                    print(e)
+                    pass
 
     return blocks, len_content
 
