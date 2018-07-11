@@ -487,7 +487,7 @@ def chainData_sql(request, sort_sql):
             continue
         block['tx_id'] = tx_id
         block['timestamp'] = time_to_str(content[i][2])
-        science_data_id_list = content[i][3] # split by  only one!!!
+        block['science_data_id_list'] = content[i][3] # split by  only one!!!
         block['conference_data_id_list'] = content[i][4]
         block['journal_data_id_list'] = content[i][5]
         block['patent_data_id_list'] = content[i][6]
@@ -502,12 +502,12 @@ def chainData_sql(request, sort_sql):
         block['reviewer'] = content[i][10]
         block['data_type'] = content[i][11]
 
-        if len(science_data_id_list) == 0 and block['conference_data_id_list'] =='' and \
+        if len(block['science_data_id_list']) == 0 and block['conference_data_id_list'] =='' and \
                 block['journal_data_id_list']=='' and block['patent_data_id_list'] == '':
             continue
         # only have science data
-        if len(science_data_id_list)!=0:
-            science_data_id = science_data_id_list
+        if len(block['science_data_id_list'])!=0:
+            science_data_id = block['science_data_id_list']
             science_data = ScienceData.objects.get(data_id= science_data_id)
             block['first_title'] = science_data.first_title
             block['second_title'] = science_data.second_title
@@ -521,91 +521,138 @@ def chainData_sql(request, sort_sql):
         if block['conference_data_id_list']!='':
             conference_data_id_list = block['conference_data_id_list'].split(',')
             for item_id in conference_data_id_list:
+                item_id = item_id.strip()
                 block[item_id] = {}
                 try:
                     conference_data = Conference.objects.get(article_id=item_id)
+                    block[item_id]['article_id'] = conference_data.article_id
                     # get article name
-                    block[item_id]['article_name'] = conference_data.article_name
+                    if conference_data.article_name != '':
+                        block[item_id]['article_name'] = conference_data.article_name
+                    else:
+                        block[item_id]['article_name'] = '无'
 
                     # get authors
-                    article_authors_list = conference_data.article_authors.split('%')
-                    authors_str = ''
-                    for item_author in article_authors_list:
-                        single_author = item_author.split('^')[1][1:-1]
-                        if authors_str =='':
-                            authors_str += single_author
-                        else:
-                            authors_str += ','+single_author
-                    block[item_id]['article_authors'] = authors_str
-
+                    article_authors_list = conference_data.article_authors
+                    if article_authors_list == '':
+                        block[item_id]['article_authors'] = '无'
+                    else:
+                        article_authors_list = article_authors_list.split('%')
+                        authors_str = ''
+                        for item_author in article_authors_list:
+                            single_author = item_author.split('^')[1][1:]
+                            if authors_str == '':
+                                authors_str += single_author
+                            else:
+                                authors_str += ',' + single_author
+                        block[item_id]['article_authors'] = authors_str
                     #get conference name
-                    block[item_id]['conference_name'] = conference_data.conference_name
-
-
-                    block[item_id]['keywords'] = conference_data.keywords
-
+                    if conference_data.conference_name != '':
+                        block[item_id]['conference_name'] =conference_data.conference_name
+                    else:
+                        block[item_id]['conference_name'] = '无'
+                    if conference_data.keywords != '':
+                        block[item_id]['keywords'] = conference_data.keywords
+                    else:
+                        block[item_id]['keywords'] = '无'
+                    if conference_data.abstract != '':
+                        block[item_id]['abstract'] = conference_data.abstract
+                    else:
+                        block[item_id]['abstract'] = '无'
                     # get abstract
-                    block[item_id]['abstract'] = conference_data.abstract
+
                 except Exception as e:
-                    print(e)
+                    print(e, 'lost_conference_data_id', '我我' + item_id + '我我')
                     pass
 
         if block['journal_data_id_list']!='':
             journal_data_id_list = block['journal_data_id_list'].split(',')
-            print(journal_data_id_list)
+            # print(journal_data_id_list)
             for item_id in journal_data_id_list:
+                item_id = item_id.strip()
                 block[item_id] = {}
                 try:
-                    # journal_data = Journal.objects.get(article_id=item_id)
-                    journal_data = Journal.objects.get(article_id='tcxb201704015')
+                    journal_data = Journal.objects.get(article_id=item_id)
+                    block[item_id]['article_id'] = journal_data.article_id
                     # get article name
-                    block[item_id]['article_name'] = journal_data.article_name
+                    if journal_data.article_name != '':
+                        block[item_id]['article_name'] = journal_data.article_name
+                    else:
+                        block[item_id]['article_name'] = '无'
 
                     # get authors
                     article_authors_list = journal_data.article_authors.split('%')
-                    authors_str = ''
-                    for item_author in article_authors_list:
-                        if authors_str == '':
-                            authors_str += item_author
-                        else:
-                            authors_str += ',' + item_author
-                    block[item_id]['article_authors'] = authors_str
+                    if article_authors_list == '':
+                        block[item_id]['article_authors'] = '无'
+                    else:
+                        authors_str = ''
+                        for item_author in article_authors_list:
+                            if authors_str == '':
+                                authors_str += item_author
+                            else:
+                                authors_str += ',' + item_author
+                        block[item_id]['article_authors'] = authors_str
 
                     # get conference name
-                    block[item_id]['journal_name'] = journal_data.journal_name
+                    if journal_data.journal_name != '':
+                        block[item_id]['journal_name'] = journal_data.journal_name
+                    else:
+                        block[item_id]['journal_name'] = '无'
 
-                    # get keywors
-                    keywords_list = journal_data.keywords.split[',']
-                    keywords_str = ''
-                    for item_keyword in keywords_list:
-                        if keywords_str == '':
-                            keywords_str += item_keyword
-                        else:
-                            item_keyword += ',' + item_keyword
-
-                    block[item_id]['keywords'] = journal_data.keywords
+                    if journal_data.keywords != '':
+                        block[item_id]['keywords'] = journal_data.keywords
+                    else:
+                        block[item_id]['keywords'] = '无'
                     # get abstract
-                    block[item_id]['abstract'] = journal_data.abstract
+                    if journal_data.abstract != '':
+                        block[item_id]['abstract'] = journal_data.abstract
+                    else:
+                        block[item_id]['abstract'] = '无'
                 except Exception as e:
-                    # print(e,'lost_journal_data_id',item_id)
+                    print(e,'lost_journal_data_id','我我'+item_id+'我我')
                     pass
 
         if block['patent_data_id_list']!='':
             patent_data_id_list = block['patent_data_id_list'].split(',')
-            print('patent_data_id_list',patent_data_id_list)
+            # print('patent_data_id_list',patent_data_id_list)
             for item_id in patent_data_id_list:
+                item_id = item_id.strip()
                 block[item_id] = {}
                 try:
                     patent_data = Patent.objects.get(patent_id=item_id)
+                    block[item_id]['patent_id'] = patent_data.patent_id
                     # get article name
-                    block[item_id]['patent_openId'] = patent_data.patent_openId
-                    block[item_id]['patent_name'] = patent_data.patent_name
-                    block[item_id]['patent_applicant'] = patent_data.patent_applicant
-                    block[item_id]['patent_authors'] = patent_data.patent_authors
-                    block[item_id]['patent_keywords'] = patent_data.patent_keywords
-                    block[item_id]['patent_province'] = patent_data.patent_province
+                    if patent_data.patent_openId != '':
+                        block[item_id]['patent_openId'] = patent_data.patent_openId
+                    else:
+                        block[item_id]['patent_openId'] = '无'
+
+                    if patent_data.patent_name != '':
+                        block[item_id]['patent_name'] = patent_data.patent_name
+                    else:
+                        block[item_id]['patent_name'] = '无'
+
+                    if patent_data.patent_applicant != '':
+                        block[item_id]['patent_applicant'] = patent_data.patent_applicant
+                    else:
+                        block[item_id]['patent_applicant'] = '无'
+
+                    if patent_data.patent_authors != '':
+                        block[item_id]['patent_authors'] = patent_data.patent_authors
+                    else:
+                        block[item_id]['patent_authors'] = '无'
+
+                    if patent_data.patent_keywords != '':
+                        block[item_id]['patent_keywords'] = patent_data.patent_keywords
+                    else:
+                        block[item_id]['patent_keywords'] = '无'
+
+                    if  patent_data.patent_province != '':
+                        block[item_id]['patent_province'] = patent_data.patent_province
+                    else:
+                        block[item_id]['patent_province'] = '无'
                 except Exception as e:
-                    print(e)
+                    print(e, 'lost_patent_data_id', '我我' + item_id + '我我')
                     pass
 
     return blocks, len_content

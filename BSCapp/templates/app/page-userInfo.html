@@ -215,8 +215,9 @@
 											<li class="disabled">
 												<span>&laquo;</span>
 											</li>
-											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}
-											<li class="active">
+											{% endif %} {% for i in tx_logs.paginator.page_range %}
+                                                {% if tx_logs.number == i %}
+											    <li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
 												</span>

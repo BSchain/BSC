@@ -24,11 +24,14 @@ def mine(block_chain, diff=5): # need to consider some condition
         new_block_index = block_chain.chain_length + 1 # new block height = chain_length + 1
 
         block = NewBlock()
-        block.new_block(index=new_block_index, timestamp=time(), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
+        # block.new_block(index=new_block_index, timestamp=(time()), prev_hash=prev_hash, transactions=block_chain.current_transactions,nonce=nonce)
+        block.new_block(index=new_block_index, timestamp=older_time(time()), prev_hash=prev_hash,
+                        transactions=block_chain.current_transactions, nonce=nonce)
         block_size = block.new_save_block() # save to file (one block one file KB)
 
 
-        now_timestamp = time()
+        # now_timestamp = time()
+        now_timestamp = older_time(time())
         block_chain.reset_transaction() # reset the current_transaction
         block_chain.chain_length += 1 # add chain_length
         block_chain.last_block = block.to_dict() # update the last block

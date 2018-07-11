@@ -13,6 +13,7 @@ function popWindow(block) {
         for( i=0; i < len_conference; i++){
             item_conference_id = conference_data_id_list[i]
             conference_body_html += '<tr>' +
+                                    '    <td align="left">'+block[item_conference_id]['article_id']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['article_name']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['article_authors']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['conference_name']+'</td>' +
@@ -24,6 +25,7 @@ function popWindow(block) {
         '                       <table class="table table-striped table-bordered table-condensed table-hover">' +
         '                           <thead >' +
         '                               <tr>' +
+        '                                   <th align="center"> 文章ID </th>' +
         '                                   <th align="center"> 论文名称 </th>' +
         '                                   <th align="center"> 论文作者 </th>' +
         '                                   <th align="center"> 会议名称 </th>' +
@@ -45,6 +47,7 @@ function popWindow(block) {
         for( i=0; i < len_journal; i++){
             item_journal_id = journal_data_id_list[i]
             journal_body_html += '<tr>' +
+                                 '    <td align="left">'+block[item_journal_id]['article_id']+'</td>' +
                                  '    <td align="left">'+block[item_journal_id]['article_name']+'</td>' +
                                  '    <td align="left">'+block[item_journal_id]['article_authors']+'</td>' +
                                  '    <td align="left">'+block[item_journal_id]['journal_name']+'</td>' +
@@ -57,6 +60,7 @@ function popWindow(block) {
         '                     <table class="table table-striped table-bordered">' +
         '                         <thead>' +
         '                             <tr>' +
+        '                                 <th align="center"> 文章ID </th>' +
         '                                 <th align="center"> 文章名称 </th>' +
         '                                 <th align="center"> 文章作者 </th>' +
         '                                 <th align="center"> 期刊名称 </th>' +
@@ -78,6 +82,7 @@ function popWindow(block) {
         for( i=0; i < len_patent; i++){
             item_patent_id = patent_data_id_list[i]
             patent_body_html += '<tr>' +
+                                '    <td align="left">'+block[item_patent_id]['patent_id']+'</td>' +
                                 '    <td align="left">'+block[item_patent_id]['patent_name']+'</td>' +
                                 '    <td align="left">'+block[item_patent_id]['patent_openId']+'</td>' +
                                 '    <td align="left">'+block[item_patent_id]['patent_applicant']+'</td>' +
@@ -90,6 +95,7 @@ function popWindow(block) {
     '                       <table class="table table-striped table-bordered">' +
     '                           <thead>' +
     '                               <tr>' +
+    '                                   <th align="center"> 专利ID </th>' +
     '                                   <th align="center"> 专利名称 </th>' +
     '                                   <th align="center"> 专利号 </th>' +
     '                                   <th align="center"> 专利申请人 </th>' +

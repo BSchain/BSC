@@ -30,15 +30,13 @@ def insert_gensis_block():
         block_insert = "insert into BSCapp_Newblock \
                         (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
                         values ('%d', '%s', '%s', '%s', '%s', '%s')" % \
-                       (gensis_block_height, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash, '2018')
+                       (gensis_block_height-1, gensis_block_prev_hash, gensis_block_timestamp, gensis_block_nonce, gensis_hash, '2018')
         cursor.execute(block_insert)
         db.commit()
-        print('now ' + UTILS.time_to_str(str(float(time.time())-28800)))
         print('insert success!')
     except Exception as e:
         print(str(e))
         db.rollback()
-        print('now ' + UTILS.time_to_str(str(time.time())))
         print('insert wrong!')
 
 
@@ -48,16 +46,18 @@ def mine_block(mineChain, diff=5, debug = False):
 
     if debug:
         sleepTime = 10  # change to 10 seconds
-        blockSizeLimit = 1024  # now set 1024 B
+        blockSizeLimit = 1024 * 2  # now set 1024 B
 
     else:
         sleepTime = 300  # change to 5 minutes
-        blockSizeLimit = 1024 * 3  # now set 1024 * 2 B
+        blockSizeLimit = 1024 * 5  # now set 1024 * 2 B
 
     while True:
         # get current transaction not contain empty transaction
         mineChain.new_get_current_transaction(blockSizeLimit, deleteFile=True)
         transaction_number = len(mineChain.current_transactions) # transaction numbers !!!
+        for i in range(0,transaction_number):
+            print(mineChain.current_transactions[i]['timestamp'])
         if transaction_number == 0 :
             print(UTILS.time_to_str(str(time.time())) +' now is empty transaction')
             time.sleep(sleepTime)
@@ -84,14 +84,16 @@ def mine_block(mineChain, diff=5, debug = False):
                 block_insert = "insert into BSCapp_Newblock \
                                 (block_height, prev_hash, block_timestamp, nonce, block_hash, tx_id) \
                                 values ('%d', '%s', '%s', '%d',  '%s', '%s')" % \
-                               (chain_height, prev_hash, block_timestamp, nonce, now_block_hash, tx_id)
+                               (chain_height-1, prev_hash, block_timestamp, nonce, now_block_hash, tx_id)
                 cursor.execute(block_insert)
                 db.commit()
-                print(UTILS.time_to_str(str(time.time())) +' insert success!')
+                # print(UTILS.time_to_str(str(time.time())) + ' insert success!')
+                print(UTILS.time_to_str(str(UTILS.older_time(time.time()))) +' insert success!')
             except Exception as e:
                 # print(str(e))
                 db.rollback()
-                print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
+                # print(UTILS.time_to_str(str(time.time())) + ' insert wrong!')
+                print(UTILS.time_to_str(str(UTILS.older_time(time.time()))) + ' insert wrong!')
         print('Sleeping...')
         time.sleep(sleepTime)
 

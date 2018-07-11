@@ -229,9 +229,12 @@ def FindPwd(request):
             # send notices to user
             now_user = User.objects.get(user_name=now_user_name)
             notice_info = '{} 在 {} 发起重置密码请求'.format(now_user_name, time_to_str(time()))
+            # Notice(notice_id=generate_uuid(now_user.user_id), sender_id='系统',
+            #        receiver_id=now_user.user_id,
+            #        notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
             Notice(notice_id=generate_uuid(now_user.user_id), sender_id='系统',
                    receiver_id=now_user.user_id,
-                   notice_type=4, notice_info=notice_info, if_check=False, timestamp=time(), if_delete=False).save()
+                   notice_type=4, notice_info=notice_info, if_check=False, timestamp=older_time(time()), if_delete=False).save()
 
             # generate now transaction file
             # tx = TX.Transaction()
@@ -361,9 +364,12 @@ def ModifyPwd(request):
 
         notice_info = '{} 在 {} 修改密码成功'.format(username, time_to_str(time()))
         # send notify to user
-        Notice(notice_id= generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
-           notice_type=4, notice_info=notice_info, if_check=False,
-           timestamp=time(), if_delete=False).save()
+        # Notice(notice_id= generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
+        #    notice_type=4, notice_info=notice_info, if_check=False,
+        #    timestamp=time(), if_delete=False).save()
+        Notice(notice_id=generate_uuid(user.user_id), sender_id='系统', receiver_id=user.user_id,
+               notice_type=4, notice_info=notice_info, if_check=False,
+               timestamp=older_time(time()), if_delete=False).save()
 
         try:
             user_modify = Modify.objects.get(user_name=username)
@@ -542,7 +548,8 @@ def BuyableData(request):
             # add transaction to file
             log = LOG.Logs()
             tx_id =  generate_uuid(user.user_id)
-            now_time = str(datetime.datetime.utcnow().timestamp())
+            # now_time = str(datetime.datetime.utcnow().timestamp())
+            now_time = str(older_time(datetime.datetime.utcnow().timestamp()))
             log.new_log(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
                         science_data_id_list = now_data_id, conference_data_id_list = [], journal_data_id_list = [], patent_data_id_list = [],
                         action = 'download', reviewer = '', first_title='', second_title='', data_type='')
@@ -678,7 +685,8 @@ def AdminDataInfo(request):
         elif now_data_status == 2:
             now_action = 'review_reject'
 
-        now_time = str(datetime.datetime.utcnow().timestamp())
+        # now_time = str(datetime.datetime.utcnow().timestamp())
+        now_time = str(older_time(datetime.datetime.utcnow().timestamp()))
 
         log = LOG.Logs()
         tx_id = generate_uuid(now_admin.admin_id)
@@ -715,7 +723,8 @@ def AdminDataInfo(request):
         sender_id = now_admin_id
         notice_id = generate_uuid(sender_id)
         receiver_id = now_data.user_id
-        timestamp = datetime.datetime.utcnow().timestamp()
+        # timestamp = datetime.datetime.utcnow().timestamp()
+        timestamp = older_time(datetime.datetime.utcnow().timestamp())
         if now_action == 'review_pass':
             notice_type = 1
             notice_info = '管理员 {} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp),
@@ -793,7 +802,8 @@ def AdminDataInfo(request):
                 now_data.data_status = data_all_pass_status
                 now_data.save()
                 now_action = 'review_pass'
-                now_time = str(datetime.datetime.utcnow().timestamp())
+                # now_time = str(datetime.datetime.utcnow().timestamp())
+                now_time = str(older_time(datetime.datetime.utcnow().timestamp()))
 
 
                 log = LOG.Logs()
@@ -828,7 +838,8 @@ def AdminDataInfo(request):
                 sender_id = now_admin_id
                 notice_id = generate_uuid(sender_id)
                 receiver_id = now_data.user_id
-                timestamp = datetime.datetime.utcnow().timestamp()
+                # timestamp = datetime.datetime.utcnow().timestamp()
+                timestamp = older_time(datetime.datetime.utcnow().timestamp())
 
                 notice_type = 1
                 notice_info = '{} 在 {} 审核 {} 通过'.format(now_admin.admin_name, time_to_str(timestamp),
@@ -915,7 +926,8 @@ def Upload(request):
 
         log = LOG.Logs()
         tx_id = generate_uuid(user.user_id)
-        now_time = str(datetime.datetime.utcnow().timestamp())
+        # now_time = str(datetime.datetime.utcnow().timestamp())
+        now_time = str(older_time(datetime.datetime.utcnow().timestamp()))
         log.new_log(tx_id=tx_id, user_id=user.user_id,timestamp=now_time,
                     science_data_id_list=data_id, conference_data_id_list=[], journal_data_id_list=[], patent_data_id_list=[],
                     action='upload', reviewer='', first_title='', second_title='', data_type='')

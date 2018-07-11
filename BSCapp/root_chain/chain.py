@@ -148,6 +148,7 @@ class Chain:
 
     def new_get_last_block(self):
         self.new_init_chain_length() # chain_length equal to the number of block
+        # last_block_file = new_get_block_file(self.chain_length)
         last_block_file = new_get_block_file(self.chain_length)
         with open(last_block_file,'r') as f:
             json_block = json.load(f)
@@ -174,7 +175,14 @@ class Chain:
         total_size = 0
         assert os.path.exists(LOG_SAVE_ROOT), ('blocks file not exist')
         transaction_list = os.listdir(LOG_SAVE_ROOT)
-        for each_transaction in transaction_list: # get the total transaction
+        # print('before sort',transaction_list)
+        transaction_list.sort()
+
+        # print('after sort', transaction_list)
+        list_len = len(transaction_list)
+        for i in range(0, list_len):
+            each_transaction = transaction_list[i]
+        # for each_transaction in transaction_list: # get the total transaction
             if total_size > blockSizeLimit: # more than blocksize
                 print('transaction size now is over than '+ str(blockSizeLimit)+' B')
                 break

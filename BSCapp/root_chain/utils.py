@@ -181,3 +181,6 @@ def get_file_md5(file_path):
 
 def time_to_str(timestamp):
     return datetime.datetime.fromtimestamp(float(timestamp) + 28800.0).strftime('%Y-%m-%d %H:%M:%S')
+
+def older_time(timestamp):
+    return timestamp - 4320000 - 86400
