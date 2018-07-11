@@ -46,7 +46,7 @@ def mine_block(mineChain, diff=5, debug = False):
 
     if debug:
         sleepTime = 10  # change to 10 seconds
-        blockSizeLimit = 1024 * 2  # now set 1024 B
+        blockSizeLimit = 512   # now set 1024 B
 
     else:
         sleepTime = 300  # change to 5 minutes
