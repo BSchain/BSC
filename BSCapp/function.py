@@ -364,7 +364,7 @@ def noticeData_sql(user_id, sort_sql):
     return notices, unread_notices, unread_number
 
 # Done add config number = 5
-def pagingData(request, datas, each_num=5):
+def pagingData(request, datas, each_num=6):
     # paginator = Paginator(datas, each_num)
     # print(each_num)
     paginator = JuncheePaginator(datas, each_num)
@@ -469,6 +469,8 @@ def chainData_sql(request, sort_sql):
     blocks = []
     len_content = len(content)
     for i in range(len_content):
+        if i > 50:
+            break
         block = dict()
         tx_id = content[i][0]
         if (tx_id == '2018'): # the gensis block

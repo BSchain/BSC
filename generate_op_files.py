@@ -88,7 +88,7 @@ def sql_to_log():
         log.save_log()
 
 
-# sql_to_log()
+sql_to_log()
 # generate_data(data_round=5, delete_header=True, save_log = True)
 
 

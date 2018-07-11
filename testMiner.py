@@ -45,11 +45,11 @@ def mine_block(mineChain, diff=5, debug = False):
     mineChain.new_get_last_block() # get the last block
 
     if debug:
-        sleepTime = 10  # change to 10 seconds
-        blockSizeLimit = 512   # now set 1024 B
+        sleepTime = 5  # change to 10 seconds
+        blockSizeLimit = 1024   # now set 1024 B
 
     else:
-        sleepTime = 300  # change to 5 minutes
+        sleepTime = 150  # change to 5 minutes
         blockSizeLimit = 1024 * 5  # now set 1024 * 2 B
 
     while True:
