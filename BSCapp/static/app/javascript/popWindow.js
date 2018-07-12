@@ -13,7 +13,7 @@ function popWindow(block) {
         for( i=0; i < len_conference; i++){
             item_conference_id = conference_data_id_list[i]
             conference_body_html += '<tr>' +
-                                    '    <td align="left">'+block[item_conference_id]['article_id']+'</td>' +
+                                    // '    <td align="left">'+block[item_conference_id]['article_id']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['article_name']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['article_authors']+'</td>' +
                                     '    <td align="left">'+block[item_conference_id]['conference_name']+'</td>' +
@@ -148,7 +148,7 @@ function popWindow(block) {
     str_html = '<div id="myModal'+tx_id+'" class="modal" style="display: block; " >' +
         '          <div class="modal-content" style="width: available"> ' +
         '            <div class="modal-header"  >' +
-        '               <button type="button" data-dismiss="modal" id="close'+ tx_id +'" class="close">&times; </button>' +
+        '               <button type="button" onclick="hideWindow(\'' + tx_id+  '\')" data-dismiss="modal" id="close'+ tx_id +'" class="close">&times; </button>' +
         '                <h4>操作详情</h4>' +
         '                <div class="modal-body pre-scrollable">' +
         '                   <div class="panel-body">' +
@@ -177,10 +177,8 @@ function popWindow(block) {
 }
 
 function hideWindow(tx_id) {
-    posId = "block"+tx_id
+    posId = "myModal"+tx_id
     item = document.getElementById(posId)
-    item.remove()
-    // modal = document.getElementById('myModal'+ tx_id)
-    // modal.style.display = "none";
+    item.style.display = "none"
 
 }

@@ -116,12 +116,13 @@
 												<td align="">  {{block.second_title}}</td>
                                                 <td align="">  {{block.data_type}}</td>
                                                 <td align="">  {{block.block_height}}</td>
-                                                <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" id="myBtn{{block.height}}" value="1" onclick="popWindow({{block}})">操作详情</button></a></td>
+                                                <td  align=""><a><button class="fa fa-balance-scale"  style=" background: honeydew; font-size: 16px" name="block_height_detail" onclick="popWindow({{ block }})">操作详情</button></a></td>
                                                 <td>
 													<button class="fa fa-bandcamp"  style=" background: honeydew; font-size: 16px" name="block_height" id="block_height" value="{{block.block_height}}" onclick="indexShowBlockDetail(this);">区块源文件</button>
 													{# add pop window #}
                                                     <div id="block{{ block.tx_id }}"> </div>
-
+{#                                                    <div id="myModal{{block.tx_id}}" > 我看见你</div>#}
+{#                                                    <button name="block_height" id="block_height" value="{{block.tx_id}}" onclick="hideWindow({{ block }});">隐藏按钮</button>#}
 												</td>
 											</tr>
 										{% endfor %}
