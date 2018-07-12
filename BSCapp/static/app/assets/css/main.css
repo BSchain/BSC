@@ -1135,14 +1135,14 @@ ul.activity-list > li {
 .profile-left {
   padding-left: 0;
   float: left;
-  width: 28%;
+  width: 20%;
   height: 100%;
   position: absolute;
   background-color: #F8F8F8; }
 
 .profile-right {
   float: right;
-  width: 72%;
+  width: 80%;
   padding: 20px 25px; }
   .profile-right .heading {
     margin-top: 0; }
