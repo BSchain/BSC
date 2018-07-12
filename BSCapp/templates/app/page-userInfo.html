@@ -133,9 +133,6 @@
                                                 <div class="col-md-6 stat-item ">
                                                     {{purchase_data_num}} <span>已使用数据</span>
                                                 </div>
-{#                                                <div class="col-md-4 stat-item">#}
-{#                                                    {{account}} <span>账户余额</span>#}
-{#                                                </div>#}
                                             </div>
                                         </div>
                                     </div>
@@ -176,14 +173,14 @@
 										<h3 class="panel-title">操作记录</h3>
 									</div>
 									<div class="panel-body">
-										<table class="table table-striped">
+										<table class="table table-striped" >
 											<thead>
 												<tr>
 {#                                                    <th align="center">数据ID</th>#}
                                                     <th align="center">数据名</th>
                                                     <th align="center">时间戳</th>
-													<th align="center">所属专题</th>
-	                                                <th align="center">所属科技资源</th>
+													<th align="center">专题</th>
+	                                                <th align="center">科技资源</th>
                                                     <th align="center">数据来源</th>
                                                     <th align="center">数据类型</th>
 													<th align="center">操作行为</th>
@@ -195,13 +192,13 @@
 											{% for tx_log in tx_logs %}
 												<tr>
 {#                                                    <td align="">  {{tx_log.science_data}}</td>#}
-                                                    <td align="">  {{tx_log.science_data_id}}</td>
-	                                                <td align="">  {{tx_log.timestamp}}</td>
-													<td align="">  {{tx_log.first_title}}</td>
-	                                                <td align="">  {{tx_log.second_title}}</td>
-													<td align="">  {{tx_log.data_source}}</td>
-                                                    <td align="">  {{tx_log.data_type}}</td>
-                                                    <td align="">  {{tx_log.action}}</td>
+                                                    <td style="width:21%" align="" style="font-size: 13px">  {{tx_log.science_data_id}}</td>
+	                                                <td style="width:10%" align="" style="font-size: 13px">  {{tx_log.timestamp}}</td>
+													<td style="width:15%" align="" style="font-size: 13px">  {{tx_log.first_title}}</td>
+	                                                <td style="width:10%" align="" style="font-size: 13px">  {{tx_log.second_title}}</td>
+													<td style="width:10%" align="" style="font-size: 13px">  {{tx_log.data_source}}</td>
+                                                    <td style="width:10%" align="" style="font-size: 13px">  {{tx_log.data_type}}</td>
+                                                    <td style="width:10%" align="" style="font-size: 13px">  {{tx_log.action}}</td>
 												</tr>
 											{% endfor %}
 											</tbody>
@@ -236,58 +233,9 @@
 										{% endif %}
 									</ul>
 									{% endif %}
-{#										{% if tx_logs.has_other_pages %}#}
-{#											<ul class="pagination">#}
-{#											{% if tx_logs.has_previous %}#}
-{#											<li>#}
-{#												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>#}
-{#											</li>#}
-{#											{% else %}#}
-{#											<li class="disabled">#}
-{#												<span>&laquo;</span>#}
-{#											</li>#}
-{#											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}#}
-{#											<li class="active">#}
-{#												<span>{{ i }}#}
-{#													<span class="sr-only">(current)</span>#}
-{#												</span>#}
-{#											</li>#}
-{#											{% else %}#}
-{#											<li>#}
-{#												<a href="?page={{ i }}">{{ i }}</a>#}
-{#											</li>#}
-{#											{% endif %} {% endfor %} {% if tx_logs.has_next %}#}
-{#											<li>#}
-{#												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>#}
-{#											</li>#}
-{#											{% else %}#}
-{#											<li class="disabled">#}
-{#												<span>&raquo;</span>#}
-{#											</li>#}
-{#											{% endif %}#}
-{#									</ul>#}
-{#									{% endif %}#}
 									</div>
 								</div>
 								<!-- END RECORD -->
-								<!-- TABBED CONTENT -->
-{#								<div class="custom-tabs-line tabs-line-bottom left-aligned">#}
-{#									<ul class="nav" role="tablist">#}
-{#										<li class="active"><a href="#tab-bottom-left1" role="tab" data-toggle="tab">Recent Activity</a></li>#}
-{#                                        <li><a href="#tab-bottom-left2" role="tab" data-toggle="tab">Projects <span class="badge">7</span></a></li>#}
-{#									</ul>#}
-{#								</div>#}
-{#								<div class="tab-content">#}
-{#									<div class="tab-pane fade in active" id="tab-bottom-left1">#}
-{#										<ul class="list-unstyled activity-timeline">#}
-{#											<li>#}
-{#												<i class="fa fa-comment activity-icon"></i>#}
-{#												<p>Commented on post <a href="#">Prototyping</a> <span class="timestamp">2 minutes ago</span></p>#}
-{#											</li>#}
-{#										</ul>#}
-{#									</div>#}
-{#								</div>#}
-								<!-- END TABBED CONTENT -->
 							</div>
 							<!-- END RIGHT COLUMN -->
 						</div>

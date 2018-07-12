@@ -470,7 +470,7 @@ def chainData_sql(request, sort_sql):
     blocks = []
     len_content = len(content)
     for i in range(len_content):
-        if i > 50:
+        if i > 78:
             break
         block = dict()
         tx_id = content[i][0]
@@ -482,6 +482,7 @@ def chainData_sql(request, sort_sql):
             block['block_height'] = itemBlock.block_height
             block['prev_hash'] = itemBlock.prev_hash
             block['tx_id'] = itemBlock.tx_id
+            block['tx_id_short'] = itemBlock.tx_id[0:16]
             block['block_timestamp'] = itemBlock.block_timestamp
             block['nonce'] = itemBlock.nonce
             block['block_hash'] = itemBlock.block_hash
@@ -489,6 +490,7 @@ def chainData_sql(request, sort_sql):
             # print(e)
             continue
         block['tx_id'] = tx_id
+        block['tx_id_short'] = itemBlock.tx_id[0:16]
         block['timestamp'] = time_to_str(content[i][2])
         block['science_data_id_list'] = content[i][3] # split by  only one!!!
         block['conference_data_id_list'] = content[i][4]
