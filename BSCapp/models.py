@@ -193,11 +193,24 @@ class DownloadLog(models.Model):
     science_data_id = models.CharField(max_length=64)
     action = models.CharField(max_length=64, default="") # 下载
 
-class CheckLog(models.Model):
-    log_id = models.CharField(max_length=64, primary_key=True)
-    timestamp = models.CharField(max_length=64)
+class OperationLog(models.Model): # save to database
+    tx_id = models.CharField(max_length=64, primary_key=True)
     user_id = models.CharField(max_length=64)
-    conference_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    journal_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    patent_data_id_list = models.CharField(max_length=2000) # 逗号分隔
-    action = models.CharField(max_length=64, default="") # 查看 或 下载
+    timestamp = models.CharField(max_length=64)
+    science_data_id_list = models.CharField(max_length=2000, default='') # 逗号分隔
+    conference_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    journal_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    patent_data_id_list = models.CharField(max_length=2000, default='')  # 逗号分隔
+    action = models.CharField(max_length=64) # login & modify_pwd & reset_pwd & download & check
+    first_title = models.CharField(max_length=64, default='')
+    second_title = models.CharField(max_length=64, default='')
+    reviewer = models.CharField(max_length=64, default='')
+    data_type = models.CharField(max_length=64, default='')
+
+class NewBlock(models.Model): # each tx_id save one block but in one block file
+    tx_id = models.CharField(max_length=64, primary_key=True)  # save_the operation log id
+    block_height = models.IntegerField()  # after mining the transaction
+    prev_hash = models.CharField(max_length=64)
+    block_timestamp = models.CharField(max_length=64)
+    nonce = models.CharField(max_length=64, default='')
+    block_hash = models.CharField(max_length=64, default='')  # 自身hash值

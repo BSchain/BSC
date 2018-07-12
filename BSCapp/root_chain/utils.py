@@ -22,6 +22,14 @@ BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocks/' # the bloc
 BLOCK_SAVE_SUFFIX = '.json' # block suffix
 BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
 
+LOG_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/logs/'
+LOG_SAVE_SUFFIX = '.json'
+NEW_BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocksNew/' # the blocks saving root
+NEW_BLOCK_SAVE_SUFFIX = '.json' # block suffix
+NEW_BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
+
+
+
 def hash_block(block): # json block
     block_str = json.dumps(block, sort_keys=True).encode() # here generate the block string
     return str(hasher.sha256(block_str).hexdigest())
@@ -58,12 +66,21 @@ def get_block_by_index_json(index):
     return json_block
 
 
+def new_get_block_by_index_json(index):
+    block_file = new_get_block_file(index)
+    assert os.path.exists(block_file), (block_file, 'not exist')
+    with open(block_file, 'r') as f:
+        json_block = json.load(f)
+    return json_block
+
 def get_block_by_index_object(index):
     return Block.json_to_bloc(get_block_by_index_json(index))
 
 def get_block_file(index):
     return BLOCK_SAVE_ROOT + str(index) + BLOCK_SAVE_SUFFIX
 
+def new_get_block_file(index):
+    return NEW_BLOCK_SAVE_ROOT + str(index) + NEW_BLOCK_SAVE_SUFFIX
 
 def get_total_tx():
     tx_total = []
@@ -164,3 +181,6 @@ def get_file_md5(file_path):
 
 def time_to_str(timestamp):
     return datetime.datetime.fromtimestamp(float(timestamp) + 28800.0).strftime('%Y-%m-%d %H:%M:%S')
+
+def older_time(timestamp): # 当前7.12 9:17  结果为 2018-05-22 20:22:53
+    return timestamp - 4320000 - 46400

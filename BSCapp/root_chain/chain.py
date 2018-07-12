@@ -5,7 +5,7 @@
 # @Software: PyCharm
 # @Blog    : http://zpfbuaa.github.io
 
-from BSCapp.root_chain.block import *
+from BSCapp.root_chain.newBlock import *
 import requests
 from BSCapp.root_chain.utils import *
 import BSCapp.root_chain.transaction as TX
@@ -57,11 +57,24 @@ class Chain:
         block_list = os.listdir(BLOCK_SAVE_ROOT)
         self.chain_length = len(block_list)
 
+    def new_init_chain_length(self):
+        assert os.path.exists(NEW_BLOCK_SAVE_ROOT), ('blocks save file not exist')
+        block_list = os.listdir(NEW_BLOCK_SAVE_ROOT)
+        self.chain_length = len(block_list)
+
     def save_chain(self):
         assert os.path.exists(BLOCK_SAVE_ROOT), ('blocks save file not exist')
         for index,each_block in enumerate(self.chain):
             block_file = get_block_file(index+1)
             f = open(block_file,'w')
+            f.write(json.dumps(self.chain))
+            f.close()
+
+    def new_save_chain(self):
+        assert os.path.exists(NEW_BLOCK_SAVE_ROOT), ('blocks save file not exist')
+        for index, each_block in enumerate(self.chain):
+            block_file = get_block_file(index + 1)
+            f = open(block_file, 'w')
             f.write(json.dumps(self.chain))
             f.close()
 
@@ -75,10 +88,17 @@ class Chain:
             gensis_json_block = json.load(f)
         return gensis_json_block # get gensis json block
 
+    @staticmethod
+    def new_get_gensis_block(gensis_index=1):
+        assert os.path.exists(NEW_BLOCK_SAVE_ROOT), ('blocks file not exist')
+        with open(get_block_file(gensis_index)) as f:
+            gensis_json_block = json.load(f)
+        return gensis_json_block  # get gensis json block
+
     def find_block_by_index(self, index):
         assert int(index) > 0, ('index must greater than 0')
         assert int(index) >= self.chain_length, ('index must smaller than chain_length',index,self.chain_length)
-        block_file = get_block_file(index)
+        block_file = new_get_block_file(index)
         assert os.path.exists(block_file), (block_file,'not exist')
         with open(block_file, 'r') as f:
             json_block = json.load(f)
@@ -95,6 +115,13 @@ class Chain:
                 json_block = json.load(f)
             self.chain.append(json_block)
 
+    def new_get_block_from_to(self, start_height, end_height):
+        assert os.path.exists(NEW_BLOCK_SAVE_ROOT), ('blocks file not exist')
+        for index in range(start_height, end_height + 1): # only get block from [start, end]
+            with open(new_get_block_file(index)) as f:
+                json_block = json.load(f)
+            self.chain.append(json_block)
+
     def get_total_chain(self):
         assert os.path.exists(BLOCK_SAVE_ROOT), ('blocks file not exist')
         block_list = os.listdir(BLOCK_SAVE_ROOT)
@@ -103,9 +130,26 @@ class Chain:
                 json_block = json.load(f)
             self.chain.append(json_block)
 
+    def new_get_total_chain(self):
+        assert os.path.exists(NEW_BLOCK_SAVE_ROOT), ('blocks file not exist')
+        block_list = os.listdir(NEW_BLOCK_SAVE_ROOT)
+        for each_block in block_list:
+            with open(NEW_BLOCK_SAVE_ROOT+each_block,'r') as f:
+                json_block = json.load(f)
+            self.chain.append(json_block)
+
     def get_last_block(self):
         self.init_chain_length() # chain_length equal to the number of block
         last_block_file = get_block_file(self.chain_length)
+        with open(last_block_file,'r') as f:
+            json_block = json.load(f)
+
+        self.last_block = json_block # get the last json block
+
+    def new_get_last_block(self):
+        self.new_init_chain_length() # chain_length equal to the number of block
+        # last_block_file = new_get_block_file(self.chain_length)
+        last_block_file = new_get_block_file(self.chain_length)
         with open(last_block_file,'r') as f:
             json_block = json.load(f)
 
@@ -120,6 +164,29 @@ class Chain:
                 print('transaction size now is over than '+ str(blockSizeLimit)+' B')
                 break
             tx_file = TRANSACTION_SAVE_ROOT + each_transaction
+            total_size += os.path.getsize(tx_file)  # update the total block size
+            with open(tx_file, 'r') as f:
+                transaction = json.load(f)
+            self.current_transactions.append(transaction)
+            if deleteFile:
+                os.remove(tx_file)
+
+    def new_get_current_transaction(self, blockSizeLimit, deleteFile):
+        total_size = 0
+        assert os.path.exists(LOG_SAVE_ROOT), ('blocks file not exist')
+        transaction_list = os.listdir(LOG_SAVE_ROOT)
+        # print('before sort',transaction_list)
+        transaction_list.sort()
+
+        # print('after sort', transaction_list)
+        list_len = len(transaction_list)
+        for i in range(0, list_len):
+            each_transaction = transaction_list[i]
+        # for each_transaction in transaction_list: # get the total transaction
+            if total_size > blockSizeLimit: # more than blocksize
+                print('transaction size now is over than '+ str(blockSizeLimit)+' B')
+                break
+            tx_file = LOG_SAVE_ROOT + each_transaction
             total_size += os.path.getsize(tx_file)  # update the total block size
             with open(tx_file, 'r') as f:
                 transaction = json.load(f)

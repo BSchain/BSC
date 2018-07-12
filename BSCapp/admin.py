@@ -23,4 +23,5 @@ admin.site.register(Patent)
 admin.site.register(DataStat)
 admin.site.register(ScienceData)
 admin.site.register(DownloadLog)
-
+admin.site.register(OperationLog)
+admin.site.register(NewBlock)

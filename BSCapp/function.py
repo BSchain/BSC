@@ -12,6 +12,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+from django.db.models import Q
 
 class JuncheePaginator(Paginator):
     def __init__(self, object_list, per_page, range_num=4, orphans=0, allow_empty_first_page=True):
@@ -241,7 +242,6 @@ def adminData_sql(request, sort_sql):
         return {}
     datas = []
     len_content = len(content)
-    # print(len_content)
     for i in range(len_content):
         data = dict()
         data['data_id'] = content[i][0]
@@ -287,6 +287,7 @@ def txLog_sql(user_id):
     for i in range(len(content)):
         tx_log = dict()
         sciencd_data = ScienceData.objects.get(data_id=content[i][0])
+        tx_log['science_data'] = sciencd_data.data_id
         tx_log['science_data_id'] = sciencd_data.data_name
         tx_log['timestamp'] = time_to_str(content[i][1])
         tx_log['first_title'] = sciencd_data.first_title
@@ -363,8 +364,8 @@ def noticeData_sql(user_id, sort_sql):
 
     return notices, unread_notices, unread_number
 
-# Done add config number = 7
-def pagingData(request, datas, each_num=7):
+# Done add config number = 5
+def pagingData(request, datas, each_num=6):
     # paginator = Paginator(datas, each_num)
     # print(each_num)
     paginator = JuncheePaginator(datas, each_num)
@@ -389,20 +390,6 @@ def get_notices(request, user_id):
     notices, unread_notices, unread_number = noticeData_sql(user_id, sort_sql)
     return notices, unread_notices, unread_number
 
-
-# def GetAccount(user_id):
-#     #get the wallet account
-#     content = {}
-#     cursor = connection.cursor()
-#     sql = 'select account from BSCapp_wallet where BSCapp_wallet.user_id = %s;'
-#     try:
-#         cursor.execute(sql, [user_id])
-#         content = cursor.fetchall()
-#         cursor.close()
-#     except Exception as e:
-#         cursor.close()
-#     return content[0][0]
-
 def GetUploadData(user_id):
     #get upload data
     content = {}
@@ -420,9 +407,9 @@ def GetDownloadData(user_id):
     #get purchase data
     content = {}
     cursor = connection.cursor()
-    sql = 'select log_id from BSCapp_downloadlog where BSCapp_downloadlog.user_id = %s;'
+    sql = 'select log_id from BSCapp_downloadlog where BSCapp_downloadlog.user_id = %s and BSCapp_downloadlog.action=%s;'
     try:
-        cursor.execute(sql, [user_id])
+        cursor.execute(sql, [user_id,'下载'])
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -456,9 +443,9 @@ def generate_sort_class(sort_name, sort_type, sort_list):
 def chainData_sql(request, sort_sql):
     context = {}
     cursor = connection.cursor()
-    sql = 'select height, timestamp, block_size, tx_number, block_hash ' \
-          'from BSCapp_block '
-
+    sql = 'select tx_id, user_id, timestamp, science_data_id_list, conference_data_id_list, journal_data_id_list, ' \
+          ' patent_data_id_list, action, first_title, second_title,reviewer, data_type ' \
+          'from BSCapp_OperationLog '
     search_sql = ''
     try:
         search_base = request.POST["searchBase"]
@@ -477,58 +464,199 @@ def chainData_sql(request, sort_sql):
         content = cursor.fetchall()
         cursor.close()
     except Exception as e:
-        # print(e)
+
         cursor.close()
         return context
-
     blocks = []
     len_content = len(content)
     for i in range(len_content):
+        if i > 50:
+            break
         block = dict()
-        block['height'] = content[i][0]
-        block['timestamp'] = time_to_str(content[i][1])
-        block['block_size'] = content[i][2]
-        block['tx_number'] = content[i][3]
-        block['block_hash'] = content[i][4]
-        block['wholeInfo'] = get_block_by_index_json(content[i][0])
+        tx_id = content[i][0]
+        if (tx_id == '2018'): # the gensis block
+            continue
+        try:
+            # print(tx_id)
+            itemBlock = NewBlock.objects.get(tx_id=tx_id)
+            block['block_height'] = itemBlock.block_height
+            block['prev_hash'] = itemBlock.prev_hash
+            block['tx_id'] = itemBlock.tx_id
+            block['block_timestamp'] = itemBlock.block_timestamp
+            block['nonce'] = itemBlock.nonce
+            block['block_hash'] = itemBlock.block_hash
+        except Exception as e:
+            # print(e)
+            continue
+        block['tx_id'] = tx_id
+        block['timestamp'] = time_to_str(content[i][2])
+        block['science_data_id_list'] = content[i][3] # split by  only one!!!
+        block['conference_data_id_list'] = content[i][4]
+        block['journal_data_id_list'] = content[i][5]
+        block['patent_data_id_list'] = content[i][6]
 
-        for i in range(block['tx_number']):
-            timestamp = block['wholeInfo']['transactions'][i]['timestamp']
-            block['wholeInfo']['transactions'][i]['timestamp'] = time_to_str(timestamp)
+        block['action'] = content[i][7]
+        if block['action'] == 'review_pass' or block['action'] == 'review_reject':
+            block['user_id'] = Admin.objects.get(admin_id=content[i][1]).admin_name
+        else:
+            block['user_id'] = User.objects.get(user_id=content[i][1]).user_name
+        block['first_title'] = content[i][8]
+        block['second_title'] = content[i][9]
+        block['reviewer'] = content[i][10]
+        block['data_type'] = content[i][11]
 
-            seller = block['wholeInfo']['transactions'][i]['seller']
-            try:
-                block['wholeInfo']['transactions'][i]['seller'] = User.objects.get(user_id=seller).user_name
-            except:
-                pass
-
-            buyer = block['wholeInfo']['transactions'][i]['buyer']
-            try:
-                block['wholeInfo']['transactions'][i]['buyer'] = User.objects.get(user_id=buyer).user_name
-            except:
-                pass
-
-            data_uuid = block['wholeInfo']['transactions'][i]['data_uuid']
-            try:
-                block['wholeInfo']['transactions'][i]['data_uuid'] = Data.objects.get(data_id=data_uuid).data_name
-            except:
-                pass
-            try:
-                block['wholeInfo']['transactions'][i]['credit'] = Data.objects.get(data_id=data_uuid).data_price
-            except:
-                pass
+        if len(block['science_data_id_list']) == 0 and block['conference_data_id_list'] =='' and \
+                block['journal_data_id_list']=='' and block['patent_data_id_list'] == '':
+            continue
+        # only have science data
+        if len(block['science_data_id_list'])!=0:
+            science_data_id = block['science_data_id_list']
+            science_data = ScienceData.objects.get(data_id= science_data_id)
+            block['first_title'] = science_data.first_title
+            block['second_title'] = science_data.second_title
+            block['data_type'] = '其他'
+            block['science_data_name'] = science_data.data_name
+            block['science_data_info'] = science_data.data_info
+            block['science_data_source'] = science_data.data_source
+            block['science_data_size'] = str(round(science_data.data_size,3))+'MB'
         blocks.append(block)
-        # action = login
-        # action = buy
-        # action = download
-        # action =
 
+        if block['conference_data_id_list']!='':
+            conference_data_id_list = block['conference_data_id_list'].split(',')
+            for item_id in conference_data_id_list:
+                item_id = item_id.strip()
+                block[item_id] = {}
+                try:
+                    conference_data = Conference.objects.get(article_id=item_id)
+                    block[item_id]['article_id'] = conference_data.article_id
+                    # get article name
+                    if conference_data.article_name != '':
+                        block[item_id]['article_name'] = conference_data.article_name
+                    else:
+                        block[item_id]['article_name'] = '无'
 
-    # print(blocks[0]['wholeInfo']['transactions'][0]['timestamp'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['seller'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['data_uuid'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['credit'])
-    # print(blocks[0]['wholeInfo']['transactions'][0]['action'])
+                    # get authors
+                    article_authors_list = conference_data.article_authors
+                    if article_authors_list == '':
+                        block[item_id]['article_authors'] = '无'
+                    else:
+                        article_authors_list = article_authors_list.split('%')
+                        authors_str = ''
+                        for item_author in article_authors_list:
+                            single_author = item_author.split('^')[1][1:]
+                            if authors_str == '':
+                                authors_str += single_author
+                            else:
+                                authors_str += ',' + single_author
+                        block[item_id]['article_authors'] = authors_str
+                    #get conference name
+                    if conference_data.conference_name != '':
+                        block[item_id]['conference_name'] =conference_data.conference_name
+                    else:
+                        block[item_id]['conference_name'] = '无'
+                    if conference_data.keywords != '':
+                        block[item_id]['keywords'] = conference_data.keywords
+                    else:
+                        block[item_id]['keywords'] = '无'
+                    if conference_data.abstract != '':
+                        block[item_id]['abstract'] = conference_data.abstract
+                    else:
+                        block[item_id]['abstract'] = '无'
+                    # get abstract
+
+                except Exception as e:
+                    print(e, 'lost_conference_data_id', '我我' + item_id + '我我')
+                    pass
+
+        if block['journal_data_id_list']!='':
+            journal_data_id_list = block['journal_data_id_list'].split(',')
+            # print(journal_data_id_list)
+            for item_id in journal_data_id_list:
+                item_id = item_id.strip()
+                block[item_id] = {}
+                try:
+                    journal_data = Journal.objects.get(article_id=item_id)
+                    block[item_id]['article_id'] = journal_data.article_id
+                    # get article name
+                    if journal_data.article_name != '':
+                        block[item_id]['article_name'] = journal_data.article_name
+                    else:
+                        block[item_id]['article_name'] = '无'
+
+                    # get authors
+                    article_authors_list = journal_data.article_authors.split('%')
+                    if article_authors_list == '':
+                        block[item_id]['article_authors'] = '无'
+                    else:
+                        authors_str = ''
+                        for item_author in article_authors_list:
+                            if authors_str == '':
+                                authors_str += item_author
+                            else:
+                                authors_str += ',' + item_author
+                        block[item_id]['article_authors'] = authors_str
+
+                    # get conference name
+                    if journal_data.journal_name != '':
+                        block[item_id]['journal_name'] = journal_data.journal_name
+                    else:
+                        block[item_id]['journal_name'] = '无'
+
+                    if journal_data.keywords != '':
+                        block[item_id]['keywords'] = journal_data.keywords
+                    else:
+                        block[item_id]['keywords'] = '无'
+                    # get abstract
+                    if journal_data.abstract != '':
+                        block[item_id]['abstract'] = journal_data.abstract
+                    else:
+                        block[item_id]['abstract'] = '无'
+                except Exception as e:
+                    print(e,'lost_journal_data_id','我我'+item_id+'我我')
+                    pass
+
+        if block['patent_data_id_list']!='':
+            patent_data_id_list = block['patent_data_id_list'].split(',')
+            # print('patent_data_id_list',patent_data_id_list)
+            for item_id in patent_data_id_list:
+                item_id = item_id.strip()
+                block[item_id] = {}
+                try:
+                    patent_data = Patent.objects.get(patent_id=item_id)
+                    block[item_id]['patent_id'] = patent_data.patent_id
+                    # get article name
+                    if patent_data.patent_openId != '':
+                        block[item_id]['patent_openId'] = patent_data.patent_openId
+                    else:
+                        block[item_id]['patent_openId'] = '无'
+
+                    if patent_data.patent_name != '':
+                        block[item_id]['patent_name'] = patent_data.patent_name
+                    else:
+                        block[item_id]['patent_name'] = '无'
+
+                    if patent_data.patent_applicant != '':
+                        block[item_id]['patent_applicant'] = patent_data.patent_applicant
+                    else:
+                        block[item_id]['patent_applicant'] = '无'
+
+                    if patent_data.patent_authors != '':
+                        block[item_id]['patent_authors'] = patent_data.patent_authors
+                    else:
+                        block[item_id]['patent_authors'] = '无'
+
+                    if patent_data.patent_keywords != '':
+                        block[item_id]['patent_keywords'] = patent_data.patent_keywords
+                    else:
+                        block[item_id]['patent_keywords'] = '无'
+
+                    if  patent_data.patent_province != '':
+                        block[item_id]['patent_province'] = patent_data.patent_province
+                    else:
+                        block[item_id]['patent_province'] = '无'
+                except Exception as e:
+                    print(e, 'lost_patent_data_id', '我我' + item_id + '我我')
+                    pass
 
     return blocks, len_content
 
@@ -555,9 +683,7 @@ def sendResetPwdEmail(receiver, secretKey):
         smtpObj.connect(mail_host, 25)  # 25 为 SMTP 端口号
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(mail_user, receivers, message.as_string())
-        # print("邮件发送成功!!!")
         return True
     except smtplib.SMTPException as e:
-        # print(str(e))
-        # print("Error: 无法发送邮件")
         return False
+
