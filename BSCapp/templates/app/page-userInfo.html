@@ -179,6 +179,7 @@
 										<table class="table table-striped">
 											<thead>
 												<tr>
+{#                                                    <th align="center">数据ID</th>#}
                                                     <th align="center">数据名</th>
                                                     <th align="center">时间戳</th>
 													<th align="center">所属专题</th>
@@ -193,6 +194,7 @@
 											<tbody>
 											{% for tx_log in tx_logs %}
 												<tr>
+{#                                                    <td align="">  {{tx_log.science_data}}</td>#}
                                                     <td align="">  {{tx_log.science_data_id}}</td>
 	                                                <td align="">  {{tx_log.timestamp}}</td>
 													<td align="">  {{tx_log.first_title}}</td>
@@ -204,20 +206,19 @@
 											{% endfor %}
 											</tbody>
 										</table>
-
-										{% if tx_logs.has_other_pages %}
-											<ul class="pagination">
-											{% if tx_logs.has_previous %}
-											<li>
-												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>
-											</li>
-											{% else %}
+                                        {% if tx_logs.has_other_pages %}
+									<ul class="pagination">
+										{% if tx_logs.has_previous %}
+      										<li><a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a></li>
+									 	{% else %}
 											<li class="disabled">
-												<span>&laquo;</span>
+											<span>&laquo;</span>
 											</li>
-											{% endif %} {% for i in tx_logs.paginator.page_range %}
-                                                {% if tx_logs.number == i %}
-											    <li class="active">
+										{% endif %}
+{#										{% for i in datas.paginator.page_range %}#}
+                                        {% for i in tx_logs.paginator.page_range_ext %}
+											{% if tx_logs.number == i %}
+											<li class="active">
 												<span>{{ i }}
 													<span class="sr-only">(current)</span>
 												</span>
@@ -226,17 +227,46 @@
 											<li>
 												<a href="?page={{ i }}">{{ i }}</a>
 											</li>
-											{% endif %} {% endfor %} {% if tx_logs.has_next %}
-											<li>
-												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>
-											</li>
-											{% else %}
-											<li class="disabled">
-												<span>&raquo;</span>
-											</li>
 											{% endif %}
+										{% endfor %}
+										{% if tx_logs.has_next %}
+											<li><a href="?page={{ tx_logs.next_page_number }}">&raquo;</a></li>
+									 	{% else %}
+											<li class="disabled"><span>&raquo;</span></li>
+										{% endif %}
 									</ul>
 									{% endif %}
+{#										{% if tx_logs.has_other_pages %}#}
+{#											<ul class="pagination">#}
+{#											{% if tx_logs.has_previous %}#}
+{#											<li>#}
+{#												<a href="?page={{ tx_logs.previous_page_number }}">&laquo;</a>#}
+{#											</li>#}
+{#											{% else %}#}
+{#											<li class="disabled">#}
+{#												<span>&laquo;</span>#}
+{#											</li>#}
+{#											{% endif %} {% for i in tx_logs.paginator.page_range %} {% if tx_logs.number == i %}#}
+{#											<li class="active">#}
+{#												<span>{{ i }}#}
+{#													<span class="sr-only">(current)</span>#}
+{#												</span>#}
+{#											</li>#}
+{#											{% else %}#}
+{#											<li>#}
+{#												<a href="?page={{ i }}">{{ i }}</a>#}
+{#											</li>#}
+{#											{% endif %} {% endfor %} {% if tx_logs.has_next %}#}
+{#											<li>#}
+{#												<a href="?page={{ tx_logs.next_page_number }}">&raquo;</a>#}
+{#											</li>#}
+{#											{% else %}#}
+{#											<li class="disabled">#}
+{#												<span>&raquo;</span>#}
+{#											</li>#}
+{#											{% endif %}#}
+{#									</ul>#}
+{#									{% endif %}#}
 									</div>
 								</div>
 								<!-- END RECORD -->

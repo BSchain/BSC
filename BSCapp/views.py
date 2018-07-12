@@ -550,6 +550,7 @@ def BuyableData(request):
             tx_id =  generate_uuid(user.user_id)
             # now_time = str(datetime.datetime.utcnow().timestamp())
             now_time = str(older_time(datetime.datetime.utcnow().timestamp()))
+            # print(time_to_str(now_time))
             log.new_log(tx_id = tx_id, user_id = user.user_id, timestamp = now_time,
                         science_data_id_list = now_data_id, conference_data_id_list = [], journal_data_id_list = [], patent_data_id_list = [],
                         action = 'download', reviewer = '', first_title='', second_title='', data_type='')

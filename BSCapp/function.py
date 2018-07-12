@@ -287,6 +287,7 @@ def txLog_sql(user_id):
     for i in range(len(content)):
         tx_log = dict()
         sciencd_data = ScienceData.objects.get(data_id=content[i][0])
+        tx_log['science_data'] = sciencd_data.data_id
         tx_log['science_data_id'] = sciencd_data.data_name
         tx_log['timestamp'] = time_to_str(content[i][1])
         tx_log['first_title'] = sciencd_data.first_title

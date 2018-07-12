@@ -182,5 +182,5 @@ def get_file_md5(file_path):
 def time_to_str(timestamp):
     return datetime.datetime.fromtimestamp(float(timestamp) + 28800.0).strftime('%Y-%m-%d %H:%M:%S')
 
-def older_time(timestamp):
-    return timestamp - 4320000 - 86400
+def older_time(timestamp): # 当前7.12 9:17  结果为 2018-05-22 20:22:53
+    return timestamp - 4320000 - 46400
