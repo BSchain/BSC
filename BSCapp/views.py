@@ -1219,12 +1219,12 @@ def ChainInfo(request):
         search_base = request.POST["searchBase"]
         search_field = request.POST["searchField"]
         if search_field == '':
-            paged_blocks = pagingData(request, blocks)
+            paged_blocks = pagingData(request, blocks, each_num=10)
         else:
             paged_blocks = pagingData(request, blocks, each_num=len_content)
     except Exception as e:
         # print(e)
-        paged_blocks = pagingData(request, blocks)
+        paged_blocks = pagingData(request, blocks, each_num=10)
 
     return render(request, "app/page-chainInfo.html",
                       {'id': username,
