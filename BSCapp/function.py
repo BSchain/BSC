@@ -469,9 +469,13 @@ def chainData_sql(request, sort_sql):
         return context
     blocks = []
     len_content = len(content)
+    number = 0
     for i in range(len_content):
-        if i > 78:
+
+        if number > 100:
             break
+        number += 1
+
         block = dict()
         tx_id = content[i][0]
         if (tx_id == '2018'): # the gensis block
