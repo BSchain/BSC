@@ -14,7 +14,7 @@ import os
 import BSCapp.root_chain.utils as UTILS
 import json
 
-db= pymysql.connect(host="localhost",user="root", password="zpflyfe",db="bsc_db",port=3306)
+db= pymysql.connect(host="localhost",user="root", password="zpflyfe14211124",db="bsc_db",port=3306)
 cursor = db.cursor()
 
 # insert the first block info to database!

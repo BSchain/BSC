@@ -16,15 +16,15 @@ import os
 import datetime
 
 
-TRANSACTION_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/transactions/'
+TRANSACTION_SAVE_ROOT = '/Users/pengfei_zheng/myself/github/BSC/transactions/'
 TRANSACTION_SAVE_SUFFIX = '.json'
-BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocks/' # the blocks saving root
+BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/myself/github/BSC/blocks/' # the blocks saving root
 BLOCK_SAVE_SUFFIX = '.json' # block suffix
 BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
 
-LOG_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/logs/'
+LOG_SAVE_ROOT = '/Users/pengfei_zheng/myself/github/BSC/logs/'
 LOG_SAVE_SUFFIX = '.json'
-NEW_BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/Documents/myself/BSC/blocksNew/' # the blocks saving root
+NEW_BLOCK_SAVE_ROOT = '/Users/pengfei_zheng/myself/github/BSC/blocksNew/' # the blocks saving root
 NEW_BLOCK_SAVE_SUFFIX = '.json' # block suffix
 NEW_BLOCK_SPLIT = '_' # e.g.  1_hash.json  2018_hash.json (index + '_' + hash + '.json')
 
@@ -164,7 +164,7 @@ def valid_chain(chain):
 
 
 def generate_uuid(name):
-    return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name+str(time())))
+    return str(uuid.uuid3(namespace=uuid.NAMESPACE_DNS, name=name+str(time()-18888400)))
 
 def get_file_md5(file_path):
     f = open(file_path, 'rb')
